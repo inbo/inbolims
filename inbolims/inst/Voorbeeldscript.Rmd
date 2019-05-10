@@ -1,0 +1,69 @@
+---
+title: "Voorbeeldscript Calibratiecurve"
+author: "Pieter"
+date: "2 mei 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+#Connecteer met de database en de data inlezen
+
+Via de functie `lims_connect()`kan je een connectie tot stand brengen met het datawarehouse.
+Eens een connectie is gemaakt, kan je gegevens uit de database inladen via de functie `inbolims::lims_get_results(parameters)`. Je kan help opvragen via `?lims_get_results`.
+Met de functie `lims_mogelijkeden(keuze)` krijg je een overzicht van mogelijke waarden.
+
+In dit voorbeeld halen we de resultaten van alle componenten van de analyse *ICP_MET_OXAL* binnen voor de matrix *BODEM* voor het jaar 2018. Standaard staat het argument sampleType zo ingesteld dat enkel de projectstalen worden genomen. Je kan specifieker gaan door ook nog andere parameters zoals component in te stellen zodat je enkel de waarden terugkrijgt per component.
+
+```{r connect}
+
+library(inbolims) #bibliotheek voor de LIMS functies
+library(tidyverse) #een verzamelpakket met heel wat handige R functies
+
+conn <- lims_connect() #indien conn -1 bevat dan is de connectie niet geslaagd
+
+lims_mogelijkheden(conn, keuze = "Matrix")
+lims_mogelijkheden(conn, keuze = "LimsAnalysisName")
+
+Data <- lims_get_results(conn, analysis = "ICP_MET_OXAL", matrix = "BODEM", 
+                         start = "2018-01-01", end = "2019-01-01")
+
+```
+
+#De gegevens bekijken
+
+De ingelezen gegevens bevinden zich nu in het R object *Data* (dit hebben we zo gedefinieerd in de bovenstaande code). Nu kunnen we met dit object bewerkingen uitvoeren zoals de data filteren, plotten, ...
+
+## Basisplots
+
+```{r basis}
+
+unique(Data$Component) #toon de aanwezige componenten
+
+#Filter de data zodat je enkel de component OXAL.Fe.DS overhoudt en steek die in DataW
+DataW <- filter(Data, Component %in% c("OXAL.Fe.DS"))
+
+ggplot(DataW, aes(x = AnalysisDate, y = ResultNumeric)) + geom_point()
+
+ggplot(DataW, aes(x = seq_len(nrow(DataW)),y = ResultNumeric)) + geom_point() + geom_line() + 
+  labs(x = "volgorde stalen in 2018", y = "Resultaat OXAL.Fe.DS")
+
+DataKwantiel <- 
+  DataW %>% 
+  group_by(Component) %>% 
+  do({
+    prob = 0:40/40
+    kwantielen <- quantile(.[["ResultNumeric"]], prob = prob)
+    data.frame(kwantiel = prob, waarde = kwantielen)
+  })
+View(DataKwantiel)
+
+ggplot(DataW, aes(x = ResultNumeric)) + geom_density() + 
+  geom_vline(data = filter(DataKwantiel, kwantiel %in% c(0.025,0.25, 0.50 ,0.75, 0.975)), 
+             aes(xintercept = waarde, color = factor(kwantiel))) + 
+  scale_color_manual(name = "kwantiel",
+                     values = c("0.025" = "red", "0.25" = "orange", "0.5" = "green4",
+                                "0.75" = "orange", "0.975" = "red"))
+```

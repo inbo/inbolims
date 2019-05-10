@@ -1,0 +1,82 @@
+---
+title: "Untitled"
+author: "PV"
+date: "30 januari 2017"
+output: 
+    html_document:
+        self_contained: no
+        number_sections: true
+---
+
+```{r setup, include=FALSE, echo = FALSE}
+require(ggplot2)
+knitr::opts_chunk$set(echo = TRUE)
+source("QC_CHARTS_FUNCTIONS.r", local = TRUE)
+data <- read.csv2(file = "QC_CHARTS.csv")
+figpath <- "QC_CHARTS_files/figure-html/"
+```
+
+
+# QC Controlekaarten
+
+De regels zijn als volgt:
+
+
+
+-  **Regel 1:**	1 point is outside the control limits. -->	A large shift.
+-  **Regel 2:**	8/9 points on the same size of the center line.	--> A small sustained shift.
+-  **Regel 3:**	6 consecutive points are steadily increasing or decreasing.	--> A trend or drift up or down.
+-  **Regel 4:**	14 consecutive points are alternating up and down.	--> Non-random systematic variation.
+-  **Regel 5:**	2 out of 3 consecutive points are more than 2 sigmas from the center line in the same direction. -->	A medium shift.
+-  **Regel 6:**	4 out of 5 consecutive points are more than 1 sigma from the center line in the same direction. -->	A small shift.
+-  **Regel 7:**	15 consecutive points are within 1 sigma of the center line.	--> Stratification.
+-  **Regel 8:**	8 consecutive points on either side of the center line with not within 1 sigma.	 --> A mixture pattern.
+
+
+
+
+```{r createPlots, results = "asis", echo = FALSE, warning = FALSE}
+tmp <- list.files(figpath)
+for (i in 1:length(tmp)) try(file.remove(paste0(figpath, tmp[i])))
+for (i in unique(data$SAMPLE_NAME)){
+	newdata <- subset(data, SAMPLE_NAME == i)
+	for (j in unique(newdata$NAME)){
+	  cat("\n\n##", i, j,"\n\n")
+	  ppdata <- subset(newdata, NAME == j, c("Nr", "TEXT_ID", "NAME", "NUMERIC_ENTRY", "ENTERED_ON"))
+		rownames(ppdata) <- 1:nrow(ppdata)
+		png(filename = paste0(figpath,"QC_",i,j,".png"), width = 960, height = 620)
+		  #g <- ggplot(ppdata, aes(x=Nr, y=NUMERIC_ENTRY)) + geom_point()
+		  qcdata <- lims_shewhart.lims_data(ppdata)
+		  g <- gg_lims_shewhart(qcdata)
+		  print(g)
+		dev.off()  
+		plt <- paste0(figpath,"QC_",i,j,".png")
+	  cat(paste0("![](", plt, ")\n"))
+	  ppdata <- cbind(ppdata, qcdata[["RVIOL"]])
+		pander::pandoc.table(ppdata)
+		print("END ITER")
+	}
+}
+
+```
+
+```{r shewshow, results = 'asis',echo = FALSE}
+# for (i in unique(data$SAMPLE_NAME)){
+# 	newdata <- subset(data, SAMPLE_NAME == i)
+# 	for (j in unique(newdata$NAME)){
+# 	  cat("\n\n##", i, j,"\n\n")
+# 	  plt <- paste0(figpath,"QC_",i,j,".png")
+# 	  cat(paste0("![](", plt, ")\n"))
+# 	  ppdata <- subset(newdata, NAME == j, c("TEXT_ID", "NAME", "NUMERIC_ENTRY", "ENTERED_ON"))
+# 		rownames(ppdata) <- 1:nrow(ppdata)
+# 		tmp <- lims_shewhart.lims_data(ppdata, plot = FALSE)
+# 		ppdata <- cbind(Nr = 1:nrow(ppdata), ppdata)
+# 		ggplot(ppdata, aes(x=Nr, y=NUMERIC_ENTRY)) + geom_point()
+# 		pander::pandoc.table(ppdata)
+# 	}
+# }
+
+
+```
+
+
