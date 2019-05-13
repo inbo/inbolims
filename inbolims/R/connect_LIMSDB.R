@@ -46,3 +46,29 @@ write_db_credentials <-
 
 
 ###############################################################
+
+#' Title
+#'
+#' @param server name of the LIMS server
+#' @param database name of the LIMS database
+#' @param uid application username (that as writing rights on the db, so this is not you username)
+#' @param pwd applciation username password
+#'
+#' @return db connection
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' lims_db_connect(uid = "me", pwd = "123456") #should not work
+#' }
+
+lims_db_connect <- function(server = "inbo-sql07-prd.inbo.be", 
+                         database = "D0015_00_Lims", uid, pwd){
+  con <- DBI::dbConnect(odbc::odbc(), 
+                        Driver = "SQL Server", 
+                        Server = server, 
+                        Database = database, 
+                        uid = uid,
+                        pwd = pwd)
+  con
+}

@@ -5,6 +5,8 @@
 #credentials
 dbcredentials.txt
 
+tijdelijk/
+
 # Session Data files
 .RData
 

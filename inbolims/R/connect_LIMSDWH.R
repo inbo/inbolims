@@ -17,8 +17,8 @@ lims_connect <- function(server = "inbo-sql08-prd.inbo.be",
                          database = "W0003_00_Lims"){
   con <- DBI::dbConnect(odbc::odbc(), 
                         Driver = "SQL Server", 
-                        Server = "inbo-sql08-prd.inbo.be", 
-                        Database = "W0003_00_Lims", 
+                        Server = server, 
+                        Database = database, 
                         Trusted_Connection = "True")
   con
 }
