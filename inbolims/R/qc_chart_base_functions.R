@@ -1,3 +1,112 @@
+#' Selecteer de waarden die als basis voor de controlekaart dienen
+#'
+#' @param conn db connection
+#' @param num number of samples to keep or all samples of a year if coded as JD2017 or all samples from the last D days, coded starting with a D, so num can be like: 30 or JD2017 or D60
+#' @param batch the name of the batch, which will be used to check which control samples are returned 
+#' @param analysis the name of the analysis
+#' @param components a vector of one or more components within the analysis
+#' @param start the earliest startdate coded as "YYYY-mm-dd". Only if num is a numeric value
+#' @param end the latest enddate coded as "YYYY-mm-dd". Only used if num is a numeric value
+#'
+#' @return a dataset with all lab information (SAMPLE_NAME, SAMPLE_NUMBER, TEXT_ID, ANALYSIS, NAME, BATCH, ENTRY, C_DATE_BATCHRUN, ENTERED_ON, Nr, CV)
+#' @export
+#' @importFrom dplyr bind_rows row_number left_join
+#' @import dplyr
+#'
+#' @examples
+#' \dontrun{
+#' batch = "IC_AN-190430-1"
+#' analysis = "IC_ANIONEN"
+#' components = c("NO2", "NO3")
+#' testdf <- select_control_samples(conn, num = 30, batch, analysis, components)
+#' }
+select_control_samples <- function(conn, num, batch, analysis, components, 
+                                   start = "1900-01-01", end = "2200-01-01"){
+  
+  C_DATE_BATCHRUN <- ENTERED_ON <- ANALYSIS <- NAME <- SAMPLE_NAME <- Nr <- ENTRY <- . <-  NULL
+  
+  #Kies de datums afhankelijk van de laatste N of een opgegeven jaar
+  today <- Sys.Date()  
+  if (suppressWarnings(is.na(as.numeric(num)))) {
+    #indien num geen getal is
+    if (substring(num,1,2) == "JD") {
+      year <- as.numeric(substring(num,3,6))
+      start <- paste0(year, "-01-01")
+      end <- paste0(year + 1, "-01-01")
+      num <- 5000
+    } else if (substring(num, 1, 1) == "D") {
+      days_previous <- as.numeric(substring(num, 2))
+      end <- as.character(format(today + 1, format = "%Y-%m-%d"))
+      start <- as.character(format(today - days_previous, format = "%Y-%m-%d"))
+      num <- 5000
+    }
+  } else {
+    #indien num een getal is
+    start <- start
+    end <- end
+  }
+  
+  #Zoek de verschillende controlestalen die in dit type batch kunnen voorkomen
+  sql01 <- paste0("select distinct(s.sample_name) from test t",
+                  " inner join sample s on t.sample_number = s.sample_number",
+                  " where t.batch = '", batch ,"'",
+                  " and s.sample_type in ('CONTROL', 'BLANK', 'PRBLANCO')")
+  dfSampNames <- DBI::dbGetQuery(conn, sql01)
+
+  #Maak een query om alle data op te halen
+  alldata <- NULL
+  for (samptyp in dfSampNames[[1]]) {
+    for (comp in components) {
+      print(c(samptyp, comp))
+      sql02 <- paste0("SELECT top(", num, ") ",
+                      "s.SAMPLE_NAME, s.SAMPLE_NUMBER, s.TEXT_ID, r.ANALYSIS, r.NAME, t.BATCH, ", 
+                      "r.ENTRY, b.C_DATE_BATCHRUN, r.ENTERED_ON",
+                      " from sample s inner join test t on s.sample_number = t.sample_number",
+                      " inner join result r on t.test_number = r.test_number",
+                      " left join batch b on t.BATCH = b.NAME",
+                      " where r.ENTRY is not NULL and r.STATUS in ('E', 'M', 'A')",
+                      " and s.SAMPLE_NAME = '", samptyp, "'", " AND r.NAME ='", comp, "'",
+                      " and t.ANALYSIS = '", analysis, "'",
+                      " and r.ENTERED_ON >= '",start, "'",
+                      " and r.ENTERED_ON < '", end, "'",
+                      " ORDER BY b.C_DATE_BATCHRUN desc, b.NAME, r.ENTERED_ON desc")
+      tmp <- DBI::dbGetQuery(conn, sql02)
+      alldata <- bind_rows(alldata, tmp)
+    }
+  }
+  alldata <- 
+    na.omit(alldata) %>% 
+    arrange(desc(C_DATE_BATCHRUN), desc(ENTERED_ON)) %>%
+    group_by(ANALYSIS, NAME, SAMPLE_NAME) %>% 
+    mutate(Nr = nrow(.) - row_number() + 1)
+  
+  ###link data with product specifications
+  
+  sql03 <-
+    paste0("
+         select ps0.GRADE, ps0.ANALYSIS, ps0.COMPONENT, CV = ps0.NOMINAL_VALUE
+         from product_spec ps0
+         inner join
+         (select PRODUCT, GRADE, ANALYSIS, COMPONENT,MAX_VERSION = max(VERSION)
+         from product_spec
+         group by PRODUCT, GRADE, ANALYSIS, COMPONENT) ps1
+         on ps0.GRADE = ps1.GRADE and ps0.ANALYSIS = ps1.ANALYSIS and ps0.COMPONENT = ps1.COMPONENT and ps0.VERSION = ps1.MAX_VERSION"
+    )
+  cvdata <- DBI::dbGetQuery(conn, sql03)
+  alldata <- 
+    left_join(alldata, cvdata,
+              by = c("SAMPLE_NAME" = "GRADE", "ANALYSIS", "NAME" = "COMPONENT")) %>% 
+    arrange(SAMPLE_NAME, Nr) %>%
+    mutate(ENTRY = as.numeric(ENTRY))
+
+  ### RETURN
+  
+  write.csv2(alldata, file = "QC_CHARTS.csv")
+  
+  alldata
+}
+
+#############################################################################
 
 
 #' Calculate Shewhart rules (generic)
@@ -41,7 +150,6 @@ lims_shewhart.default <- function(x, center = NULL, sd = NULL, rules=lims_shewha
   plotdata <- as.data.frame(plotdata)
   plotdata$RVIOL <- as.character(paste0(plotdata$rule01,plotdata$rule02,plotdata$rule03,plotdata$rule04,
                            plotdata$rule05,plotdata$rule06,plotdata$rule07,plotdata$rule08))
-
   plotdata
 }
 
@@ -80,7 +188,6 @@ gg_lims_shewhart <- function(plotdata, red_rules = 1:2, orange_rules = 3:6, yell
   plotdata
   
   value <- color <- Nr <- NULL #to avoid NOTE in as-cran
-  
   g <- 
   ggplot(plotdata, aes(x = Nr, y = value)) +
   geom_line(aes(y = lcl_1s), lty=2, color = "gold") + geom_line(aes(y = ucl_1s), lty = 2, color = "gold") +
@@ -278,4 +385,113 @@ lims_shewhart_rules <- function(x, center, sd, runs = c(1,9,6,14,3,5,15,8), ...)
   cbind(value=x, lcl_3s, lcl_2s, lcl_1s, center, ucl_1s, ucl_2s, ucl_3s,
         rule01, rule02, rule03, rule04, rule05, rule06, rule07, rule08)
 }
+
+
+#########################################################################
+
+#' Maak een HTML rapport 
+#'
+#' @param data dataset verkregen na de functie select_control_samples
+#' @param path pad indien afwijkend van de werkdirectory. Zeker eindigen met "/". Zorg dat deze directory reeds bestaat.
+#'
+#' @importFrom grDevices dev.off png
+#' @importFrom stats median na.omit
+#' @importFrom utils write.csv2
+#' @importFrom dplyr bind_rows arrange desc group_by mutate
+#' @return HTML rapport met QC kaarten
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' batch = "IC_AN-190430-1"
+#' analysis = "IC_ANIONEN"
+#' components = c("NO2", "NO3")
+#' testdf <- select_control_samples(conn, num = 30, batch, analysis, components)
+#' html_qc_report(testdf)
+#' }
+html_qc_report <- function(data, path = ""){
+  
+  ### Identificeer directories, en verwijder vorige HTML bestanden
+  
+  SAMPLE_NAME <- NAME <- C_DATE_BATCHRUN <- ENTERED_ON <- ANALYSIS <- Nr <- NULL
+  
+  htmlfile <- paste0(path, "index.html")
+  figpath <- paste0(path, "figure_html/")
+  if (!dir.exists(figpath)) dir.create(figpath)
+  
+  tmp <- list.files(figpath)
+  for (i in 1:length(tmp)) try(file.remove(paste0(figpath, tmp[i])), silent = TRUE)
+  
+  ### Maak een HTML template, met de regels van boven
+  
+  cat("<HTML><HEAD><TITLE>QC-chart</TITLE></HEAD><BODY>\n", file = htmlfile, append = FALSE)
+  
+  cat(file = htmlfile, append = TRUE,
+      paste(sep = "\n",
+            "<h2><b>De regels zijn als volgt:</b></h2><p>",
+            "<ol>",
+            "<li><b>Regel 1:</b> 1 point is outside the control limits. -->	A large shift.</li>",
+            "<li><b>Regel 2:</b> 8/9 points on the same size of the center line.	--> A small sustained shift.</li>",
+            "<li><b>Regel 3:</b> 6 consecutive points are steadily increasing or decreasing.	--> A trend or drift up or down.</li>",
+            "<li><b>Regel 4:</b> 14 consecutive points are alternating up and down.	--> Non-random systematic variation.</li>",
+            "<li><b>Regel 5:</b> 2 out of 3 consecutive points are more than 2 sigmas from the center line in the same direction. -->	A medium shift</li>",
+            "<li><b>Regel 6:</b> 4 out of 5 consecutive points are more than 1 sigma from the center line in the same direction. -->	A small shift.</li>",
+            "<li><b>Regel 7:</b> 	15 consecutive points are within 1 sigma of the center line.	--> Stratification.</li>",
+            "<li><b>Regel 8:</b> 8 consecutive points on either side of the center line with not within 1 sigma.	 --> A mixture pattern.</li>",
+            "</ol><p>"
+      ))
+  
+  ### QC Controlekaarten
+  
+  for (i in unique(data$SAMPLE_NAME)) {
+    newdata <- subset(data, SAMPLE_NAME == i)
+    for (j in unique(newdata$NAME)) {
+      cat("<p><h1>",'<span style = "color:red">', j,"</span>", i, "</h1>\n\n", file = htmlfile, append = TRUE)
+      ppdata <- subset(newdata, NAME == j, c("TEXT_ID", "NAME", "BATCH", "ENTRY", "ENTERED_ON", "CV"))
+      ppdata$ENTERED_ON <- substring(ppdata$ENTERED_ON,1,10)
+      ppdata$Nr <- 1:nrow(ppdata)
+      
+      qcdata <- lims_shewhart.lims_data(ppdata, entrycol = "ENTRY")
+      g <- gg_lims_shewhart(qcdata)
+      #g <- plotly::ggplotly(g)
+      cvval <- mean(ppdata$CV)
+      
+      png(filename = paste0(figpath,"QC_",i,j,".png"), width = 960, height = 620)
+      print(g)
+      dev.off()
+      
+      Sys.sleep(0.1)
+      figsav <- paste0("figure_html/","QC_",i,j,".png")
+      cat("\n<img src=",figsav,"</img>", file = htmlfile, append = TRUE)
+      
+      ppdata <- cbind(ppdata, "Rule viol" = qcdata[["RVIOL"]])
+      gem <- mean(ppdata$ENTRY, na.rm = TRUE)
+      med <- median(ppdata$ENTRY, na.rm = TRUE)
+      sd <- sd(ppdata$ENTRY, na.rm = TRUE)
+      lcl <- gem - 1:3 * sd
+      ucl <- gem + 1:3 * sd
+      cv <- mean(ppdata$CV)
+      
+      cat("<p><b>gem</b> = ", round(gem,3), "; <b>CV</b> = ", cv, "<br></br>", file = htmlfile, append = TRUE)
+      cat("<b>med</b> = ", round(med, 3), "; <b>sd</b> = ", round(sd, 3), "<br></br></p>\n", file = htmlfile, append = TRUE)
+      
+      itab <- data.frame(LCL = lcl, UCL = ucl)
+      row.names(itab) <- c("1s", "2s", "3s")
+      print(xtable::xtable(itab), type = "html", digits = 3, file = htmlfile, append = TRUE, include.rownames = FALSE)
+      
+      ppdata$CV <- NULL
+      print(xtable::xtable(ppdata), type = "html", digits = 3, file = htmlfile, append = TRUE, include.rownames = FALSE )
+      
+    }
+  }
+  
+  ### EINDIG HTML en Toon deze
+  
+  cat("\n</BODY></HTML>", file = htmlfile, append = TRUE)
+  print(htmlfile)
+  
+  shell.exec(htmlfile)
+}
+
+
 

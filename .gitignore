@@ -6,6 +6,7 @@
 dbcredentials.txt
 
 tijdelijk/
+workdir/
 
 # Session Data files
 .RData
