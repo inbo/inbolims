@@ -1,0 +1,249 @@
+
+---
+title: "E-DNA run"
+author: "Pieter"
+date: "10 mei 2019"
+output: html_document
+---
+
+FUNCTIES NOG OMZETTEN!!!
+
+#Wat wordt gedaan
+
+
+
+
+```{r all}
+##########################################################################################
+#### CHANGING VALUES BETWEEN SERVERS #######
+##########################################################################################
+
+setwd("L:\\LabWare-7\\Data\\R_WORKDIR\\_GENETICA\\DNA_RUN")
+outdir <- getwd()
+library(RODBC)
+logfile = "GEN_EDNA_RUN.log"
+
+args <- commandArgs()
+sink(logfile, append = FALSE)
+print(args)
+sink()
+
+
+dbodbc <- dbuid <- dbpwd <- dbrunid <- plateblanks <- sampreps <- maxreps <- -1
+
+dbodbc <- args[6]
+dbuid <- args[7]
+dbpwd <- args[8]
+runid <- args[9]
+plateblanks <- as.numeric(args[10])
+sampreps <- as.numeric(args[11])
+maxreps <- as.numeric(args[12])
+
+
+
+################################################################################################
+# IDENTICAL BETWEEN FILES
+################################################################################################
+
+##### constants
+
+
+platesize <- 96
+columnsize <- 8
+qcm_amount <- 1
+qcm_pos <- c(38) #38 = F5; same length as qcm_amount
+min_filled <- 24 #minimal plate fill for starting a new plate
+
+##### db connection / data-import
+sink(logfile, append = TRUE)
+print(args)
+conn <- odbcConnect(dbodbc, uid = dbuid, pwd = dbpwd)
+cat("Connectie:\n");print(conn)
+qry <- paste0("select * from C_DNA_EXTRACTION where DNA_RUN_ID = ", runid)
+print(qry)
+dfOrig <- sqlQuery(conn, qry)
+if (nrow(dfOrig) == 0) {
+  print("Er werden geen records in de tabel C_DNA_EXTRACTION gevonden")
+}
+dfOrig$REP_SAMPLE_NUMBER <- 0
+dfOrig$MUST_HAVE <- TRUE
+print(str(dfOrig))
+sink()
+
+if (is.null(nrow(dfOrig)) || nrow(dfOrig) == 0){
+  stop()
+}
+
+###### count samples / add replicates
+
+freesize <- platesize - qcm_amount - plateblanks
+
+dfWork <- dfOrig[c("SAMPLE_NUMBER", "REP_SAMPLE_NUMBER")]
+
+#TESTING PURPOSES: dfWork <- data.frame(SAMPLE_NUMBER = 1:84, REP_SAMPLE_NUMBER = NA)
+
+dfReps1 <- dfWork[sample(1:nrow(dfWork), size = ceiling(nrow(dfWork) * sampreps / 100) + 1), ] #1 reservestaal toegevoegd
+dfReserve <- dfReps1[nrow(dfReps1), , drop = FALSE] #reservestaal voor als kolom net niet gevuld geraakt
+dfReps1 <- dfReps1[-nrow(dfReps1), , drop = FALSE]  #reps zonder reservestaal
+dfReps2 <- NULL
+for (k in 2:maxreps) {
+  dfReps2 <- rbind(dfReps2, dfReps1)
+}
+
+MaxProjSamples <- nrow(dfWork) + nrow(dfReps1) + nrow(dfReps2)
+MaxPlates <- ceiling(MaxProjSamples / freesize)
+MaxSamples <- MaxProjSamples + MaxPlates * (qcm_amount + plateblanks)
+MaxReps2 <- nrow(dfReps2)
+
+
+plate_overflow <- MaxSamples %% platesize #let op, bevat ook de controlestalen (dus direct bv 5 ipv 1)
+if (plate_overflow > 0 & plate_overflow < min_filled) {
+  if (nrow(dfReps2) >= (plate_overflow - qcm_amount - plateblanks)) { #er verdwijnt immers een plaat dus ook de controles
+    dfReps2 <- dfReps2[sample(1:nrow(dfReps2), size = nrow(dfReps2) - (plate_overflow - qcm_amount - plateblanks)), , drop = FALSE] #controlestalen moeten eraf!, anders wordt er teveel weggegooid
+  } else {
+    print("here")
+    #do nothing (niet genoeg stalen om weg te kunnen gooien)
+  }
+}
+NplatesTmp <- ceiling((nrow(dfWork) + nrow(dfReps1) + nrow(dfReps2)) / (platesize - qcm_amount - plateblanks))
+
+#dfReps 2zijn in principe al gecorrigeerd voor te kleine extra platen
+col_overflow <- (nrow(dfWork) + nrow(dfReps1) + nrow(dfReps2) + (platesize - freesize) * NplatesTmp) %% columnsize
+if (col_overflow > 0 & col_overflow < 7) {
+  if (nrow(dfReps2) >= col_overflow) {
+    dfReps2 <- dfReps2[sample(1:nrow(dfReps2), size = nrow(dfReps2) - col_overflow), , drop = FALSE]
+  }
+} else if (col_overflow == 7) {
+  dfReps2 <- rbind(dfReps2, dfReserve) #indien 1 staal tekort gebruik het reservestaal
+} else {
+  #do nothing
+}
+
+
+#Nu dat de overbodige Reps weggehaald zijn bekomen we nu het correcte aantal platen
+dfReps <- rbind(dfReps1, dfReps2)
+dfReps$REP_SAMPLE_NUMBER <- dfReps$SAMPLE_NUMBER
+dfReps$SAMPLE_NUMBER <- -9
+dfPlateSamples <- rbind(dfWork, dfReps) #zou een veelvoud van 92 moeten zijn bij volle platen, en de modulus met 8 zou altijd 4 moeten zijn
+volgorde <- sample(1:nrow(dfPlateSamples))
+volgorde[volgorde %in%  (1:nrow(dfWork))] <- 1:nrow(dfWork)
+dfPlateSamples <- dfPlateSamples[volgorde, , drop = FALSE]
+Nplates <- ceiling(nrow(dfPlateSamples) / freesize)
+
+sink(file = logfile, append = TRUE)
+cat("Aantal platen: ", Nplates, "\n")
+sink()
+
+
+###
+
+PlatePositions <- expand.grid(Plate = 1:Nplates, Position = 1:platesize, type = NA, sample = NA, origsample = NA)
+PlatePositions <- PlatePositions[order(PlatePositions$Plate, PlatePositions$Position), , drop = FALSE]
+for (i in 1:Nplates) {
+  PlatePositions$type[PlatePositions$Position == qcm_pos] <- "Q"
+  PlatePositions$sample[PlatePositions$Position == qcm_pos] <- -2
+  blankpos <- sample((1:platesize)[-qcm_pos], size = 3)
+  PlatePositions$type[PlatePositions$Position %in% blankpos & PlatePositions$Plate == i] <- "B"
+  PlatePositions$sample[PlatePositions$Position %in% blankpos & PlatePositions$Plate == i] <- -1
+  PlatePositions$sample[PlatePositions$Position %in% blankpos & PlatePositions$Plate == i] <- -1
+}
+
+smpsel <- 1
+for (pp in 1:nrow(PlatePositions)) {
+  if (is.na(PlatePositions$sample[pp]) & smpsel <= nrow(dfPlateSamples)) {
+    PlatePositions[pp, "sample"] <- dfPlateSamples$SAMPLE_NUMBER[smpsel]
+    PlatePositions[pp, "origsample"] <- dfPlateSamples$REP_SAMPLE_NUMBER[smpsel]
+    PlatePositions[pp, "type"] <- ifelse(dfPlateSamples$REP_SAMPLE_NUMBER[smpsel] > 0, "D", NA)
+    smpsel <- smpsel + 1
+  } else {
+    #do nothing
+  }
+}
+
+
+### STALEN VERSHUIVEN ZODAT ZE MOOI AANSLUITEN
+
+PlatePositions$SeqNr <- 1:nrow(PlatePositions)
+first_NA <- PlatePositions$SeqNr[which(is.na(PlatePositions$sample))[1]]
+after_NA <- PlatePositions$SeqNr[which(!is.na(PlatePositions$sample) & PlatePositions$SeqNr > first_NA)]
+index <- first_NA
+if (length(after_NA) > 0) {
+  for (i in 1:length(after_NA)) {
+    PlatePositions$type[index] <- PlatePositions$type[after_NA[i]]
+    PlatePositions$sample[index] <- PlatePositions$sample[after_NA[i]]
+    PlatePositions$origsample[index] <- PlatePositions$origsample[after_NA[i]]
+    PlatePositions$type[after_NA[i]] <- NA
+    PlatePositions$sample[after_NA[i]] <- NA
+    PlatePositions$origsample[after_NA[i]] <- NA
+    index <- index + 1
+  }
+}
+
+
+convertPos <- function(pos, lanes = 8) {
+  base <- 1 + (pos - 1) %/% lanes
+  rest <- pos %% lanes
+  rest[rest == 0] <- lanes
+  rest <- LETTERS[rest]
+  paste0(rest, base)
+}
+
+PlatePositions <-  subset(PlatePositions, !is.na(sample))
+PlatePositions$Position <- convertPos(PlatePositions$Position)
+PlatePositions$type[is.na(PlatePositions$type)] <- "S"
+PlatePositions$origsample[is.na(PlatePositions$origsample)] <- 0
+
+sink(file = logfile, append = TRUE)
+cat("Aantal in te vullen posities: ", nrow(PlatePositions), "\n")
+sink()
+
+### LAATSTE PLAAT HERRANDOMISEREN (anders staan NTC en QCM altijd achteraan de rij)
+
+nsamp_lastplate <- nrow(subset(PlatePositions, Plate == Nplates))
+PP <- subset(PlatePositions, Plate == Nplates & type != "Q")
+PS <- PP[sample(1:nrow(PP)), , drop = FALSE]
+PS$sample[PS$type == "S"] <- sort(PS$sample[PS$type == "S"])
+index <- 1
+for (sn in PP$SeqNr) {
+  PlatePositions$type[PlatePositions$SeqNr == sn] <- PS$type[index]
+  PlatePositions$sample[PlatePositions$SeqNr == sn] <- PS$sample[index]
+  PlatePositions$origsample[PlatePositions$SeqNr == sn] <- PS$origsample[index]
+  index <- index + 1
+}  
+
+
+
+### INVULLEN IN C_DNA_EXTRACTION
+
+qry_insert <- character()
+for (i in 1:nrow(PlatePositions)) {
+  qry_insert[i] <- paste0("insert into C_DNA_EXTRACTION (DNA_ID, DNA_RUN_ID, SAMPLE_NUMBER, SAMPLE_TYPE, PLATE_SEQ, PLATE_POSITION, REP_SAMPLE_NUMBER)",
+                          " values (", 
+                          PlatePositions[i,"SeqNr"], ",", 
+                          runid, ",", 
+                          PlatePositions[i, "sample"], ",",
+                          "'", substring(PlatePositions[i, "type"], 1), "'", ",",
+                          PlatePositions[i, "Plate"], ",",
+                          "'", PlatePositions[i, "Position"], "'" , ",", 
+                          PlatePositions[i, "origsample"], ")")
+}
+
+
+###delete current values
+qry <- "delete FROM C_DNA_EXTRACTION"
+sqlQuery(conn, qry)
+for (i in 1:length(qry_insert)) {
+  sqlQuery(conn, qry_insert[i])
+}
+
+odbcCloseAll()
+
+sink(file = logfile, append = TRUE)
+cat("R routine be?indigd. Normaal gezien moet de tabel C_DNA_EXTRACTION nu alle staalinfo bevatten", "\n")
+sink()
+
+#############################################################################################
+
+# 
+# 
+```

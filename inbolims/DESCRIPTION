@@ -17,7 +17,8 @@ Imports:
     DBI,
     odbc,
     ggplot2,
-    zoo
+    zoo,
+    xtable
 Suggests:
     knitr,
     rmarkdown,

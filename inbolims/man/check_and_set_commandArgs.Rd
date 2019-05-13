@@ -4,7 +4,7 @@
 \alias{check_and_set_commandArgs}
 \title{Manueel zetten van de commando argumenten}
 \usage{
-check_and_set_commandArgs(argvalues, n_min = 3)
+check_and_set_commandArgs(argvalues = NULL, n_min = 3)
 }
 \arguments{
 \item{argvalues}{vector met de commando-argumenten (allemaal tussen quotes) zoals je zou verwachten als je het script laat runnen via de command line. Het 6e argument is doorgaans het eerste relevante argument en bevat normaliter de naam van het script, de andere argumenten kunnen variëren, maar vaak zijn dsn, uid en pwd het 7e, 8e en 9e argument, daarna gevolgd door scriptspecifieke parameters}
