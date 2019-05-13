@@ -18,6 +18,9 @@ library(xtable)
 min_args <- 5
 args <- commandArgs()
 is_test <- length(args) < min_args
+
+
+
 if (is_test) {
   creds <- inbolims::read_db_credentials()
 }  
@@ -52,8 +55,8 @@ num <-
   filter(ARG_NAME == "NUM") %>% 
   pull(VALUE)
 
-
 dfResultaten <- select_control_samples(conn, num, batch, analyse, components)
+
 
 html_qc_report(dfResultaten)
 
