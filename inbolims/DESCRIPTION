@@ -18,7 +18,8 @@ Imports:
     odbc,
     ggplot2,
     zoo,
-    xtable
+    xtable,
+    tidyr
 Suggests:
     knitr,
     rmarkdown,

@@ -1,28 +1,4 @@
 
-#' Connect to Data warehouse
-#'
-#' @param server naam van de server van het LIMS datawarehouse. Staat default correct
-#' @param database naam van de database van het LIMS datawaerhouse. Staat default correct
-#'
-#' @return database connection object
-#' @export
-#' @examples
-#' \dontrun{
-#' conn <- lims_connect()
-#' sql <- "select top(10) * from factResult"
-#' dfResults <- dbGetQuery(conn, sql)
-#' str(dfResults)
-#' }
-lims_connect <- function(server = "inbo-sql08-prd.inbo.be", 
-                         database = "W0003_00_Lims"){
-  con <- DBI::dbConnect(odbc::odbc(), 
-                        Driver = "SQL Server", 
-                        Server = server, 
-                        Database = database, 
-                        Trusted_Connection = "True")
-  con
-}
-
 
 #' Toon lijst met mogelijke keuzes voor de tabelvelden
 #'
@@ -39,7 +15,7 @@ lims_mogelijkheden <- function(conn = NULL, keuze = c("LimsAnalysisName", "Matri
 
   keuze <- keuze[1]
   
-  if (is.null(conn)) conn <- lims_connect()
+  if (is.null(conn)) conn <- limsdwh_connect()
   
   if (keuze == "LimsAnalysisName") q <- "select distinct LimsAnalysisName from dimAnalysis" 
   if (keuze == "Matrix")           q <- "select distinct Matrix  from dimMatrix"
@@ -83,7 +59,7 @@ lims_get_results <- function(conn = NULL, sampletype = c("NULL", "DUP", "SUBSAMP
   disconnect <- FALSE
   if (is.null(conn)) {
     disconnect <- TRUE
-    conn <- try(lims_connect())
+    conn <- try(limsdwh_connect())
     if (class(conn) != "Microsoft SQL Server") 
       stop("Geen geldige databankconnectie kunnen tot stand brengen")
   }

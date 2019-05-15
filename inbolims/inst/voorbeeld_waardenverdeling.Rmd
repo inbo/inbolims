@@ -22,7 +22,7 @@ In dit voorbeeld halen we de resultaten van alle componenten van de analyse *ICP
 library(inbolims) #bibliotheek voor de LIMS functies
 library(tidyverse) #een verzamelpakket met heel wat handige R functies
 
-conn <- lims_connect() #indien conn -1 bevat dan is de connectie niet geslaagd
+conn <- limsdwh_connect() #indien conn -1 bevat dan is de connectie niet geslaagd
 
 lims_mogelijkheden(conn, keuze = "Matrix")
 lims_mogelijkheden(conn, keuze = "LimsAnalysisName")

@@ -1,4 +1,6 @@
 
+#####################################################################
+
 #' Converteer een UTF bestand naar een ASCII bestand (nodig voor ABI toestel)
 #'
 #' @param filename relatiever verwijziging naar locatiepad bestand
@@ -40,6 +42,7 @@
 #   invisible()
 # }
 
+############################################
 
 
 

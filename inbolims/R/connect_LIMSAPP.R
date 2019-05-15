@@ -1,41 +1,85 @@
-
-#' Manueel zetten van de commando argumenten
+#' Lees de data credentials van de LIMS hoofddatabank
 #'
-#' @param argvalues vector met de commando-argumenten (allemaal tussen quotes) zoals je zou verwachten als je het script laat runnen via de command line. Het 6e argument is doorgaans het eerste relevante argument en bevat normaliter de naam van het script, de andere argumenten kunnen variëren, maar vaak zijn dsn, uid en pwd het 7e, 8e en 9e argument, daarna gevolgd door scriptspecifieke parameters
-#' @param n_min minimum aantal argumenten die nodig zijn voor gekozen wordt om argvalues in te vullen zoals in argvalues gespecifieerd.
+#' Lees de credentials in voor de database vanuit een bestand. De eerste regel bevat de data source, de tweede regel de username, en de derde regel het passwoord
+#' @param file bestandsnaam waaruit de credentials geschreven worden
 #'
-#' @return een lijst met de echte commandArgs() als die bestaan (meer dan n_min argumenten in commandArgs) of de zelf gecreëerde indien de commandArgs() slechts n_min argumenten bevat
+#' @return list with 3 elements, the data source, user-id and paswoord of the LIMS Main DB
 #' @export
 #'
 #' @examples
-#' check_and_set_commandArgs(argvalues = c("","","","","","", par1 = "foobar", aantal = 5), 
-#'                           n_min = 3)
-check_and_set_commandArgs <- function(argvalues = NULL, n_min = 3) {
-  tmp <- commandArgs()
-  if (length(tmp) < n_min) {
-    if (is.null(argvalues)) stop("commandoargumenten moeten meegegeven worden, omdat ze niet bestaan")
-    print("argumenten uit argvalues gehaald")
-    args <- argvalues
-  } else {
-    print("argumenten uit commando-aanroep gehaald")
-    args <- tmp
-  }
-  args
+#' read_db_credentials(system.file("extdata", "dbcredentials.txt", package = "inbolims"))
+read_db_credentials <- function(file = "dbcredentials.txt")
+{
+  creds <- readLines(file)
+  list(dsn = creds[1],
+       uid = creds[2], 
+       pwd = creds[3])
 }
 
-##############################################################
+#' Write db credentials
+#'
+#' @param file bestandsnaam waar je de database credentials wil bewaren
+#' @param dsn de naam van de gegevensbron (zie ODBC sources in windows)
+#' @param uid de gebruikersnaam voor de db
+#' @param pwd het passwoord voor de db voor de gebruikersnaam
 
-# #Proberen te verwijderen
-# readCreds <- function(file = "dbcredentials.txt", additional_vars = NULL){
-#   cn <- read.table(file, stringsAsFactors = FALSE)
-#   arglist <- c("", "", "", "", "", cn[1,1], cn[2,1], cn[3,1])
-#   if (!is.null(additional_vars)) {
-#     for (i in 1:length(additional_vars)) {
-#       arglist[8 + i] <- additional_vars[i]
-#     }
-#   }
-#   arglist
-# }
+#'
+#' @return writes a text file with the database credentials
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' write_db_credentials(file = "dbcredentials.txt", dsn = "MyDataSource", uid = "Me", pwd = "1234")
+#' }
+
+write_db_credentials <- 
+  function(file = "dbcredentials.txt", 
+           dsn = NULL, 
+           uid = "User001", 
+           pwd = "123456") {
+    writeLines(paste(dsn, uid, pwd, "\n", sep = "\n"), con = file)
+  }
+
+
+
+###############################################################
+
+#' Ophalen commando-argumenten
+#'
+#' @param args de argumenten die meekomen bij het oproepen van het script (meestal commandArgs)
+#' @param min_args minimum aantal argumenten om te checken of het een effectieve call is, of een test (bij een test werk je interactief en zijn er veel minder commandoargumenten)
+#' @param first_arg de positie van het eerste argument (dit zal 5 of 6 zijn afh. van je R). Het eerste argument is het opgeroepen R script, daarna volgt normaal gezien de data-source, de user-name, het passwoord, en de call_id, die de extra benodigde argumenten voor het script ophaalt in de lims databank (tabel C_RSCRIPT_ARGS)
+#' @param cred_file de bestandsnaam (al dan niet met padverwijzing) van het 3 regels lange tekstbestand, waar de data-source, user-name en paswoord kunnen opgehaald worden in die volgorde. Dit is enkel relevant in testmodus, dus als er minder dan min_args argumenten zijn
+#' @param call_id het nummer waarmee de argumenten uit de lims databank kunnen opgehaald worden (tabel C_RSCRIPT_ARGS)
+#'
+#' @return character vector waarbij de elementen met de naam dsn (data-source), uid (gebruikersnaam), pwd (paswoord), call_id (call identificatie) teruggegeven worden
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' cred_file <- system.file("extdata", "dbcredentials.txt", package = "inbolims")
+#' args <- prepare_session(call_id = 5, cred_file = cred_file)
+#' }
+
+prepare_session <- function(args = commandArgs(), min_args = 5, first_arg = min_args, 
+                            cred_file = "dbcredentials.txt", call_id = NULL){
+  is_test <- ifelse(length(args) < min_args, TRUE, FALSE)
+  if (is_test) {
+    creds <- try(inbolims::read_db_credentials(cred_file))
+    if (class(creds)[1] == "try-error") {
+      stop("databasse info niet gevonden, zorg dat cred_file verwijst naar een bestaand bestand")
+    }
+    if (is.null(call_id)) {
+      stop("call_id moet een waarde hebben")
+    }
+    argvec <- c(dsn = creds$dsn, uid = creds$uid, 
+                pwd = creds$pwd, call_id = call_id) 
+  } else {
+    argvec <- c(dsn = args[min_args + 1], uid = args[min_args + 2], 
+                pwd = args[min_args + 3], call_id = args[min_args + 4])
+  }
+  argvec
+}
 
 
 ############################################################
@@ -59,4 +103,22 @@ read_db_arguments <- function(conn, call_id){
   
 }
 
+
+##############################################################
+
+# #Proberen te verwijderen
+# readCreds <- function(file = "dbcredentials.txt", additional_vars = NULL){
+#   cn <- read.table(file, stringsAsFactors = FALSE)
+#   arglist <- c("", "", "", "", "", cn[1,1], cn[2,1], cn[3,1])
+#   if (!is.null(additional_vars)) {
+#     for (i in 1:length(additional_vars)) {
+#       arglist[8 + i] <- additional_vars[i]
+#     }
+#   }
+#   arglist
+# }
+
+
+
+##############################################################
 

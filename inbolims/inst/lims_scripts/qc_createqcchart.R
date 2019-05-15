@@ -2,36 +2,19 @@
 ###########   QC CHARTS       #####################
 ###################################################
 
-### >>> CONFIGURE R SESSION ###
-### ----------------------- ###
 
-#setwd("C:/GIT_PROJECTS/inbolims/workdir") #om te testen
-#set call_id to a value
+### >>> Configure R session 
 
-library(inbolims)
 library(dplyr)
 library(ggplot2)
-library(DBI)
-library(odbc)
-library(xtable)
+library(inbolims)
 
-min_args <- 5
-args <- commandArgs()
-is_test <- length(args) < min_args
+args <- inbolims::prepare_session()
+conn <- inbolims::limsdb_connect(uid = args["uid"], pwd = args["pwd"])
+params <- inbolims::read_db_arguments(conn, args["call_id"])
 
 
-
-if (is_test) {
-  creds <- inbolims::read_db_credentials()
-}  
-
-dsn <-    ifelse(is_test, creds$dsn, args[min_args + 1])
-uid <-    ifelse(is_test, creds$uid, args[min_args + 2])
-pwd <-    ifelse(is_test, creds$pwd, args[min_args + 3])
-callid <- ifelse(is_test, call_id,   args[min_args + 4])
-
-conn <- inbolims::lims_db_connect(uid = uid, pwd = pwd)
-params <- inbolims::read_db_arguments(conn, callid)
+### >>> Declare variables
 
 analyse <- 
   params %>% 
@@ -55,8 +38,12 @@ num <-
   filter(ARG_NAME == "NUM") %>% 
   pull(VALUE)
 
-dfResultaten <- select_control_samples(conn, num, batch, analyse, components)
 
+### >>> Execute Core Code
 
-html_qc_report(dfResultaten)
+#Haal de resultaten uit de databank
+dfResultaten <- inbolims::select_control_samples(conn, num, batch, analyse, components)
+
+#Maak het HTML rapport
+inbolims::html_qc_report(dfResultaten)
 
