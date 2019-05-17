@@ -28,5 +28,5 @@ dfResult <- inbolims::gen_plate_create_report(dfDesign, Capilar = LETTERS[1:8], 
 ### >>> Invullen Resultatendataset
 
 DBI::dbGetQuery(conn, "delete from C_DNA_RUN_REPORT_RESULTS")
-check <- DBI::dbWriteTable(conn, "C_DNA_RUN_REPORT_RESULTS", dfResultWide, append = TRUE)
-write.csv2(file = "platereport.csv", dfResultWide)
+check <- DBI::dbWriteTable(conn, "C_DNA_RUN_REPORT_RESULTS", dfResult, append = TRUE)
+write.csv2(file = "platereport.csv", dfResult)
