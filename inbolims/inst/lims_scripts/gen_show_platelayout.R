@@ -7,6 +7,7 @@
 library(dplyr)
 library(inbolims)
 
+#args <- inbolims::prepare_session(call_id = "35")
 args <- inbolims::prepare_session()
 conn <- inbolims::limsdb_connect(uid = args["uid"], pwd = args["pwd"])
 params <- inbolims::read_db_arguments(conn, args["call_id"])

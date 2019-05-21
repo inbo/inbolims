@@ -31,6 +31,7 @@
 #'@keywords design
 #'@importFrom utils head tail
 #'@importFrom stats aggregate
+#'@importFrom rlang .data
 #'@importFrom ggplot2 rel
 #'@examples
 #'
@@ -50,10 +51,9 @@
 #'
 #'@export
 randomiseCapilar <- function(Specimens, Group, FirstLabID = 1, Prefix = "", nCapilar = 8, nLines = 12, QC, rReplicates = 0.1, minReplicates = 8, fillPlate = FALSE){
-
-  # Fooling R CMD check #
-  Capilar <- Line <- Plate <- Replicate <- Specimen <- NULL
  
+  Plate <- Line <- Replicate <- Capilar <- Specimen <- NULL #nodig door de with functie? is niet duidelijk?
+  
   ### CHECK INPUT
   if (is.numeric(Specimens) & length(Specimens) == 1) {
     Specimens <- seq_len(Specimens)
@@ -76,7 +76,8 @@ randomiseCapilar <- function(Specimens, Group, FirstLabID = 1, Prefix = "", nCap
   
   Specimens <- factor(Specimens, levels = levels(specList$Specimen))
   nPlate <- ceiling(length(Specimens) / ((nCapilar * nLines - nrow(QC)) * (1 - rReplicates)))
-  Design <- expand.grid(Capilar = LETTERS[seq_len(nCapilar)], Line = seq_len(nLines), Plate = seq_len(nPlate), Specimen = factor(NA, levels = levels(Specimens)), Replicate = NA)
+  Design <- expand.grid(Capilar = LETTERS[seq_len(nCapilar)], Line = seq_len(nLines), 
+                        Plate = seq_len(nPlate), Specimen = factor(NA, levels = levels(Specimens)), Replicate = NA)
   
   ###
   

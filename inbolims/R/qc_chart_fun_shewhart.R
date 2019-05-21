@@ -12,6 +12,7 @@
 #' @export
 #' @importFrom dplyr bind_rows row_number left_join
 #' @import dplyr
+#' @importFrom rlang .data
 #'
 #' @examples
 #' \dontrun{
@@ -22,8 +23,6 @@
 #' }
 select_control_samples <- function(conn, num, batch, analysis, components, 
                                    start = "1900-01-01", end = "2200-01-01"){
-  
-  C_DATE_BATCHRUN <- ENTERED_ON <- ANALYSIS <- NAME <- SAMPLE_NAME <- Nr <- ENTRY <- . <-  NULL
   
   #Kies de datums afhankelijk van de laatste N of een opgegeven jaar
   today <- Sys.Date()  
@@ -76,9 +75,11 @@ select_control_samples <- function(conn, num, batch, analysis, components,
   }
   alldata <- 
     na.omit(alldata) %>% 
-    arrange(desc(C_DATE_BATCHRUN), desc(ENTERED_ON)) %>%
-    group_by(ANALYSIS, NAME, SAMPLE_NAME) %>% 
-    mutate(Nr = nrow(.) - row_number() + 1)
+    arrange(desc(.data$C_DATE_BATCHRUN), desc(.data$ENTERED_ON)) %>%
+    group_by(.data$ANALYSIS, .data$NAME, .data$SAMPLE_NAME) %>% 
+    mutate(Nr = n() - row_number() + 1)
+  
+  print(alldata)
   
   ###link data with product specifications
   
@@ -96,8 +97,8 @@ select_control_samples <- function(conn, num, batch, analysis, components,
   alldata <- 
     left_join(alldata, cvdata,
               by = c("SAMPLE_NAME" = "GRADE", "ANALYSIS", "NAME" = "COMPONENT")) %>% 
-    arrange(SAMPLE_NAME, Nr) %>%
-    mutate(ENTRY = as.numeric(ENTRY))
+    arrange(.data$SAMPLE_NAME, .data$Nr) %>%
+    mutate(ENTRY = as.numeric(.data$ENTRY))
 
   ### RETURN
   
@@ -162,11 +163,11 @@ lims_shewhart.default <- function(x, center = NULL, sd = NULL, rules=lims_shewha
 #' @param yellow_rules numeric vector of rule violations that should be marked as yellow
 #' @param ... not currently in use
 #' @importFrom ggplot2 ggplot geom_line geom_point aes xlab ylab 
+#' @importFrom rlang .data
 #' @return Shewhart ggplot 
 #' @export
 gg_lims_shewhart <- function(plotdata, red_rules = 1:2, orange_rules = 3:6, yellow_rules = 7:8, ...){
   if (!all(red_rules, orange_rules, yellow_rules) %in% 1:8) stop("chosen rules not valid, should be a vector of integers between 1 and 8")
-  center <- lcl_1s <- lcl_2s <- lcl_3s <- center <- ucl_1s <- ucl_2s <- ucl_3s <- NULL
   if (length(red_rules)) {
     plotdata$RR <- as.numeric(rowSums(plotdata[, paste0("rule", sprintf("%02d",red_rules))]) > 0)
   } else {
@@ -189,21 +190,23 @@ gg_lims_shewhart <- function(plotdata, red_rules = 1:2, orange_rules = 3:6, yell
   
   value <- color <- Nr <- NULL #to avoid NOTE in as-cran
   g <- 
-  ggplot(plotdata, aes(x = Nr, y = value)) +
-  geom_line(aes(y = lcl_1s), lty=2, color = "gold") + geom_line(aes(y = ucl_1s), lty = 2, color = "gold") +
-  geom_line(aes(y = lcl_2s), lty=2, color = "orange") + geom_line(aes(y = ucl_2s), lty = 2, color = "orange") +
-  geom_line(aes(y = lcl_3s), lty=2, color = "red") + geom_line(aes(y = ucl_3s), lty = 2, color = "red") +
-  geom_line(aes(y=center)) +
-  geom_line(lty = 3) +
-  geom_point(data = subset(plotdata, color == "black"), color = "darkgreen") +
-  geom_point(data = subset(plotdata, color == "red"), color = "red", size = rel(3)) +
-  geom_point(data = subset(plotdata, color == "orange"), color = "orange", size = rel(2)) +
-  geom_point(data = subset(plotdata, color == "yellow"), color = "yellow") +
-  xlab("") + ylab("")
+  ggplot(plotdata, aes(x = .data$Nr, y = .data$value)) +
+    geom_line(aes(y = .data$lcl_1s), lty = 2, color = "gold") + 
+    geom_line(aes(y = .data$ucl_1s), lty = 2, color = "gold") +
+    geom_line(aes(y = .data$lcl_2s), lty = 2, color = "orange") + 
+    geom_line(aes(y = .data$ucl_2s), lty = 2, color = "orange") +
+    geom_line(aes(y = .data$lcl_3s), lty = 2, color = "red") + 
+    geom_line(aes(y = .data$ucl_3s), lty = 2, color = "red") +
+    geom_line(aes(y = .data$center)) +
+    geom_line(lty = 3) +
+    geom_point(data = subset(plotdata, color == "black"), color = "darkgreen") +
+    geom_point(data = subset(plotdata, color == "red"), color = "red", size = rel(3)) +
+    geom_point(data = subset(plotdata, color == "orange"), color = "orange", size = rel(2)) +
+    geom_point(data = subset(plotdata, color == "yellow"), color = "yellow") +
+    xlab("") + ylab("")
   
   g
 }
-
 
 
 #' Rule1: point outside 3sigma

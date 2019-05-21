@@ -7,49 +7,49 @@
 #' @import dplyr
 #' @importFrom dplyr do mutate filter transmute arrange select
 #' @importFrom tidyr spread
+#' @importFrom rlang .data
 #' @export
 gen_plate_setup_source <- function(data){
-  Capilar <- DNA <- ID <- Ixno <- Lane <- MilliQ <- ParentAliquot <- ParentSample <- NULL
-  Plate <- Plate_Seq <- SampleNumber <- SampleType <- Specimen <- NULL
-  
+
   dfDesign <- 
     data %>%
-    dplyr::transmute(Replicate = ID, 
-                     Specimen = as.character(ifelse(Specimen == "leeg", NA, Specimen)),
-                     Plate = factor(Plate, levels = sort(unique(Plate))),
-                     Plate_Seq = as.numeric(Plate),
-                     Capilar = LETTERS[Capilar],
-                     Lane, 
-                     SampleType = ifelse(is.na(SampleType) | SampleType == "", "N", as.character(SampleType)), 
-                     SampleNumber,
-                     MilliQ,
-                     DNA,
-                     ParentSample, 
-                     ParentAliquot, 
-                     ParentAliquotBis = ifelse(ParentAliquot == 0, SampleNumber, ParentAliquot),
-                     Location = paste0(Plate_Seq, Capilar, Lane)) %>%
-    dplyr::arrange(Plate, Lane, Capilar)
+    dplyr::transmute(Replicate = .data$ID, 
+                     Specimen = as.character(ifelse(.data$Specimen == "leeg", NA, .data$Specimen)),
+                     Plate = factor(.data$Plate, levels = sort(unique(.data$Plate))),
+                     Plate_Seq = as.numeric(.data$Plate),
+                     Capilar = LETTERS[.data$Capilar],
+                     .data$Lane, 
+                     SampleType = ifelse(is.na(.data$SampleType) | .data$SampleType == "", "N", 
+                                         as.character(.data$SampleType)), 
+                     .data$SampleNumber,
+                     .data$MilliQ,
+                     .data$DNA,
+                     .data$ParentSample, 
+                     .data$ParentAliquot, 
+                     ParentAliquotBis = ifelse(.data$ParentAliquot == 0, .data$SampleNumber, .data$ParentAliquot),
+                     Location = paste0(.data$Plate_Seq, .data$Capilar, .data$Lane)) %>%
+    dplyr::arrange(.data$Plate, .data$Lane, .data$Capilar)
   
-  allsamps <- dfDesign %>% select(SampleNumber, MilliQ, DNA)
+  allsamps <- dfDesign %>% select(.data$SampleNumber, .data$MilliQ, .data$DNA)
   
   dfDesign <- 
     bind_cols(
-      select(dfDesign, -MilliQ, -DNA),
+      select(dfDesign, -.data$MilliQ, -.data$DNA),
       dfDesign %>%
         mutate(Nr = row_number()) %>%
         rowwise() %>%
         do({
-          if (.[["SampleType"]] == "SUBSAMPLE") {
-            pid <- which(allsamps$SampleNumber == .[["ParentAliquot"]])
+          if (.data$SampleType == "SUBSAMPLE") {
+            pid <- which(allsamps$SampleNumber == data$ParentAliquot)
             if (length(pid)) {
               mqparent <- allsamps[pid, "MilliQ"]
               dnaparent <- allsamps[pid, "DNA"]  
               rv <- data.frame(MilliQ = mqparent, DNA = dnaparent)
             } else {
-              rv <- data.frame(MilliQ = .[["MilliQ"]], DNA = .[["DNA"]])        
+              rv <- data.frame(MilliQ = .data$MilliQ, DNA = .data$DNA)        
             }
           } else {
-            rv <- data.frame(MilliQ = .[["MilliQ"]], DNA = .[["DNA"]])   
+            rv <- data.frame(MilliQ = .data$MilliQ, DNA = .data$DNA)   
           }
           rv
         }))
@@ -67,29 +67,26 @@ gen_plate_setup_source <- function(data){
 #' @import dplyr
 #' @importFrom dplyr do mutate filter transmute arrange select
 #' @importFrom tidyr spread
+#' @importFrom rlang .data
 #'
 #' @return dataset klaar om te exporteren naar excel of naar de C_DNA_RUN_REPORT_RESULTS tabel
 #' @export
 gen_plate_create_report <- function(data,  Capilar = LETTERS[1:8], Lane = 1:12){
   
-  Capilar <- Ixno <- DNA <- ID <- Lane <- Lane01 <- Lane02 <- Lane03 <- Lane04 <- Lane05 <- Lane06 <- NULL
-  Lane07 <- Lane08 <- Lane09 <- Lane10 <- Lane11 <- Lane12 <- MilliQ <- ParentAliquot <- NULL
-  ParentSample <- Plate <- PlateSeq <- Plate_Seq <- Samen <- SampleNumber <- SampleType <- Specimen <- value <- NULL
-  
   dfResult <- 
     expand.grid(Plate = levels(data$Plate),
-                Capilar = LETTERS[1:8],
-                Lane = 1:12,
+                Capilar = Capilar,
+                Lane = Lane,
                 Ixno    = 1:8, #8 locaties om iets te schrijven per cel
                 value = NA,
                 stringsAsFactors = F) %>%
-    arrange(Plate, Lane, Capilar, Ixno) %>%
-    mutate(Plate = factor(Plate, levels = levels(data$Plate)),
-           PlateSeq = as.numeric(Plate),
-           Capilar = as.character(Capilar), 
-           Samen = ifelse(Ixno %in% 1:2, Ixno, 
-                          ifelse(Ixno %in% 3:4, 3, 
-                                 ifelse(Ixno %in% 5:6, 4, 5))))
+    arrange(.data$Plate, .data$Lane, .data$Capilar, .data$Ixno) %>%
+    mutate(Plate = factor(.data$Plate, levels = levels(data$Plate)),
+           PlateSeq = as.numeric(.data$Plate),
+           Capilar = as.character(.data$Capilar), 
+           Samen = ifelse(.data$Ixno %in% 1:2, .data$Ixno, 
+                          ifelse(.data$Ixno %in% 3:4, 3, 
+                                 ifelse(.data$Ixno %in% 5:6, 4, 5))))
   
   for (i in 1:nrow(data)) {
     tmp <- as.data.frame(data[i, , drop = FALSE])
@@ -117,18 +114,21 @@ gen_plate_create_report <- function(data,  Capilar = LETTERS[1:8], Lane = 1:12){
   
   dfResult <- 
     dfResult %>% 
-    arrange(PlateSeq, Capilar, Lane, Ixno) %>%
-    mutate(Lane = paste0("Lane", sprintf("%02d", Lane))) %>%
-    group_by(Plate, PlateSeq, Capilar, Lane, Samen) %>%
-    mutate(value = ifelse(is.na(value), "", value)) %>%
-    summarize(value = paste(value, collapse = "  " ))
+    arrange(.data$PlateSeq, .data$Capilar, .data$Lane, .data$Ixno) %>%
+    mutate(Lane = paste0("Lane", sprintf("%02d", .data$Lane))) %>%
+    group_by(.data$Plate, .data$PlateSeq, .data$Capilar, .data$Lane, .data$Samen) %>%
+    mutate(value = ifelse(is.na(.data$value), "", .data$value)) %>%
+    summarize(value = paste(.data$value, collapse = "  " ))
   
-  dfResultWide <- 
-    dfResult %>% 
-    ungroup() %>%
-    select(Plate, Capilar, Lane, Samen, value) %>%
-    tidyr::spread(key = Lane, value = value) %>%
-    transmute(ID = 1:nrow(.), Plate, Capilar, Lane01, Lane02, Lane03, Lane04, Lane05, Lane06, Lane07, Lane08, Lane09, Lane10, Lane11, Lane12)
+   dfResultWide <- 
+     dfResult %>% 
+     ungroup() %>%
+     select(.data$Plate, .data$Capilar, .data$Lane, .data$Samen, .data$value) %>%
+     tidyr::spread(key = .data$Lane, value = .data$value)  %>%
+     transmute(ID = 1:n(), .data$Plate, .data$Capilar, 
+               .data$Lane01, .data$Lane02, .data$Lane03, .data$Lane04,
+               .data$Lane05, .data$Lane06, .data$Lane07, .data$Lane08,
+               .data$Lane09, .data$Lane10, .data$Lane11, .data$Lane12)
   
   dfResultWide
 }

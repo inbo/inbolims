@@ -19,7 +19,8 @@ Imports:
     ggplot2,
     zoo,
     xtable,
-    tidyr
+    tidyr,
+    rlang
 Suggests:
     knitr,
     rmarkdown,

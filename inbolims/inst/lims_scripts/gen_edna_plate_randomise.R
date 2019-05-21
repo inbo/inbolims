@@ -7,6 +7,7 @@
 library(dplyr)
 library(inbolims)
 
+#args <- inbolims::prepare_session(call_id = 43)
 args <- inbolims::prepare_session()
 conn <- inbolims::limsdb_connect(uid = args["uid"], pwd = args["pwd"])
 params <- inbolims::read_db_arguments(conn, args["call_id"])
@@ -33,8 +34,6 @@ qcm_pos <- seq(from = qc_pos, to = plate_size, length = n_qcm)
 n_blank <- params %>% filter(ARG_NAME == "N_BLANKS") %>% pull(VALUE) %>% as.numeric() 
 samp_reps <- params %>% filter(ARG_NAME == "REPS") %>% pull(VALUE) %>% as.numeric()
 max_reps_per_sample <-  params %>% filter(ARG_NAME == "MAX_REPS") %>% pull(VALUE) %>% as.numeric()
-
-
 
 ### >>> Zet Plaatdata klaar
 
@@ -64,27 +63,11 @@ dfPlates <- dfPlates %>%
 #DNA_ID DNA_RUN_ID SAMPLE_NUMBER SAMPLE_TYPE PLATE_SEQ PLATE_POSITION REP_SAMPLE_NUMBER
 
 DBI::dbGetQuery(conn, "delete from C_DNA_EXTRACTION")
-DBI::dbWriteTable(conn, name = "C_DNA_EXTRACTION", value = dfPlates, overwrite = TRUE)
+DBI::dbWriteTable(conn, name = "C_DNA_EXTRACTION", value = dfPlates, overwrite = TRUE, append = FALSE)
 
 DBI::dbDisconnect(conn)
 
 ######################
-
-
-
-gen_edna_create_plates <- function(data, n_qcm = 1, n_blank = 3, plate_size = 96, column_size = 8, ... ){
-  
- 
-  
-}
-
-
-#####
-
-
-
-
-
 
 lastpositions <- dfPlateLast %>% pull(Position)
 

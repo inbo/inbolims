@@ -24,11 +24,21 @@ library(tidyverse) #een verzamelpakket met heel wat handige R functies
 
 conn <- limsdwh_connect() #indien conn -1 bevat dan is de connectie niet geslaagd
 
-lims_mogelijkheden(conn, keuze = "Matrix")
-lims_mogelijkheden(conn, keuze = "LimsAnalysisName")
+# #ter illustratie (regel per regel uitvoeren, niet de 3 tegelijk, want interactief)
+# k1 <- select_lims_object(conn, keuze = "Matrix")
+# k2 <- select_lims_object(conn, keuze = "Analyse")
+# k3 <- select_lims_object(conn, keuze = "Component", multiple = TRUE, analyse = k2)
+# 
+# 
+# #Op basis van de selecties
+# Data <- lims_get_results(conn, analysis = k2, matrix = k1, component = k3, 
+#                          start = "2018-01-01", end = "2019-01-01")
 
+#Volledig gecodeerd (voor alle componenten van de analyse en matrix)
 Data <- lims_get_results(conn, analysis = "ICP_MET_OXAL", matrix = "BODEM", 
                          start = "2018-01-01", end = "2019-01-01")
+
+
 
 ```
 

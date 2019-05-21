@@ -1,7 +1,7 @@
 #' Converteer numerieke positie op een plaat een letter-cijfer codering
 #'
 #' @param pos positie op de plaat
-#' @param cols aantal kolommen op de plaat (op 96-well plaat is dit meestel 8)
+#' @param lanes aantal kolommen op de plaat (op 96-well plaat is dit meestel 8)
 #'
 #' @return character vector met posities in het formaat A1, B2, C12
 #' @export

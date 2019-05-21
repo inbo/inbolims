@@ -1,4 +1,19 @@
-get_edna_plate_data <- function(data, rep_fractie = 0.10, plate_size = 96, column_size = 8, n_qcm = 1, n_blank = 3, min_filled = 24) {
+#' Zet projectstalen klaar voor op de plaat
+#'
+#' @param data datset met projectstalen. Bevat minstens de kolom DNA_ID, DNA_RUN_ID, SAMPLE_NUMBER, REP_SAMPLE_NUMBER
+#' @param rep_fractie welk aandeel van de stalen (tussen 0 en 1) wordt gebruikt om substalen te maken
+#' @param plate_size grootte van de plaat. Typisch 96
+#' @param column_size lengte van de plaatkolommen. Typisch 8 voor een 96-well plaat
+#' @param n_qcm aantal qc methods per plaat
+#' @param n_blank aantal blanco's per plaat
+#' @param max_reps maximaal aantal keer dat een staal gerepliceerd mag worden in de plaat. Dus elk van de rep_fractie stalen kan maximaal max_reps keer als substaal voorkomen. In het totaal komt het staal dus maximaal  1 + max_reps keer voor op de plaat
+#' @param min_filled hoeveel elementen van een plaat moeten gevuld worden, om een nieuwe plaat waard te zijn. Indien de overflow van de vorige plaat minder dan 24 is, wordt het aantal substalen gereduceerd, zodat geen nieuwe plaat nodig is.
+#' @importFrom rlang .data
+#' @import dplyr
+#' @return dataset die klaargezet is om in de functie set_edna_plate_positions te gebruiken
+#' @export
+get_edna_plate_data <- function(data, rep_fractie = 0.10, plate_size = 96, column_size = 8, n_qcm = 1, n_blank = 3, 
+                                max_reps = 2, min_filled = 24) {
   
   ### >>> staalkeuze 
   
@@ -16,9 +31,9 @@ get_edna_plate_data <- function(data, rep_fractie = 0.10, plate_size = 96, colum
   dfReps1 <- data[rep_keuze[-length(rep_keuze)], ] #1 reservestaal toegevoegd
   dfReserve <- data[rep_keuze[length(rep_keuze)], , drop = FALSE] 
   
-  #Herhaal deze stalen tot aan max_reps_per_sample (indien 2: origineel + 1 rep  (rep1) + 1 rep (rep2))
+  #Herhaal deze stalen tot aan max_reps (indien 2: origineel + 1 rep  (rep1) + 1 rep (rep2))
   dfReps2 <- NULL
-  for (k in 2:max_reps_per_sample) {
+  for (k in 2:max_reps) {
     dfReps2 <- bind_rows(dfReps2, dfReps1)
   }
   
@@ -71,7 +86,7 @@ get_edna_plate_data <- function(data, rep_fractie = 0.10, plate_size = 96, colum
   
   dfPlateFill <- 
     dfPlateFillNoOrder %>% 
-    mutate(type = ifelse(origsample > 0, "D", "N")) %>%
+    mutate(type = ifelse(.data$origsample > 0, "D", "N")) %>%
     slice(volgorde)
   
   n_plates <- ceiling(nrow(dfPlateFill) / free_size)
@@ -83,46 +98,60 @@ get_edna_plate_data <- function(data, rep_fractie = 0.10, plate_size = 96, colum
 #################################################
 
 
-set_edna_plate_positions <- function(data, n_plates, plate_size = plate_size, column_size = column_size, qcm_pos) {
+#' Data verder klaarzettten voor export naar lims platen
+#'
+#' @param data dataset komende uit de functie get_edna_plate_data
+#' @param n_plates aantal platen die gevuld moeten worden
+#' @param plate_size grootte van de plaat (standaard 96)
+#' @param column_size  aantal lanes (standaard 8 voor een 96 wells plate)
+#' @param qcm_pos posities van de qc_methods
+#' @param n_blank aantal blanco's per plaat
+#' @importFrom rlang .data
+#' @import dplyr
+#'
+#' @return dataset die kan weggeschreven worden in C_DNA_EXTRACTION waar Lims dan verder mee aan de slag kan
+#' @export
+set_edna_plate_positions <- function(data, n_plates, plate_size = 96, column_size = 8, qcm_pos = 38, n_blank = 3) {
   
   ### >>> Maak lege plaat aan en vul de posities van de controlestalen (Q en B) in
-  
+
   dfPlates <- 
     expand.grid(Plate = 1:n_plates, Position = 1:plate_size, type = NA, sample = NA, origsample = NA) %>%
-    arrange(Plate, Position) %>%
-    mutate(type = ifelse(Position %in% qcm_pos, "Q", type))
+    arrange(.data$Plate, .data$Position) %>%
+    mutate(type = ifelse(.data$Position %in% qcm_pos, "Q", .data$type))
   for (i in 1:n_plates) {
-    blank_pos <- sample((1:plate_size)[-qcm_pos], size = n_blank)
+    blank_candi <- 1:plate_size
+    blank_pos <- sample(blank_candi[-qcm_pos], size = n_blank)
     dfPlates <- 
       dfPlates %>%
-      mutate(type = ifelse(Position %in% blank_pos & Plate == i, "B", type))
+      mutate(type = ifelse(.data$Position %in% blank_pos & .data$Plate == i, "B", .data$type))
   }
   
   ### >>> Splits de plaat op in referentiestalen en echte stalen
   
   dfPlateRefs <- dfPlates %>%
-    filter(!is.na(type)) %>% 
-    mutate(sample = ifelse(type == "B", -1, 
-                           ifelse(type == "Q", -2, NA)))
+    filter(!is.na(.data$type)) %>% 
+    mutate(sample = ifelse(.data$type == "B", -1, 
+                           ifelse(.data$type == "Q", -2, NA)))
   
   dfPlateSamps <- dfPlates %>% 
-    filter(is.na(type)) %>% 
-    select(Plate, Position) %>%
+    filter(is.na(.data$type)) %>% 
+    select(.data$Plate, .data$Position) %>%
     slice(1:nrow(data)) %>% 
     bind_cols(data)
   
   dfPlateAll <- dfPlateRefs %>%
     bind_rows(dfPlateSamps) %>% 
-    arrange(Plate, Position)
+    arrange(.data$Plate, .data$Position)
   
   #De laatste plaat moet nog eens gerandomiseerd worden
-  dfPlateLast  <- filter(dfPlateAll, Plate == max(Plate))
-  dfPlateAllmin1 <- filter(dfPlateAll, Plate < max(Plate))
+  dfPlateLast  <- filter(dfPlateAll, .data$Plate == max(.data$Plate))
+  dfPlateAllmin1 <- filter(dfPlateAll, .data$Plate < max(.data$Plate))
   
   ### >>> Randomiseer de laatste plaat
   
   #indien de plaat minder plaatsen bevat dan waar de QC method staat, randomiseer alle staaltypes
-  if (nrow(dfPlateLast) < qc_pos[length(qc_pos)]) {
+  if (nrow(dfPlateLast) < qcm_pos[length(qcm_pos)]) {
     whi_normal <- which(dfPlateLast$type %in% c("N", "D"))
     whi_qc <- which(dfPlateLast$type %in% c("Q", "B"))
     randomisation <- sample(1:nrow(dfPlateLast))
@@ -139,7 +168,7 @@ set_edna_plate_positions <- function(data, n_plates, plate_size = plate_size, co
     #indien de QC method niet op de laatste positie staat, omdat de plaat verder gevuld is dan de QCM positie 
     #dan worden enkel de blanco's gerandomiseerd
   } else {
-    blank_pos <- dfPlateLast %>% filter(type == "B" & Position > qc_pos[length(qc_pos)]) %>% pull(Position)
+    blank_pos <- dfPlateLast %>% filter(.data$type == "B" & Position > qcm_pos[length(qcm_pos)]) %>% pull(.data$Position)
     
     #indien er blanco's voorkomen nadat de QC method voorkomt
     if (length(blank_pos) > 0) {

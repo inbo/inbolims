@@ -3,31 +3,45 @@
 #' Toon lijst met mogelijke keuzes voor de tabelvelden
 #'
 #' @param conn connectie met de databank. Indien NULL wordt de standaard lims_connect() gebruikt
-#' @param keuze keuze waarvan je een lijst van mogelijkheden wilt. Je kan hier kiezen tussen LimsAnalyseNaam, Matrix, SampleType, Project, StatusCode
-#' @return data.frame met alle waarden van de keuzelijsten, zoals in parameter keuze gedefinieerd
+#' @param keuze keuze waarvan je een lijst van mogelijkheden wilt. Je kan hier kiezen tussen Analyse, Matrix, SampleType, Project, StatusCode, Component
+#' @param how hoe wil je dat de informatie getoond wordt; Indien "show" toont dit gewoon de mogelijkheden, indien "list" kan je een of meerdere objecten selecteren uit een getoonde lijst
+#' @param multiple if TRUE meerdere elementen kunnen geselecteerd worden, indien FALSE slechts 1 element.
+#' @param analyse alleen gebruikt om componenten te selecteren. indien NULL krijg je een keuzelijst, anders wordt de hier gekozen waarde gebruikt
+#' @param ... andere argumenten die gebruikt kunnen worden in de functies \link{select.list} of \link{View}
+#' @return data.frame met alle waarden van de keuzelijsten, zoals in parameter keuze gedefinieerd, ofwel indien how = "list", dan krijg je een selectiemogelijkheid, en wordt de selectie teruggegeven
 #' @export
 #'
 #' @examples
 #' \dontrun{
-#' lims_mogelijkheden(keuze = "Matrix")
+#' #zorg dat je een connectiebestand met de naam conn hebt
+#' select_lims_object(conn, keuze = "Matrix", how = "list", multiple = TRUE)
 #' }
-lims_mogelijkheden <- function(conn = NULL, keuze = c("LimsAnalysisName", "Matrix", "SampleType", "Project", "StatusCode")){
-
-  keuze <- keuze[1]
-  
-  if (is.null(conn)) conn <- limsdwh_connect()
-  
-  if (keuze == "LimsAnalysisName") q <- "select distinct LimsAnalysisName from dimAnalysis" 
+select_lims_object <- function(conn, keuze, how = c("list", "show"), multiple = FALSE, analyse = NULL, ...){
+  if (keuze == "Analyse") q <- "select distinct LimsAnalysisName from dimAnalysis" 
   if (keuze == "Matrix")           q <- "select distinct Matrix  from dimMatrix"
   if (keuze == "SampleType")       q <- "select distinct SampleType  from DimSample"
   if (keuze == "Project")          q <- "select distinct  Project  from DimProject"
   if (keuze == "StatusCode")       q <- "select distinct StatusCode from dimStatus"
+  if (keuze == "Component")  {
+    if (is.null(analyse)) {
+      analyse <-  select_lims_object(conn, keuze = "Analyse", how = "list", multiple = FALSE)
+    } else {
+      #gebruik analyse uit de argumenten
+    }
+    q <- paste0("select distinct component from dimComponent where LimsAnalysisName = '", analyse, "'")
+  }
   
   df <- DBI::dbGetQuery(conn, q)
-  utils::View(df)
-  invisible(df)
+  if (how[1] == "show") {
+    utils::View(df)
+    return(df)
+  } else  {
+    sel <- utils::select.list(df[[1]], multiple = multiple, ...)
+    return(sel)
+  }
 }
 
+#######################################################
 
 #' Lees ruwe data in
 #'
@@ -85,15 +99,15 @@ lims_get_results <- function(conn = NULL, sampletype = c("NULL", "DUP", "SUBSAMP
   wh_sst <- ""
   wh_rst <- ""
 
-  if (any(sampletype %in% c("NA", "NULL"))){
-    wh_sty <- paste(wh_sty,"and (s.SampleType is null")
+  if (any(sampletype %in% c("NA", "NULL"))) {
+    wh_sty <- "s.SampleType is null"
     sampletype <- sampletype[-which(sampletype %in% c("NA", "NULL"))]
   }
   if (length(sampletype)) {
     sampletype <- paste0("('",paste(sampletype, collapse = "','"), "')")
-    wh_sty <- paste(wh_sty, "or s.SampleType in", sampletype, ")")
+    wh_sty <- paste(wh_sty, "or s.SampleType in ", sampletype)
   } else {
-    wh_sty <- paste(wh_sty, ")")
+    wh_sty <- wh_sty
   }
     
   if (!is.null(contract)) { #voorlopig nog contractnummer, in DWH staat contractnaam niet
@@ -145,14 +159,13 @@ lims_get_results <- function(conn = NULL, sampletype = c("NULL", "DUP", "SUBSAMP
     "inner join factResult f on s.SampleKey = f.sampleKey",
     "inner join dimUnit u on f.UnitKey = u.UnitKey")
   
-  qrywhere <- "where f.LimsSampleNumber is not NULL"
-  qrywhere <- paste(qrywhere, wh_sty, wh_ctr, wh_prj, wh_ana, wh_cmp, wh_mat, wh_tim, wh_sst, wh_rst)
+  qrywhere <- paste("where ( f.LimsSampleNumber is not NULL or ",  wh_sty, ") ")
+  qrywhere <- paste(qrywhere, wh_ctr, wh_prj, wh_ana, wh_cmp, wh_mat, wh_tim, wh_sst, wh_rst)
   
   qry <- paste(qrysel, qrywhere, "order by f.AnalysisDate desc")
   print(qry)
   AnalysisDate <- NULL #gewoon om geen NOTE te krijgen bij compilatie
   data <- DBI::dbGetQuery(conn, qry)
-  DBI::dbDisconnect(conn)
   data <- dplyr::mutate(data, AnalysisDate = as.POSIXct(AnalysisDate))
   data
 }
