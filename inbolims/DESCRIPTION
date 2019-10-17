@@ -1,0 +1,31 @@
+Package: inbolims
+Type: Package
+Title: Utilities to query the INBO lab analysis datawarehouse
+Version: 0.1
+Date: 2019-04-18
+Author: Pieter Verschelde
+Maintainer: Pieter Verschelde<pieter.verschelde@inbo.be>
+Description: Some utilities that expand the Lims program in INBO. It mainly focuses on post-processing in connection with Quality Assurance.
+License: MIT + file LICENSE
+Depends: 
+    R (>= 3.3.0)
+Imports:
+    stats,
+    utils,
+    dplyr,
+    magrittr,
+    DBI,
+    odbc,
+    ggplot2,
+    zoo,
+    xtable,
+    tidyr,
+    rlang,
+    tibble,
+    purrr
+Suggests:
+    knitr,
+    rmarkdown,
+    testthat
+RoxygenNote: 6.1.1
+Encoding: UTF-8

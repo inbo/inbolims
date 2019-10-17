@@ -1,0 +1,36 @@
+
+---
+title: "LIMS DWH bevragen"
+author: "Pieter"
+date: "15 oktober 2019"
+output: html_document
+---
+
+#Inleiding
+
+#Werken met het inbolims package
+
+```{r inlezen}
+library(inbolims)
+
+conn <- limsdwh_connect()
+my_data <- limsdwh_report(conn, project = "I-19W001-01")
+my_staalinfo <- report_sample(my_data)
+my_xtab <- report_xtab(my_data)
+my_xtab <- report_xtab(my_data, link = "ExternStaalID")
+my_xtab <- report_xtab(my_data, link = "ExternStaalID", collapse_repli = "avg")
+
+ 
+
+
+
+
+
+```
+
+#Werken met basis R commando's
+
+## Connectie met de database
+
+## Aanmaken van de LIMS query
+
