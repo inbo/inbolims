@@ -1,4 +1,19 @@
- 
+#'example_data <- data.frame(Sample = rep(c(paste0("S", sprintf("%02d", 1:7)), "blanco"), rep(10,8)),
+#'                           Concentration = c(18.3,19.9,20.7,17.6,16.7,18.4,16.7,16.0,17.7,16.2,
+#'                                            3.7,4.9,3.8,3.7,3.6,3.3,4.2,4.0,4.7,3.9,
+#'                                             0.79,0.9,1.3,0.82,0.9,0.38,1.0,0.56,0.56,0.65,
+#'                                             0.08,0.15,0.28,0.16,0.0,0.18,0.33,0.0,0.0,0.23,
+#'                                             0.0,0.0,0.08,0.08,0.0,0.08,0.0,0.0,0.07,0.0,
+#'                                             0.0,0.0,0.08,0.07,0,0,0,0,0,0,
+#'                                             rep(0,20)))
+#'ddPCR_qcplot(example_data, estim_formula = "connect")
+#' 
+#'
+
+
+
+
+
 #' QC plot voor digital droplet pcr analyse
 #'
 #' @param data toestelfile die op zijn minst Sample en  Concentration bevat, waarbij de samples alfabetisch staan volgens  stijgende verdunning en er een blanco staal is. Ieder staal moet minstens enkele observaties bevatten
@@ -8,15 +23,16 @@
 #' @param verdunningsfactor hoeveel keer wordt er extra verdund van staal tot staal. Standaard 5
 #' @param LOQ_slope_tolerance  Bij weinig verdunning verwacht je de helling dichtbij 1, maar hoe meer verdunt hoe lager deze hellling. Deze parameter bevat de limiet voor wat nog als lineair bereik gerekend wordt. Standaard is dit op 0.60 gezet.
 #' @param log_add aangezien er logtransformaties gebruikt worden, en een 0 niet kan omgezet worden, bevat deze parameter wat er bijgeteld wordt voor alle concentraties. Standaard 0.0001
-#' @param plot_it indien TRUE (standaard) dan wordt een ggplot getoont met de informatie, indien FALSE wordt enkel een data.frame teruggegeven waaruit je de plot zelf kan maken
+#' @param plot indien TRUE (standaard) dan wordt een ggplot getoont met de informatie, indien FALSE wordt enkel een data.frame teruggegeven waaruit je de plot zelf kan maken
+#' @param print indien TRUE (standaard) dan worden LOD en LOQ getoond in de output
+#' @param LOQ_manual manuele waarde voor LOQ als je die zelf wil berekenen
 #' @param limit_color kleur voor de LOD en LOQ op de grafiek. Standaard "green4"
 #' @param ... extra parameters die doorgegeven worden aan de functie ddPCR_calculate_fit waarvan in deze functie gebruikt wordt gemaakt
-#' @param LOQ_manual manuele waarde voor LOQ als je die zelf wil berekenen
 #' @return een ggplot object met de kwaliteitsfiguur of indien plot_it = FALSE een data.frame met alle nodige plotgegevens
 #' @importFrom ggplot2 scale_color_manual scale_linetype_manual scale_shape_manual geom_text
 #' @importFrom dplyr tibble
+#' @importFrom stats sd
 #' @export
-#'
 ddPCR_qcplot <- function(data, 
                          verdunningsfactor = 5 ,
                          blanco = "blanco",
@@ -25,71 +41,110 @@ ddPCR_qcplot <- function(data,
                          LOQ_slope_tolerance = 0.60,
                          LOQ_manual = NULL,
                          log_add = 1e-4,
-                         plot_it = TRUE,
+                         plot = TRUE,
+                         print = TRUE,
                          limit_color = "green4",
                          ...)
 {
+  
+  ### Data voorbereiding
   samples <- sort(unique(data$Sample))
-  non_blanks <- samples[!(samples %in% blanco)]
+  non_blanks <- as.character(samples[!(samples %in% blanco)])
   verdunningen <- c(verdunningsfactor^((1:length(non_blanks)) - 1), Inf) #Inf voor verdunning blanco
   
-  dfObs <- data %>%
-    mutate(Sample = factor(.data$Sample, levels = c(sort(unique(.data$Sample[.data$Sample != blanco])), blanco)))
   
+  dfObs <- data %>%
+    mutate(Sample = factor(.data$Sample, levels = c(non_blanks, blanco)))
+  
+  dfNoZero <- dfObs %>% 
+    filter(.data$Concentration > 0)
+  
+  ### Berekenen van statistieken per staal (dus over de replicates heen)
   smrydata <- dfObs %>% 
-    select(.data$Well, .data$Sample, .data$Concentration) %>%
+    select(.data$Sample, .data$Concentration) %>%
     group_by(.data$Sample) %>%
     summarise(Mean_conc = mean(.data$Concentration),
-              Aantal = sum(.data$Concentration > 0),
-              Fractie = .data$Aantal / n()) %>%
+              SD_conc = sd(.data$Concentration),
+              Mean_conc_nozero = mean(.data$Concentration[.data$Concentration > 0]),
+              SD_conc_nozero = sd(.data$Concentration[.data$Concentration > 0]),
+              Aantal_pos = sum(.data$Concentration > 0),
+              Fractie_pos = .data$Aantal_pos / n(),
+              Fractie_within_1s = sum(.data$Concentration >= .data$Mean_conc_nozero - .data$SD_conc_nozero & 
+                                        .data$Concentration <= .data$Mean_conc_nozero + .data$SD_conc_nozero) / .data$Aantal_pos) %>%
     mutate(Verdunning = verdunningen,
            Theoretical_conc = max(.data$Mean_conc) / .data$Verdunning)
   
+  
+  ### Berekenen van LOD (smrydata, alle waarden, originele schaal)
   if (!is.null( LOD_manual)) {
     dfLOD <- data.frame(Sample = NA, x = LOD_manual)
   } else {
     dfLOD <- smrydata %>% 
-    select(.data$Sample, .data$Theoretical_conc, .data$Fractie) %>%
-    filter(.data$Fractie >= LOD_min_positives) %>% 
+    select(.data$Sample, .data$Theoretical_conc, .data$Mean_conc_nozero, .data$Fractie_pos) %>%
+    filter(.data$Fractie_pos >= LOD_min_positives) %>% 
     arrange(.data$Theoretical_conc) %>%
-    transmute(Sample = .data$Sample, x = log10(.data$Theoretical_conc + log_add)) %>%
+    transmute(Sample = .data$Sample, 
+              LOD_theo = .data$Theoretical_conc,
+              log10_LOD_theo = log10(.data$LOD_theo),
+              LOD_meas = .data$Mean_conc_nozero,
+              log10_LOD_meas = log10(.data$LOD_meas)) %>%
     slice(1)
   }
   
-  dfObs <- left_join(dfObs, smrydata, by = "Sample") %>% 
-    mutate(log10Concentration = log10(.data$Concentration + log_add),
-           log10Theoretical = log10(.data$Theoretical_conc))
-  
-  wdata_non_zero <- filter(dfObs, .data$Theoretical_conc > 0 & .data$Concentration > 0)
-  dfLOQcalc <- ddPCR_calculate_fit(x = wdata_non_zero$log10Theoretical, 
-                                   y = wdata_non_zero$log10Concentration, 
+  ###BEREKENING LOQ op basis van een schattingsmethode gebaseerd op het log10-log10 buigpunt
+  dfLOQcalc <- ddPCR_calculate_fit(x = log10(dfNoZero$Theoretical_conc), 
+                                   y = log10(dfNoZero$Concentration), 
                                ...)
   if (!is.null(LOQ_manual)) {
     dfLOQ <- tibble(x = LOQ_manual)
   } else {
+    check_theo <- log10(dfNoZero$Theoretical_conc)
     dfLOQ <- 
-    filter(dfLOQcalc, .data$x %in% wdata_non_zero$log10Theoretical, !duplicated(.data$x)) %>%
-    mutate(Slope = c((.data$y[-length(.data$y)] - .data$y[-1]) / (.data$x[-length(.data$x)] - .data$x[-1]), NA)) %>%
-    summarise(x = .data$x[.data$Slope >= LOQ_slope_tolerance][1])
+      filter(dfLOQcalc, .data$x %in% check_theo , !duplicated(.data$x)) %>%
+      mutate(Slope = c((.data$y[-length(.data$y)] - .data$y[-1]) / (.data$x[-length(.data$x)] - .data$x[-1]), NA)) %>%
+      summarise(log10_LOQ_theo = .data$x[.data$Slope >= LOQ_slope_tolerance][1], 
+                log10_LOQ_meas = .data$y[.data$Slope >= LOQ_slope_tolerance][1]) %>% 
+      mutate( LOQ_theo = 10^(.data$log10_LOQ_theo),
+              LOQ_meas = 10^(.data$log10_LOQ_meas))
+  }
+ 
+  ###Print de resultaten
+  if (print) {
+    cat("Samenvattende tabel:\n\n")
+    print(smrydata %>% select(.data$Sample, .data$Verdunning, Theo_conc = .data$Theoretical_conc,
+                              Measured = .data$Mean_conc, Measured_nozero = .data$Mean_conc_nozero, 
+                              SD_nozero = .data$SD_conc_nozero, .data$Fractie_pos, .data$Fractie_within_1s))
+    cat("\nLOD: ", dfLOD$LOD_meas, "\n")
+    cat("LOQ: ", dfLOQ$LOQ_meas, "\n")
   }
   
+  ###Prepareer data voor een grote plotdataset
+  
+  #zorg dat dfObs en dfLOQ hetzelfde aantal rijen hebben
   maxrows <- max(nrow(dfObs), nrow(dfLOQcalc))
+  dfPlotObs <- left_join(dfObs, smrydata %>% select(.data$Theoretical_conc, .data$Sample), by = "Sample")
   if (nrow(dfObs) < maxrows) {
     tmp <- as.data.frame(matrix(nrow = maxrows - nrow(dfObs), ncol = ncol(dfObs), data = NA))
     names(tmp) <- names(dfObs)
     dfObs <- bind_rows(dfObs, tmp)
   }
   
-  dfTheo <- dfObs %>% group_by(.data$log10Theoretical) %>% summarise(log10Concentration = mean(.data$log10Theoretical))
-  
+
   dfPlot <- 
-    bind_rows(dfObs %>% mutate(which_data = "Obs"), 
-              dfTheo %>% mutate(which_data = "Theo"),
-              dfLOQcalc %>% transmute(log10Theoretical = .data$x, log10Concentration = .data$y, which_data = "Fit")) %>%
-    mutate(LOD = dfLOD$x,
-           LOQ = dfLOQ$x)
+    bind_rows(dfPlotObs %>% mutate(which_data = "Obs"), 
+              smrydata %>% 
+                transmute(Concentration = .data$Theoretical_conc, Theoretical_conc = .data$Theoretical_conc) %>% 
+                mutate(which_data = "Theo"),
+              dfLOQcalc %>% transmute(Theoretical_conc = 10^(.data$x), Concentration = 10^(.data$y), which_data = "Fit")) %>%
+    mutate(LOD = dfLOD$LOD_meas,
+           LOQ = dfLOQ$LOQ_meas) %>% 
+    transmute(.data$Sample, .data$which_data,
+              log10Concentration = log10(.data$Concentration + log_add),
+              log10Theoretical = log10(.data$Theoretical_conc + log_add),
+              log10LOD = log10(.data$LOD + log_add),
+              log10LOQ = log10(.data$LOQ + log_add))
   
-  if (!plot_it) {
+  if (!plot) {
     return(dfPlot)
   }
   
@@ -103,10 +158,10 @@ ddPCR_qcplot <- function(data,
     scale_color_manual(name = "", values = c("black", "red", "blue")) + 
     scale_linetype_manual(name = "", values = c("solid","blank","solid")) + 
     scale_shape_manual(name = "", values = c(-1, 1, 4)) + 
-    geom_vline(xintercept = dfPlot$LOD[1], color = limit_color, linetype = 2) + 
-    geom_vline(xintercept = dfPlot$LOQ[1], color = limit_color, linetype = 2) + 
-    geom_text(aes(x = .data$LOD[1], y = maxconc, label = "LOD"), hjust = 1.1, color = limit_color) + 
-    geom_text(aes(x = .data$LOQ[1], y = maxconc, label = "LOQ"), hjust = -0.1, color = limit_color) + 
+    geom_vline(xintercept = dfPlot$log10LOD[1], color = limit_color, linetype = 2) + 
+    geom_vline(xintercept = dfPlot$log10LOQ[1], color = limit_color, linetype = 2) + 
+    geom_text(aes(x = .data$log10LOD[1], y = maxconc, label = "LOD"), hjust = 1.1, color = limit_color) + 
+    geom_text(aes(x = .data$log10LOQ[1], y = maxconc, label = "LOQ"), hjust = -0.1, color = limit_color) + 
     xlab(expression(paste(log[10], "(calculated DNA concentration)"))) + 
     ylab(expression(paste(log[10], "(measured DNA concentration)")))
 }
