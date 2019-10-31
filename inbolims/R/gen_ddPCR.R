@@ -10,7 +10,7 @@
 #' @param LOQ_slope_tolerance  Bij weinig verdunning verwacht je de helling dichtbij 1, maar hoe meer verdunt hoe lager deze hellling. Deze parameter bevat de limiet voor wat nog als lineair bereik gerekend wordt. Standaard is dit op 0.60 gezet.
 #' @param log_add aangezien er logtransformaties gebruikt worden, en een 0 niet kan omgezet worden, bevat deze parameter wat er bijgeteld wordt voor alle concentraties. Standaard 0.0001
 #' @param LOQ_manual manuele waarde voor LOQ als je die zelf wil berekenen
-#' @param ... extra parameters die doorgegeven worden aan de functie ddPCR_calculate_fit waarvan in deze functie gebruikt wordt gemaakt
+#' @param ... extra parameters die doorgegeven worden aan de functie \code{\link{ddPCR_calculate_fit}} waarvan in deze functie gebruikt wordt gemaakt
 #' @return een ggplot object met de kwaliteitsfiguur of indien plot_it = FALSE een data.frame met alle nodige plotgegevens
 #' @importFrom ggplot2 scale_color_manual scale_linetype_manual scale_shape_manual geom_text
 #' @importFrom dplyr tibble
@@ -319,19 +319,3 @@ ddPCR_calculate_fit <- function(x, y, start = c('a' = 1, 'b' = 1, 'c' = 1), esti
   tibble(x = xs, y = ys)
 }
 
-
-###################################################################
-
-
- # example_data <- data.frame(Sample = rep(c(paste0("S", sprintf("%02d", 1:7)), "blanco"), rep(10,8)),
- #                            Concentration = c(18.3,19.9,20.7,17.6,16.7,18.4,16.7,16.0,17.7,16.2,
- #                                              3.7,4.9,3.8,3.7,3.6,3.3,4.2,4.0,4.7,3.9,
- #                                              0.79,0.9,1.3,0.82,0.9,0.38,1.0,0.56,0.56,0.65,
- #                                              0.08,0.15,0.28,0.16,0.0,0.18,0.33,0.0,0.0,0.23,
- #                                              0.0,0.0,0.08,0.08,0.0,0.08,0.0,0.0,0.07,0.0,
- #                                              0.0,0.0,0.08,0.07,0,0,0,0,0,0,
- #                                              rep(0,20)),
- #                            Treshold = 3000)
- # plotdata <- ddPCR_qc_calc(example_data, estim_formula = "connect")
- # ggplot(plotdata)
- # summary(plotdata)

@@ -27,7 +27,7 @@ ddPCR_qc_calc(data, dilution_base = 20, dilution_factor = 5,
 
 \item{log_add}{aangezien er logtransformaties gebruikt worden, en een 0 niet kan omgezet worden, bevat deze parameter wat er bijgeteld wordt voor alle concentraties. Standaard 0.0001}
 
-\item{...}{extra parameters die doorgegeven worden aan de functie ddPCR_calculate_fit waarvan in deze functie gebruikt wordt gemaakt}
+\item{...}{extra parameters die doorgegeven worden aan de functie \code{\link{ddPCR_calculate_fit}} waarvan in deze functie gebruikt wordt gemaakt}
 }
 \value{
 een ggplot object met de kwaliteitsfiguur of indien plot_it = FALSE een data.frame met alle nodige plotgegevens
