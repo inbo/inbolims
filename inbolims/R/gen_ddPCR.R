@@ -3,6 +3,7 @@
 #'
 #' @param data toestelfile die op zijn minst Sample, Concentration en Treshold bevat, waarbij de samples alfabetisch staan volgens  stijgende verdunning en er een blanco staal is. Ieder staal moet minstens enkele observaties bevatten
 #' @param blank de naam van de Sample die als blanco moet gerekend worden
+#' @param limit_type welke waarde moet gebruikt worden om de LOD en LOQ op de grafiek te zetten. De theoretische concenteratie ("theo") of de gemeten concentratie ("meas")
 #' @param LOD_min_positives minimum fractie van detecties om boven de LOD te komen. Standaard 1/20
 #' @param LOD_manual een manuele LOD als je die zelf wil berekenen
 #' @param dilution_factor hoeveel keer wordt er extra verdund van staal tot staal. Standaard 5
@@ -19,15 +20,8 @@
 #' @export
 #' @examples 
 #' library(ggplot2)
-#' example_data <- data.frame(Sample = rep(c(paste0("S", sprintf("%02d", 1:7)), "blanco"), rep(10,8)),
-#'                           Concentration = c(18.3,19.9,20.7,17.6,16.7,18.4,16.7,16.0,17.7,16.2,
-#'                                            3.7,4.9,3.8,3.7,3.6,3.3,4.2,4.0,4.7,3.9,
-#'                                             0.79,0.9,1.3,0.82,0.9,0.38,1.0,0.56,0.56,0.65,
-#'                                             0.08,0.15,0.28,0.16,0.0,0.18,0.33,0.0,0.0,0.23,
-#'                                             0.0,0.0,0.08,0.08,0.0,0.08,0.0,0.0,0.07,0.0,
-#'                                             0.0,0.0,0.08,0.07,0,0,0,0,0,0,
-#'                                             rep(0,20)),
-#'                           Treshold = 3000)
+#' fpath <- system.file("extdata", "ddPCR_voorbeelddata.csv", package="inbolims")
+#' example_data <- read.csv2(fpath, stringsAsFactors = FALSE)
 #' plotdata <- ddPCR_qc_calc(example_data, estim_formula = "connect")
 #' ggplot(plotdata)
 #' summary(plotdata)
@@ -35,6 +29,7 @@ ddPCR_qc_calc <- function(data,
                           dilution_base = 20,
                           dilution_factor = 5,
                           blank = "blanco",
+                          limit_type = "theo",
                           LOD_min_positives = 0.05,
                           LOD_manual = NULL, 
                           LOQ_slope_tolerance = 0.60,
@@ -73,7 +68,7 @@ ddPCR_qc_calc <- function(data,
   
   ### Berekenen van LOD (smrydata, alle waarden, originele schaal)
   if (!is.null( LOD_manual)) {
-    dfLOD <- data.frame(Sample = NA, x = LOD_manual)
+    dfLOD <- data.frame(Sample = NA, LOD_theo = LOD_manual, LOD_meas = LOD_manual)
   } else {
     dfLOD <- smrydata %>% 
     select(.data$Sample, .data$Theoretical_conc, .data$Mean_conc_nozero, .data$Frac_pos) %>%
@@ -103,7 +98,7 @@ ddPCR_qc_calc <- function(data,
                                    y = log10(dfNoZero$Concentration), 
                                ...)
   if (!is.null(LOQ_manual)) {
-    dfLOQ <- tibble(x = LOQ_manual)
+    dfLOQ <- tibble(LOQ_theo = LOQ_manual, LOQ_meas = LOQ_manual)
   } else {
     check_theo <- log10(dfNoZero$Theoretical_conc)
     dfLOQ <- 
@@ -133,8 +128,8 @@ ddPCR_qc_calc <- function(data,
                 transmute(Concentration = .data$Theoretical_conc, Theoretical_conc = .data$Theoretical_conc) %>% 
                 mutate(which_data = "Theo"),
               dfLOQcalc %>% transmute(Theoretical_conc = 10^(.data$x), Concentration = 10^(.data$y), which_data = "Fit")) %>%
-    mutate(LOD = dfLOD$LOD_meas,
-           LOQ = dfLOQ$LOQ_meas) %>% 
+    mutate(LOD = ifelse(limit_type == "theo", dfLOD$LOD_theo, dfLOD$LOD_meas),
+           LOQ = ifelse(limit_type == "theo", dfLOQ$LOQ_theo, dfLOQ$LOQ_meas)) %>% 
     transmute(.data$Sample, .data$which_data,
               log10Concentration = log10(.data$Concentration + log_add),
               log10Theoretical = log10(.data$Theoretical_conc + log_add),
@@ -318,4 +313,17 @@ ddPCR_calculate_fit <- function(x, y, start = c('a' = 1, 'b' = 1, 'c' = 1), esti
   }
   tibble(x = xs, y = ys)
 }
+
+
+# 
+# example_data <- data.frame(Sample = rep(c(paste0("S", sprintf("%02d", 1:7)), "blanco"), rep(10,8)),
+#                           Concentration = c(18.3,19.9,20.7,17.6,16.7,18.4,16.7,16.0,17.7,16.2,
+#                                            3.7,4.9,3.8,3.7,3.6,3.3,4.2,4.0,4.7,3.9,
+#                                             0.79,0.9,1.3,0.82,0.9,0.38,1.0,0.56,0.56,0.65,
+#                                             0.08,0.15,0.28,0.16,0.0,0.18,0.33,0.0,0.0,0.23,
+#                                             0.0,0.0,0.08,0.08,0.0,0.08,0.0,0.0,0.07,0.0,
+#                                             0.0,0.0,0.08,0.07,0,0,0,0,0,0,
+#                                             rep(0,20)),
+#                           Treshold = 3000)
+
 

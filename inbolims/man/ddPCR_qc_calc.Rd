@@ -5,8 +5,9 @@
 \title{QC plot voor digital droplet pcr analyse}
 \usage{
 ddPCR_qc_calc(data, dilution_base = 20, dilution_factor = 5,
-  blank = "blanco", LOD_min_positives = 0.05, LOD_manual = NULL,
-  LOQ_slope_tolerance = 0.6, LOQ_manual = NULL, log_add = 1e-04, ...)
+  blank = "blanco", limit_type = "theo", LOD_min_positives = 0.05,
+  LOD_manual = NULL, LOQ_slope_tolerance = 0.6, LOQ_manual = NULL,
+  log_add = 1e-04, ...)
 }
 \arguments{
 \item{data}{toestelfile die op zijn minst Sample, Concentration en Treshold bevat, waarbij de samples alfabetisch staan volgens  stijgende verdunning en er een blanco staal is. Ieder staal moet minstens enkele observaties bevatten}
@@ -16,6 +17,8 @@ ddPCR_qc_calc(data, dilution_base = 20, dilution_factor = 5,
 \item{dilution_factor}{hoeveel keer wordt er extra verdund van staal tot staal. Standaard 5}
 
 \item{blank}{de naam van de Sample die als blanco moet gerekend worden}
+
+\item{limit_type}{welke waarde moet gebruikt worden om de LOD en LOQ op de grafiek te zetten. De theoretische concenteratie ("theo") of de gemeten concentratie ("meas")}
 
 \item{LOD_min_positives}{minimum fractie van detecties om boven de LOD te komen. Standaard 1/20}
 
@@ -37,15 +40,8 @@ QC plot voor digital droplet pcr analyse
 }
 \examples{
 library(ggplot2)
-example_data <- data.frame(Sample = rep(c(paste0("S", sprintf("\%02d", 1:7)), "blanco"), rep(10,8)),
-                          Concentration = c(18.3,19.9,20.7,17.6,16.7,18.4,16.7,16.0,17.7,16.2,
-                                           3.7,4.9,3.8,3.7,3.6,3.3,4.2,4.0,4.7,3.9,
-                                            0.79,0.9,1.3,0.82,0.9,0.38,1.0,0.56,0.56,0.65,
-                                            0.08,0.15,0.28,0.16,0.0,0.18,0.33,0.0,0.0,0.23,
-                                            0.0,0.0,0.08,0.08,0.0,0.08,0.0,0.0,0.07,0.0,
-                                            0.0,0.0,0.08,0.07,0,0,0,0,0,0,
-                                            rep(0,20)),
-                          Treshold = 3000)
+fpath <- system.file("extdata", "ddPCR_voorbeelddata.csv", package="inbolims")
+example_data <- read.csv2(fpath, stringsAsFactors = FALSE)
 plotdata <- ddPCR_qc_calc(example_data, estim_formula = "connect")
 ggplot(plotdata)
 summary(plotdata)
