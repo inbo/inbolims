@@ -65,6 +65,7 @@ gen_ms_create_plates <- function(DNA, ...) {
     dplyr::select(Orig = .data$non_QC, After = .data$Specimen) %>% 
     dplyr::bind_rows(data.frame(Orig = QC_samplenumber, After = QC_samplenumber))
   
+  if (is.null(dataset$NUM_POS)) dataset$NUM_POS <- NA
   dataset <- 
     dataset %>%
     dplyr::left_join(dfLink, by = c("Specimen" = "After")) %>%
@@ -73,7 +74,7 @@ gen_ms_create_plates <- function(DNA, ...) {
     dplyr::transmute(DNA_ID = .data$Replicate, DNA_RUN_ID = run_id, 
                      SAMPLE_NUMBER = .data$SampleNumber, SAMPLE_TYPE = .data$Group, 
                      PLATE_SEQ = .data$Plate, PLATE_POSITION = paste0(.data$Capilar, .data$Lane), 
-                     REP_SAMPLE_NUMBER = 0) %>%
+                     REP_SAMPLE_NUMBER = 0, NUM_POS = .data$NUM_POS) %>%
     dplyr::filter(.data$SAMPLE_TYPE != "X")
   
   dataset
