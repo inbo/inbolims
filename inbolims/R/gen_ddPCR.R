@@ -1,7 +1,7 @@
 
 #' QC plot voor digital droplet pcr analyse
 #'
-#' @param data toestelfile die op zijn minst Sample, Concentration en Treshold bevat, waarbij de samples alfabetisch staan volgens  stijgende verdunning en er een blanco staal is. Ieder staal moet minstens enkele observaties bevatten
+#' @param data toestelfile die op zijn minst Sample, Concentration en Threshold bevat, waarbij de samples alfabetisch staan volgens  stijgende verdunning en er een blanco staal is. Ieder staal moet minstens enkele observaties bevatten
 #' @param blank de naam van de Sample die als blanco moet gerekend worden
 #' @param limit_type welke waarde moet gebruikt worden om de LOD en LOQ op de grafiek te zetten. De theoretische concenteratie ("theo") of de gemeten concentratie ("meas")
 #' @param LOD_min_positives minimum fractie van detecties om boven de LOD te komen. Standaard 1/20
@@ -82,9 +82,9 @@ ddPCR_qc_calc <- function(data,
     slice(1)
   }
   
-  ###Treshold
+  ###Threshold
   
-  treshold <- mean(data$Treshold)
+  threshold <- mean(data$Threshold)
   
   ###BEREKENING LOQ op basis van een schattingsmethode gebaseerd op het log10-log10 buigpunt
   
@@ -135,7 +135,7 @@ ddPCR_qc_calc <- function(data,
               log10Theoretical = log10(.data$Theoretical_conc + log_add),
               log10LOD = log10(.data$LOD + log_add),
               log10LOQ = log10(.data$LOQ + log_add),
-              Treshold = treshold)
+              Threshold = threshold)
   
   summary_out <- smrydata %>% 
     select(Staal = .data$Sample, Verdunning = .data$Dilution, Theo = .data$Theoretical_conc,
@@ -147,9 +147,9 @@ ddPCR_qc_calc <- function(data,
     spread(key = .data$Staal, value = .data$Waarde) %>% 
     mutate(Statistiek = as.character(.data$Statistiek))
   
-  summary_generic <- tibble(Statistiek = c("Treshold", "LOD_theo", "LOQ_theo", 
+  summary_generic <- tibble(Statistiek = c("Threshold", "LOD_theo", "LOQ_theo", 
                                                "LOD_meting", "LOQ_meting"),
-                                Waarde = c(treshold,  dfLOD$LOD_theo, dfLOQ$LOQ_theo, 
+                                Waarde = c(threshold,  dfLOD$LOD_theo, dfLOQ$LOQ_theo, 
                                            dfLOD$LOD_meas, dfLOQ$LOQ_meas)) 
   summary_out <- bind_rows(summary_out, summary_generic) %>% 
      select(1, ncol(.), 2:(ncol(.) - 1)) %>% 
@@ -218,9 +218,9 @@ ggplot.ddPCR <- function(data, mapping = NULL,
                          xlab = expression(paste(log[10], "(calculated DNA concentration)")),
                          ylab = expression(paste(log[10], "(measured DNA concentration)")),
                          log_add = 1e-4) {
-  data <- data[["plotdata"]]
-  maxconc <- max(data$log10Concentration, na.rm = TRUE)
-  ggplot(filter(data, .data$log10Theoretical > log10(log_add)), 
+  dfplot <- data[["plotdata"]]
+  maxconc <- max(dfplot$log10Concentration, na.rm = TRUE)
+  ggplot(filter(dfplot, .data$log10Theoretical > log10(log_add)), 
          aes(x = .data$log10Theoretical, y = .data$log10Concentration, 
              color = .data$which_data, shape = .data$which_data, linetype = .data$which_data)) + 
     geom_point() + 
@@ -228,10 +228,12 @@ ggplot.ddPCR <- function(data, mapping = NULL,
     scale_color_manual(name = "", values = colors[1:3]) + 
     scale_linetype_manual(name = "", values = linetypes) + 
     scale_shape_manual(name = "", values = shapes) + 
-    geom_vline(xintercept = data$log10LOD[1], color = colors[4], linetype = 2) + 
-    geom_vline(xintercept = data$log10LOQ[1], color = colors[4], linetype = 2) + 
-    geom_text(aes(x = .data$log10LOD[1], y = maxconc, label = LOD_label), hjust = 1.1, color = colors[4]) + 
-    geom_text(aes(x = .data$log10LOQ[1], y = maxconc, label = LOQ_label), hjust = -0.1, color = colors[4]) + 
+    geom_vline(xintercept = dfplot$log10LOD[1], color = colors[4], linetype = 2) + 
+    geom_vline(xintercept = dfplot$log10LOQ[1], color = colors[4], linetype = 2) + 
+    geom_text(aes(x = dfplot$log10LOD[1], y = maxconc, label = LOD_label), 
+              hjust = 1.1, color = colors[4]) + 
+    geom_text(aes(x = dfplot$log10LOQ[1], y = maxconc, label = LOQ_label), 
+              hjust = -0.1, color = colors[4]) + 
     xlab(xlab) + 
     ylab(ylab)
 }
@@ -324,6 +326,6 @@ ddPCR_calculate_fit <- function(x, y, start = c('a' = 1, 'b' = 1, 'c' = 1), esti
 #                                             0.0,0.0,0.08,0.08,0.0,0.08,0.0,0.0,0.07,0.0,
 #                                             0.0,0.0,0.08,0.07,0,0,0,0,0,0,
 #                                             rep(0,20)),
-#                           Treshold = 3000)
+#                           Threshold = 3000)
 
 

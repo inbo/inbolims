@@ -10,7 +10,7 @@ ddPCR_qc_calc(data, dilution_base = 20, dilution_factor = 5,
   log_add = 1e-04, ...)
 }
 \arguments{
-\item{data}{toestelfile die op zijn minst Sample, Concentration en Treshold bevat, waarbij de samples alfabetisch staan volgens  stijgende verdunning en er een blanco staal is. Ieder staal moet minstens enkele observaties bevatten}
+\item{data}{toestelfile die op zijn minst Sample, Concentration en Threshold bevat, waarbij de samples alfabetisch staan volgens  stijgende verdunning en er een blanco staal is. Ieder staal moet minstens enkele observaties bevatten}
 
 \item{dilution_base}{hoeveel keer is het eerste staal verdund. Standaard 20}
 
