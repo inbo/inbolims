@@ -108,6 +108,7 @@ limsdwh_report <- function(conn,
   and s.SampleStatus = 'A'
   and (s.SampleType is null or s.SampleType = 'SUBSAMPLE')
   and f.Project is not null
+  and f.ResultStatus <> 'X'
 "
   )
 
