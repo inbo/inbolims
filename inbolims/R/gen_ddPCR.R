@@ -17,6 +17,7 @@
 #' @importFrom dplyr tibble
 #' @importFrom stats sd
 #' @importFrom tidyr gather spread
+#' @importFrom ggplot2 ggplot aes geom_point geom_line
 #' @export
 #' @examples 
 #' library(ggplot2)
