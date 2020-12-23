@@ -4,6 +4,7 @@
 #' @param config character string of data.frame die aangeeft welke configuratie moet gebruikt worden (zie \link{limsdwh_report_query})
 #' @param version indien NULL wordt de laatste versie van het opgegeven reporttype gebruikt, indien hier gespecifieerd wordt de gekozen versie gebruikt.
 #' @param project naam van een project, bv "I-19W001-01", of meerdere namen als vector bv. c("I-19W001-01", "I-19W001-02"). Als derde mogelijkheid kan je ook 1 project selecteren met SQL joker karakters als \% en _. Als je alle projecten van contract 19W001 wil kan je dit als volgt specificeren: "\%19W001\%" 
+#' @param extra eventueel extra criteria toe te voegen aan de SQL, moet beginnen met 'and '
 #' @param ... other arguments, passed to limsdwh_report_convert_config_to_query like "show_query"
 #' @return data.frame uit het lims datawarehouse met alle analyseresultaten die gerapporteerd worden door het labo
 #' @export
@@ -17,14 +18,11 @@ limsdwh_report <- function(conn,
                            config = "DEFAULT",
                            version = NULL,
                            project = NULL, 
+                           extra = NULL,
                            ...) {
-  
-  if (is.null(project)) {
-    stop("Geef een project, een vector van projecten, of een of meerdere projecten met jokerkarakter _ en/of &")
-  }
-  
-  qry <- limsdwh_report_query(config, version, project)
-  DBI::dbGetQuery(conn, qry)
+
+  qry <- limsdwh_report_query(project, extra, config, version, ...)
+  RODBC::sqlQuery(conn, qry)
 }
 
 
@@ -35,33 +33,43 @@ limsdwh_report <- function(conn,
 #' @param config naam van de configuratie, of een dataset in de vorm van de configuratiedataset (kolommen ConfigName, Version, Order, Table, Field, ReportableName, FieldType). De controlevelden OrigineelStaal (OriginalSample), TestReplicaat(TestReplicate), ResultaatReplicaat (ResultReplicate), LimsAnalysenaam (LimsAnalysisName) zijn altijd nodig, als je wil crosstabuleren later
 #' @param version versienummer
 #' @param project vector van projecten, of 1 project met de SQL jokercharacters \% en/of \_
+#' @param extra eventueel extra criteria toe te voegen aan de SQL, moet beginnen met 'and '
 #' @param include_control Niet gebruikt op dit moment. Indien FALSE worden enkel de velden met FieldType "R" in the config file getoond, Control fields are needed to make a crosstabulation of Result (Uses OriginalSample, TestReplicate, ResultReplicate en Analysis.)
 #' @param show_query print de gevormde query op het scherm voor eventueel later gebruik of kleine aanpassingen
 #' @importFrom readr read_delim
 #' @importFrom  dplyr filter mutate arrange
 #' @return character string containing the query to pass to the datawarehouse
 #' @export
-#' @examples
-#' cat(limsdwh_report_query(config = "DEFAULT", project = 'I-17W003-01'))
 
-limsdwh_report_query <- function(config = "DEFAULT", version = NULL, project, include_control = TRUE, show_query = FALSE) {
+limsdwh_report_query <- function(project, extra = '', 
+                                 config = "DEFAULT", version = NULL, 
+                                 include_control = TRUE, show_query = FALSE) {
+  
+  qryfile <- system.file("dwh_bevraging/basisquery_rapport.sql", package = "inbolims")
+  #qryfile <- "inbolims/inst/dwh_bevraging/basisquery_rapport.sql"
+  #qryfile <- "inbolims/inst/dwh_bevraging/basisquery_rapport_bouw.sql"
+  if (qryfile == "") {
+    stop("qryfile dwh_bevraging/basisquery_rapport.sql niet gevonden in basispad inbolins library. Check of de installatie correct verlopen is")
+  } else {
+    qry <- readLines(qryfile)
+  }
   
   ### Vind de gekozen config
   if (!inherits(x = config, what = "data.frame")) {
     configdatapath <- system.file("report_config", "ReportFieldsConfig.csv", package = "inbolims")
     if (length(configdatapath)) {
-      configdata <- read_delim(configdatapath, delim = ";") %>% 
+      configdata <- read_delim(configdatapath, delim = ";") %>%
         filter(.data$ConfigName == config)
       if (nrow(configdata) > 0) {
         if (is.null(version)) {
-          version <- rev(sort(configdata$Version))[1]   
+          version <- rev(sort(configdata$Version))[1]
         }
-        configdata <- configdata %>% filter(.data$Version == version) %>% 
+        configdata <- configdata %>% filter(.data$Version == version) %>%
           arrange(.data$Order)
       } else {
         warning("specified reporttype does not exist. Default configuration used instead")
-        configdata <- read_delim(configdatapath, delim = ";") %>% 
-          filter(.data$ConfigName == "DEFAULT" , .data$Version == 1) %>% 
+        configdata <- read_delim(configdatapath, delim = ";") %>%
+          filter(.data$ConfigName == "DEFAULT" , .data$Version == 1) %>%
           arrange(.data$Order)
       }
     } else {
@@ -70,45 +78,58 @@ limsdwh_report_query <- function(config = "DEFAULT", version = NULL, project, in
   } else {   #gebruik je eigen configdata
     configdata <- config
   }
-  
+
   ### Maak de projectselectie
-  if (!is.null(project)) { 
+  if (!is.null(project)) {
     if (length(project) == 1) {
       if (unlist(regexpr("%", text = project)) > 0 | unlist(regexpr("_", text = project)) > 0)
-        wh_prj <- paste0("and dimSample.Project like '", project , "'")
+        wh_prj <- paste0("and s.Project like '", project , "'")
       else
-        wh_prj <- paste0("and dimSample.Project = '", project, "'") 
+        wh_prj <- paste0("and s.Project = '", project, "'")
     }
     else {
       project <- paste0("('",paste(project, collapse = "','"), "')")
-      wh_prj <- paste0("and dimSample.Project in ", project)      
+      wh_prj <- paste0("and s.Project in ", project)
     }
   }
   else {
     stop("het project moet altijd meegegeven worden als een enkel project, een vector van projecten, of een project met SQL joker karakters")
   }
+  qry[qry == "<<PROJECTCRITERIUM>>"] <- wh_prj
   
- ### BOUW DE QUERY
-  tablejoins <- paste0("
-from dimSample
-left join factResult  on factResult.SampleKey = dimSample.sampleKey 
-left join dimAnalysis  on dimAnalysis.AnalysisKey = factResult.AnalysisKey")
-
-  
-  whereclause <- paste("where dimSample.SampleStatus = 'A' and factResult.IsReportable <> 0", wh_prj, sep = " \n")
-  
-  tablefields <- configdata %>% 
-    rowwise() %>% 
-    mutate(SQLfields = ifelse(!is.na(.data$Table), 
-                              paste0(.data$ReportableName, " = ", .data$Table, ".", .data$Field),
-                              paste0(.data$ReportableName, " = ", .data$Field))) %>% 
-    pull(.data$SQLfields) %>% paste(collapse = ", \n")
-  
-  query <- paste("select ", tablefields, tablejoins, whereclause)
-  if (show_query) {
-    print(query)
+  if (length(extra)) {
+    qry[qry == "<<EXTRA CRITERIA>>"] <- extra
+  } else {
+    qry[qry == "<<EXTRA CRITERIA>>"] <- ""
   }
-  return(query)
+  
+  
+  qry <- paste(qry, collapse = "\n")
+  if (show_query) cat(qry)
+  
+  return(qry)
+     
+#  ### BOUW DE QUERY
+#   tablejoins <- paste0("
+# from dimSample
+# left join factResult  on factResult.SampleKey = dimSample.sampleKey 
+# left join dimAnalysis  on dimAnalysis.AnalysisKey = factResult.AnalysisKey")
+# 
+#   
+#   whereclause <- paste("where dimSample.SampleStatus = 'A' and factResult.IsReportable <> 0", wh_prj, sep = " \n")
+#   
+#   tablefields <- configdata %>% 
+#     rowwise() %>% 
+#     mutate(SQLfields = ifelse(!is.na(.data$Table), 
+#                               paste0(.data$ReportableName, " = ", .data$Table, ".", .data$Field),
+#                               paste0(.data$ReportableName, " = ", .data$Field))) %>% 
+#     pull(.data$SQLfields) %>% paste(collapse = ", \n")
+#   
+#   query <- paste("select ", tablefields, tablejoins, whereclause)
+#   if (show_query) {
+#     print(query)
+#   }
+#   return(query)
 }
 
 

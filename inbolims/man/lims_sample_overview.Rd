@@ -4,10 +4,19 @@
 \alias{lims_sample_overview}
 \title{Lims overzicht projectstalen}
 \usage{
-lims_sample_overview(conn, customer = NULL, project = NULL,
-  lab = c("VAST", "WATER", "GENETICA"), status = c("I", "P", "C", "A"),
-  sql_filter = NULL, sql_order = NULL, start = NULL, end = NULL,
-  show_query = FALSE, show_fields = c(""))
+lims_sample_overview(
+  conn,
+  customer = NULL,
+  project = NULL,
+  lab = c("VAST", "WATER", "GENETICA"),
+  status = c("I", "P", "C", "A"),
+  sql_filter = NULL,
+  sql_order = NULL,
+  start = NULL,
+  end = NULL,
+  show_query = FALSE,
+  show_fields = c("")
+)
 }
 \arguments{
 \item{conn}{datawarehouse connection, typically the result of limsdwh_connect()}

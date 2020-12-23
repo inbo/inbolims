@@ -3,7 +3,6 @@
 \docType{package}
 \name{inbolims}
 \alias{inbolims}
-\alias{inbolims-package}
 \title{\code{inbolims} package}
 \description{
 Google spreadsheets R API

@@ -4,9 +4,20 @@
 \alias{lims_scatter_date}
 \title{Scatterplot van het resultaat ten opzichte van de tijdsas}
 \usage{
-lims_scatter_date(data, group = NULL, xlab, ylab, clab, file = NA,
-  show = TRUE, suffix = "", dpi = 300, width = 7, height = 5,
-  ...)
+lims_scatter_date(
+  data,
+  group = NULL,
+  xlab,
+  ylab,
+  clab,
+  file = NA,
+  show = TRUE,
+  suffix = "",
+  dpi = 300,
+  width = 7,
+  height = 5,
+  ...
+)
 }
 \arguments{
 \item{data}{lims dataset to plot}

@@ -4,8 +4,7 @@
 \alias{create_archief_labels_bat}
 \title{Creëer het .bat bestand waarin R de opdracht krijgt de archieflabels Access DB in te vullen}
 \usage{
-create_archief_labels_bat(bat_file, db_location, R_location,
-  Rscript_location)
+create_archief_labels_bat(bat_file, db_location, R_location, Rscript_location)
 }
 \arguments{
 \item{bat_file}{the name including path where the .bat file should be created}

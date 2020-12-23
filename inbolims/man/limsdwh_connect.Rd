@@ -4,10 +4,12 @@
 \alias{limsdwh_connect}
 \title{Connect to Data warehouse.}
 \usage{
-limsdwh_connect(deployment = "prd")
+limsdwh_connect(deployment = "prd", uidpwd = "")
 }
 \arguments{
 \item{deployment}{"prd" betekent uit de productieserver halen, "uat" is enkel voor testen met het datawarehouse op de uat server. De toegangsrechten moeten voor uat via referentiebeheer in windows gedefinieerd zijn}
+
+\item{uidpwd}{connectiesting addendun in de vorm van "uid=user001;pwd=geheim;"}
 }
 \value{
 database connection object

@@ -4,9 +4,21 @@
 \alias{lims_scatter_nr}
 \title{Scatterplot van het resultaat van de laatste punten}
 \usage{
-lims_scatter_nr(data, group = NULL, xlab, ylab, clab, file = NA,
-  show = TRUE, suffix = "", dpi = 300, width = 7, height = 5,
-  add_path = TRUE, ...)
+lims_scatter_nr(
+  data,
+  group = NULL,
+  xlab,
+  ylab,
+  clab,
+  file = NA,
+  show = TRUE,
+  suffix = "",
+  dpi = 300,
+  width = 7,
+  height = 5,
+  add_path = TRUE,
+  ...
+)
 }
 \arguments{
 \item{data}{lims dataset to plot}

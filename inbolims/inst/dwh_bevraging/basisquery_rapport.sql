@@ -1,22 +1,20 @@
-
-USE W0003_00_LIMS
-select top(1000) 
-  ContractID = 'CONTRACT_QUOTE.CONTRACT_QUOTE_ID'
+select top(100000) 
+  ContractID = c.Contract
 , Klant = r.Customer
 , r.Project
-, VerantwoordelijkLabo = 'PROJECT.OWNER_LOCATION'
-, LaboLimsGroep = 'PROJECT.GROUP_NAME'
+, VerantwoordelijkLabo = p.VerantwoordelijkLabo
+, LaboLimsGroep = p.ProjectGroupName
 , LimsStaalNummer = s.LIMSSampleNumber
 , ExternSampleID = s.FieldSampleID
 , LaboCode = s.LabSampleID
 , OrigineelStaal = s.LIMSOriginalSampleNumber 
-, SampleProduct = 'SAMPLE.PRODUCT'
+, SampleProduct = s.Product
 , ProductGrade = s.MatrixDetail
 , SamplingPoint = s.SamplingPoint
-, Matrix = 'SAMPLE.C_SAMPLE_MATRIX'
+, Matrix = s.Matrix
 , Monsternamedatum = s.FieldSamplingDate
 , Monsternemer = s.FieldObserver
-, Toestand = 'SAMPLE.C_CONDITION'
+, Toestand = s.SampleCondition
 , VoorbehandelingExtern = s.SamplePreparation
 , Opmerking = s.FieldSampleRemark
 , LimsAnalyseNaam = r.LimsAnalysisName
@@ -25,33 +23,33 @@ select top(1000)
 , AnalyseNaam = a.AnalysisLabName
 , r.Component
 , Gerapporteerd = r.IsReportable
-, TestReplicaat = 'TEST.REPLICATE_COUNT'
+, TestReplicaat = r.TestReplicateCount
 , ResultaatReplicaat = r.ResultReplicate
 , r.Instrument
-, Batch = 'TEST.BATCH'
+, Batch = r.Batch
 , WaardRuw = r.Result
 , WaardeGeformatteerd = r.ResultFormatted
 , Eenheid = r.LimsUnit 
 , BinnenSpecs = r.IsInSpec
 , BenedenLOQ = r.isBelowLOQ
 , BovenMaxLOQ = r.IsAboveLOQ
-, ResultaatType = 'RESULT.RESULT_TYPE'
+, ResultaatType = r.ResultType
 , NumeriekeWaarde = r.ResultFormattedNumeric
 , NumeriekeRuweWaarde = r.ResultNumeric
-, VisueleMatrix = 'C_VISUAL_MATRIX'
-, Plaat = 'SAMPLE.C_PLATE_MAIN'
-, PlaatPositie = 'SAMPLE.C_PLATE_MAIN_POS'
-, ArchiefStaal = 'SAMPLE.C_ARCHIVE_SAMPLE'
+, VisueleMatrix = s.VisualMatrix
+, Plaat = s.SamplePlate
+, PlaatPositie = s.SamplePlatePosition
+, ArchiefStaal = s.IsArchiefStaal
 , Xcoord = s.SampleLambertX
 , Ycoord = s.SampleLambertY
 , Diepte = s.SampleDepth
 , Toponiem = s.SampleToponym
 from dimSample s
-left join factResult r on r.SampleKey = s.SampleKey
-left join dimAnalysis a on a.AnalysisKey = r.AnalysisKey
---left join dimContract c on r.ContractKey = c.ContractKey, ofwel rechtstreeks in dimProject of dimResult invullen
-where r.PROJECT = '<<INSERT_PROJECT_NAME>>'
+inner join factResult r on r.SampleKey = s.SampleKey
+inner join dimAnalysis a on a.AnalysisKey = r.AnalysisKey
+inner join dimContract c on s.ContractKey = c.ContractKey
+inner join dimProject p on p.ProjectKey = s.ProjectKey
+where r.IsReportable <> 0 
 and s.SampleStatus = 'A' 
-and r.IsReportable <> 0
-
-
+<<PROJECTCRITERIUM>>
+<<EXTRA CRITERIA>>

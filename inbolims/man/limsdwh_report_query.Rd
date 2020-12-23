@@ -4,15 +4,23 @@
 \alias{limsdwh_report_query}
 \title{Convert config file to sql query}
 \usage{
-limsdwh_report_query(config = "DEFAULT", version = NULL, project,
-  include_control = TRUE, show_query = FALSE)
+limsdwh_report_query(
+  project,
+  extra = "",
+  config = "DEFAULT",
+  version = NULL,
+  include_control = TRUE,
+  show_query = FALSE
+)
 }
 \arguments{
+\item{project}{vector van projecten, of 1 project met de SQL jokercharacters \% en/of \_}
+
+\item{extra}{eventueel extra criteria toe te voegen aan de SQL, moet beginnen met 'and '}
+
 \item{config}{naam van de configuratie, of een dataset in de vorm van de configuratiedataset (kolommen ConfigName, Version, Order, Table, Field, ReportableName, FieldType). De controlevelden OrigineelStaal (OriginalSample), TestReplicaat(TestReplicate), ResultaatReplicaat (ResultReplicate), LimsAnalysenaam (LimsAnalysisName) zijn altijd nodig, als je wil crosstabuleren later}
 
 \item{version}{versienummer}
-
-\item{project}{vector van projecten, of 1 project met de SQL jokercharacters \% en/of \_}
 
 \item{include_control}{Niet gebruikt op dit moment. Indien FALSE worden enkel de velden met FieldType "R" in the config file getoond, Control fields are needed to make a crosstabulation of Result (Uses OriginalSample, TestReplicate, ResultReplicate en Analysis.)}
 
@@ -23,7 +31,4 @@ character string containing the query to pass to the datawarehouse
 }
 \description{
 Convert config file to sql query
-}
-\examples{
-cat(limsdwh_report_query(config = "DEFAULT", project = 'I-17W003-01'))
 }

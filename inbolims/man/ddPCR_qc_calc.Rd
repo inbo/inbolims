@@ -4,10 +4,19 @@
 \alias{ddPCR_qc_calc}
 \title{QC plot voor digital droplet pcr analyse}
 \usage{
-ddPCR_qc_calc(data, dilution_base = 20, dilution_factor = 5,
-  blank = "blanco", limit_type = "theo", LOD_min_positives = 0.05,
-  LOD_manual = NULL, LOQ_slope_tolerance = 0.6, LOQ_manual = NULL,
-  log_add = 1e-04, ...)
+ddPCR_qc_calc(
+  data,
+  dilution_base = 20,
+  dilution_factor = 5,
+  blank = "blanco",
+  limit_type = "theo",
+  LOD_min_positives = 0.05,
+  LOD_manual = NULL,
+  LOQ_slope_tolerance = 0.6,
+  LOQ_manual = NULL,
+  log_add = 1e-04,
+  ...
+)
 }
 \arguments{
 \item{data}{toestelfile die op zijn minst Sample, Concentration en Threshold bevat, waarbij de samples alfabetisch staan volgens  stijgende verdunning en er een blanco staal is. Ieder staal moet minstens enkele observaties bevatten}

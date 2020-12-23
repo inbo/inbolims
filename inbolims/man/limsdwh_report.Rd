@@ -4,8 +4,14 @@
 \alias{limsdwh_report}
 \title{Haal resultaten uit het LIMS datawarehouse}
 \usage{
-limsdwh_report(conn, config = "DEFAULT", version = NULL,
-  project = NULL, ...)
+limsdwh_report(
+  conn,
+  config = "DEFAULT",
+  version = NULL,
+  project = NULL,
+  extra = NULL,
+  ...
+)
 }
 \arguments{
 \item{conn}{connectiestring naar de database. Wordt aangemaakt via dwh_connect() of manueel}
@@ -15,6 +21,8 @@ limsdwh_report(conn, config = "DEFAULT", version = NULL,
 \item{version}{indien NULL wordt de laatste versie van het opgegeven reporttype gebruikt, indien hier gespecifieerd wordt de gekozen versie gebruikt.}
 
 \item{project}{naam van een project, bv "I-19W001-01", of meerdere namen als vector bv. c("I-19W001-01", "I-19W001-02"). Als derde mogelijkheid kan je ook 1 project selecteren met SQL joker karakters als \% en _. Als je alle projecten van contract 19W001 wil kan je dit als volgt specificeren: "\%19W001\%"}
+
+\item{extra}{eventueel extra criteria toe te voegen aan de SQL, moet beginnen met 'and '}
 
 \item{...}{other arguments, passed to limsdwh_report_convert_config_to_query like "show_query"}
 }

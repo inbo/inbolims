@@ -4,11 +4,21 @@
 \alias{lims_get_results}
 \title{Lees ruwe data in}
 \usage{
-lims_get_results(conn = NULL, sampletype = c("NULL", "DUP",
-  "SUBSAMPLE"), contract = NULL, project = NULL, analysis = NULL,
-  component = NULL, matrix = NULL, start = end - 4 * 31536000,
-  end = Sys.time(), samplestatus = c("C", "A"), resultstatus = c("E",
-  "M", "A"), n_max = 1e+05, print_query = TRUE)
+lims_get_results(
+  conn = NULL,
+  sampletype = c("NULL", "DUP", "SUBSAMPLE"),
+  contract = NULL,
+  project = NULL,
+  analysis = NULL,
+  component = NULL,
+  matrix = NULL,
+  start = end - 4 * 31536000,
+  end = Sys.time(),
+  samplestatus = c("C", "A"),
+  resultstatus = c("E", "M", "A"),
+  n_max = 1e+05,
+  print_query = TRUE
+)
 }
 \arguments{
 \item{conn}{connectie met de databank bekomen via lims_connect(). Indien NULL zal de standaard lims_connect() door deze functie worden uitgevoerd, alsook een disconnect}

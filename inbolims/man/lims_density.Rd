@@ -4,9 +4,21 @@
 \alias{lims_density}
 \title{Densityplot van het lims resultaat}
 \usage{
-lims_density(data, group = NULL, xlab, ylab, file = NA, show = TRUE,
-  suffix = "", dpi = 300, width = 7, height = 5, ncol = 1,
-  quantiles = TRUE, ...)
+lims_density(
+  data,
+  group = NULL,
+  xlab,
+  ylab,
+  file = NA,
+  show = TRUE,
+  suffix = "",
+  dpi = 300,
+  width = 7,
+  height = 5,
+  ncol = 1,
+  quantiles = TRUE,
+  ...
+)
 }
 \arguments{
 \item{data}{lims dataset to plot}

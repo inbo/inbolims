@@ -4,8 +4,19 @@
 \alias{lims_boxplot}
 \title{Boxplot van het resultaat}
 \usage{
-lims_boxplot(data, group = NULL, xlab, ylab, file = NA, show = TRUE,
-  suffix = "", dpi = 300, width = 7, height = 5, ...)
+lims_boxplot(
+  data,
+  group = NULL,
+  xlab,
+  ylab,
+  file = NA,
+  show = TRUE,
+  suffix = "",
+  dpi = 300,
+  width = 7,
+  height = 5,
+  ...
+)
 }
 \arguments{
 \item{data}{lims dataset to plot}

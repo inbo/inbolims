@@ -4,8 +4,15 @@
 \alias{lims_list_objects}
 \title{Toon lijst met mogelijke keuzes voor de tabelvelden}
 \usage{
-lims_list_objects(conn, keuze, lab, how = c("select", "show"),
-  multiple = FALSE, analyse = NULL, ...)
+lims_list_objects(
+  conn,
+  keuze,
+  lab,
+  how = c("select", "show"),
+  multiple = FALSE,
+  analyse = NULL,
+  ...
+)
 }
 \arguments{
 \item{conn}{connectie met de databank. Indien NULL wordt de standaard lims_connect() gebruikt}

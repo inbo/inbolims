@@ -4,9 +4,20 @@
 \alias{lims_histogram}
 \title{Histogram van het resultaat}
 \usage{
-lims_histogram(data, group = NULL, xlab, ylab, file = NA,
-  show = TRUE, suffix = "", dpi = 300, width = 7, height = 5,
-  ncol = 1, ...)
+lims_histogram(
+  data,
+  group = NULL,
+  xlab,
+  ylab,
+  file = NA,
+  show = TRUE,
+  suffix = "",
+  dpi = 300,
+  width = 7,
+  height = 5,
+  ncol = 1,
+  ...
+)
 }
 \arguments{
 \item{data}{lims dataset to plot}

@@ -4,8 +4,13 @@
 \alias{lims_quantile}
 \title{Kwantielberekening}
 \usage{
-lims_quantile(data, group = NULL, probs = c(0, 0.025, 0.25, 0.5, 0.75,
-  0.975, 1), file = NA, ...)
+lims_quantile(
+  data,
+  group = NULL,
+  probs = c(0, 0.025, 0.25, 0.5, 0.75, 0.975, 1),
+  file = NA,
+  ...
+)
 }
 \arguments{
 \item{data}{lims data waarvoor de kwantielen berekend moeten worden}

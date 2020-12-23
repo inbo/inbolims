@@ -4,8 +4,13 @@
 \alias{ddPCR_calculate_fit}
 \title{Berekeningen van een trendlijn in de qc grafiek voor digital droplet PCR}
 \usage{
-ddPCR_calculate_fit(x, y, start = c(a = 1, b = 1, c = 1),
-  estim_formula = "connect", loess_span = 0.5)
+ddPCR_calculate_fit(
+  x,
+  y,
+  start = c(a = 1, b = 1, c = 1),
+  estim_formula = "connect",
+  loess_span = 0.5
+)
 }
 \arguments{
 \item{x}{vector met de x-coordinaten in de grafiek}

@@ -5,7 +5,13 @@ remotes::install_github("inbo/inbolims/inbolims") #haal het package op uit githu
 library(inbolims)
 
 ### maak connectie met het datawarehouse
-conn <- limsdwh_connect() #Werkt enkel op INBO netwerk, of via VPN
+conn <- limsdwh_connect() #PRD Werkt enkel op INBO netwerk, of via VPN
+conn <- limsdwh_connect("uat") #UAT Werkt enkel op INBO netwerk, of via VPN
+
+### test query (tijdelijk)
+#qry <- paste(limsdwh_report_query(), collapse = " ")
+#test <- RODBC::sqlQuery(conn, qry)
+
 
 #### restultaatdata ophalen uit het lims datawarehouse
 my_data <- limsdwh_report(conn, project = "I-19W005-01") 

@@ -4,8 +4,12 @@
 \alias{limsdwh_report_xtab}
 \title{Kruistabel maken van de gegevens uit het lims datawarehouse}
 \usage{
-limsdwh_report_xtab(df, link = "Labocode", value = "WaardeRuw",
-  collapse_repli = FALSE)
+limsdwh_report_xtab(
+  df,
+  link = "Labocode",
+  value = "WaardeRuw",
+  collapse_repli = FALSE
+)
 }
 \arguments{
 \item{df}{dataset die bekomen is via limsdwh_report}
