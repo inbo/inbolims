@@ -48,10 +48,12 @@ een ggplot object met de kwaliteitsfiguur of indien plot_it = FALSE een data.fra
 QC plot voor digital droplet pcr analyse
 }
 \examples{
+\dontrun{
 library(ggplot2)
 fpath <- system.file("extdata", "ddPCR_voorbeelddata.csv", package="inbolims")
 example_data <- read.csv2(fpath, stringsAsFactors = FALSE)
 plotdata <- ddPCR_qc_calc(example_data, estim_formula = "connect")
 ggplot(plotdata)
 summary(plotdata)
+}
 }

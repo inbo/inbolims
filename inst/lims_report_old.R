@@ -1,28 +1,28 @@
-#' Haal resultaten uit het LIMS datawarehouse
+
+#' Haal resultaten uit het LIMS datawarehouse (Oude versie)
 #'
 #' @param conn connectiestring naar de database. Wordt aangemaakt via dwh_connect() of manueel
-#' @param config character string of data.frame die aangeeft welke configuratie moet gebruikt worden (zie \link{limsdwh_report_query})
+#' @param config character string of data.frame die aangeeft welke configuratie moet gebruikt worden (zie \link{lims_report_query})
 #' @param version indien NULL wordt de laatste versie van het opgegeven reporttype gebruikt, indien hier gespecifieerd wordt de gekozen versie gebruikt.
 #' @param project naam van een project, bv "I-19W001-01", of meerdere namen als vector bv. c("I-19W001-01", "I-19W001-02"). Als derde mogelijkheid kan je ook 1 project selecteren met SQL joker karakters als \% en _. Als je alle projecten van contract 19W001 wil kan je dit als volgt specificeren: "\%19W001\%" 
 #' @param extra eventueel extra criteria toe te voegen aan de SQL, moet beginnen met 'and '
-#' @param ... other arguments, passed to limsdwh_report_convert_config_to_query like "show_query"
+#' @param ... other arguments, passed to lims_report_convert_config_to_query like "show_query"
 #' @return data.frame uit het lims datawarehouse met alle analyseresultaten die gerapporteerd worden door het labo
-#' @export
 #' @examples 
 #' \dontrun{
-#' conn <- limsdwh_connect()
-#' reportdata <- limsdwh_report(conn, project = 'I-17W003-01')
+#' conn <- lims_connect()
+#' reportdata <- lims_report_old(conn, project = 'I-17W003-01')
 #' }
 #'
-limsdwh_report <- function(conn, 
-                           config = "DEFAULT",
-                           version = NULL,
-                           project = NULL, 
-                           extra = NULL,
-                           ...) {
-
-  qry <- limsdwh_report_query(project, extra, config, version, ...)
-  RODBC::sqlQuery(conn, qry)
+lims_report_old <- function(conn, 
+                            config = "DEFAULT",
+                            version = NULL,
+                            project = NULL, 
+                            extra = NULL,
+                            ...) {
+  
+  qry <- lims_report_query(project, extra, config, version, ...)
+  odbc::dbGetQuery(conn, qry)
 }
 
 
@@ -41,9 +41,9 @@ limsdwh_report <- function(conn,
 #' @return character string containing the query to pass to the datawarehouse
 #' @export
 
-limsdwh_report_query <- function(project, extra = '', 
-                                 config = "DEFAULT", version = NULL, 
-                                 include_control = TRUE, show_query = FALSE) {
+lims_report_query <- function(project, extra = '', 
+                              config = "DEFAULT", version = NULL, 
+                              include_control = TRUE, show_query = FALSE) {
   
   qryfile <- system.file("dwh_bevraging/basisquery_rapport.sql", package = "inbolims")
   #qryfile <- "inbolims/inst/dwh_bevraging/basisquery_rapport.sql"
@@ -78,7 +78,7 @@ limsdwh_report_query <- function(project, extra = '',
   } else {   #gebruik je eigen configdata
     configdata <- config
   }
-
+  
   ### Maak de projectselectie
   if (!is.null(project)) {
     if (length(project) == 1) {
@@ -108,28 +108,28 @@ limsdwh_report_query <- function(project, extra = '',
   if (show_query) cat(qry)
   
   return(qry)
-     
-#  ### BOUW DE QUERY
-#   tablejoins <- paste0("
-# from dimSample
-# left join factResult  on factResult.SampleKey = dimSample.sampleKey 
-# left join dimAnalysis  on dimAnalysis.AnalysisKey = factResult.AnalysisKey")
-# 
-#   
-#   whereclause <- paste("where dimSample.SampleStatus = 'A' and factResult.IsReportable <> 0", wh_prj, sep = " \n")
-#   
-#   tablefields <- configdata %>% 
-#     rowwise() %>% 
-#     mutate(SQLfields = ifelse(!is.na(.data$Table), 
-#                               paste0(.data$ReportableName, " = ", .data$Table, ".", .data$Field),
-#                               paste0(.data$ReportableName, " = ", .data$Field))) %>% 
-#     pull(.data$SQLfields) %>% paste(collapse = ", \n")
-#   
-#   query <- paste("select ", tablefields, tablejoins, whereclause)
-#   if (show_query) {
-#     print(query)
-#   }
-#   return(query)
+  
+  #  ### BOUW DE QUERY
+  #   tablejoins <- paste0("
+  # from dimSample
+  # left join factResult  on factResult.SampleKey = dimSample.sampleKey 
+  # left join dimAnalysis  on dimAnalysis.AnalysisKey = factResult.AnalysisKey")
+  # 
+  #   
+  #   whereclause <- paste("where dimSample.SampleStatus = 'A' and factResult.IsReportable <> 0", wh_prj, sep = " \n")
+  #   
+  #   tablefields <- configdata %>% 
+  #     rowwise() %>% 
+  #     mutate(SQLfields = ifelse(!is.na(.data$Table), 
+  #                               paste0(.data$ReportableName, " = ", .data$Table, ".", .data$Field),
+  #                               paste0(.data$ReportableName, " = ", .data$Field))) %>% 
+  #     pull(.data$SQLfields) %>% paste(collapse = ", \n")
+  #   
+  #   query <- paste("select ", tablefields, tablejoins, whereclause)
+  #   if (show_query) {
+  #     print(query)
+  #   }
+  #   return(query)
 }
 
 
@@ -137,13 +137,13 @@ limsdwh_report_query <- function(project, extra = '',
 
 #' Staalinformatie halen uit de ingelezen lims datawarehouse data
 #'
-#' @param df dataset ingelezen via limsdwh_report
+#' @param df dataset ingelezen via lims_report
 #'
 #' @return data.frame met enkel de staalinformatie
 #' @import dplyr
 #' @export
 #'
-limsdwh_report_sample <- function(df) {
+lims_report_sample <- function(df) {
   df %>% 
     select(.data$Klant, .data$Contract, .data$Project, 
            .data$ExternStaalID, .data$Labocode, .data$LinkStaal, 
@@ -160,7 +160,7 @@ limsdwh_report_sample <- function(df) {
 
 #' Kruistabel maken van de gegevens uit het lims datawarehouse
 #'
-#' @param df dataset die bekomen is via limsdwh_report
+#' @param df dataset die bekomen is via lims_report
 #' @param link naam waarop de stalen gelinkt worden in de kruistabel (slechts 1 rij per link), behalve als collapse_repli op FALSE staat, dan wordt sowieso de labocode gebruikt
 #' @param value de kolomnaam uit df die de cellen zal bemannen in de kruistabel
 #' @param collapse_repli Indien FALSE, dan wordt er gelinkt op de labocode ipv de link, indien "first" dan wordt de eerste meting genomen, indien "last" de laatste meting en indien "avg" het gemiddelde tussen de metingen
@@ -168,7 +168,7 @@ limsdwh_report_sample <- function(df) {
 #' @return dataset met als rijen de staalidentificatie en de kolommen alle resultaten van alle testen
 #' @export
 #'
-limsdwh_report_xtab <- function(df, link = "Labocode", value = "WaardeRuw", collapse_repli = FALSE) {
+lims_report_xtab <- function(df, link = "Labocode", value = "WaardeRuw", collapse_repli = FALSE) {
   df <- df %>% 
     transmute(.data$Labocode, .data$LinkStaal, .data$ExternStaalID, 
               link = .data[[link]], 

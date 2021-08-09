@@ -20,12 +20,14 @@
 #' @importFrom ggplot2 ggplot aes geom_point geom_line
 #' @export
 #' @examples 
+#' \dontrun{
 #' library(ggplot2)
 #' fpath <- system.file("extdata", "ddPCR_voorbeelddata.csv", package="inbolims")
 #' example_data <- read.csv2(fpath, stringsAsFactors = FALSE)
 #' plotdata <- ddPCR_qc_calc(example_data, estim_formula = "connect")
 #' ggplot(plotdata)
 #' summary(plotdata)
+#' }
 ddPCR_qc_calc <- function(data, 
                           dilution_base = 20,
                           dilution_factor = 5,
