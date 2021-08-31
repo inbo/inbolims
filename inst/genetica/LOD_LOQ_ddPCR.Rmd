@@ -1,6 +1,0 @@
----
-title: "LOD LOQ ddPCR"
-author: "Pieter"
-date: "31 oktober 2019"
-output: html_document
----

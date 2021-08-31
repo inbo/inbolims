@@ -1,4 +1,4 @@
-install.packages("remotes") #eenmalig (pakket nodig om install_github te gebruiken)
+install.packages("remotes") #eenmalig (om pakket te laden)
 remotes::install_github("inbo/inbolims/inbolims") #haal het package op uit github
 
 ### laadt de bibliotheek

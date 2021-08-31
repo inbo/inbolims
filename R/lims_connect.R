@@ -19,9 +19,9 @@ lims_connect <- function(deployment = "prd", use_RODBC = TRUE, uidpwd = ''){
   if (deployment != "uat") {
     if (use_RODBC) {
       con <- try(RODBC::odbcDriverConnect(
-        connection =   "Driver={ODBC Driver 13 for SQL Server};Server=inbo-sql08-prd.inbo.be;Database=W0003_00_Lims;Trusted_Connection=yes;"), silent = TRUE)
+        connection =   "Driver={ODBC Driver 13 for SQL Server};Server=inbo-sql08-prd.inbo.be;Database=W0003_00_Lims;Trusted_Connection=yes;Port=1433;"), silent = TRUE)
       if (inherits(con, "try-error") | inherits(con, "integer")) {
-        cstr <- paste0("Driver={ODBC Driver 13 for SQL Server};Server=inbo-sql08-prd.inbouat.be;Database=W0003_00_Lims;",
+        cstr <- paste0("Driver={ODBC Driver 13 for SQL Server};Server=inbo-sql08-prd.inbouat.be;Database=W0003_00_Lims;Port=1435;",
                        uidpwd)
         con <- RODBC::odbcDriverConnect(
           connection = cstr)       
@@ -32,6 +32,7 @@ lims_connect <- function(deployment = "prd", use_RODBC = TRUE, uidpwd = ''){
       con <- DBI::dbConnect(odbc::odbc(), 
                             Driver = "SQL Server", 
                             Server = "inbo-sql08-prd.inbo.be", 
+                            port = 1433, #toegevoegd voor via vpn, weghalen indien dit problemen geeft
                             Database = "W0003_00_Lims", 
                             Trusted_Connection = "True")   
       if(class(con) != "Microsoft SQL Server") 

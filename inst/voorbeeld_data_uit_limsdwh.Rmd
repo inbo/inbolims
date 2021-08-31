@@ -12,24 +12,10 @@ output: html_document
 
 ```{r inlezen}
 library(inbolims)
-#conn <- inbodb::connect_inbo_dbase('W0003_00_Lims') #alternatief
-#conn <- conn1 <- lims_connect(deployment = 'uat') #prd of uat
-# conn <- conn2 <- lims_connect(deployment = 'prd')
-# sqlfile <- system.file("dwh_bevraging/basisquery_rapport_dwh_uat.sql", 
-#                       package = "inbolims")
-# qry_tmp <- paste(readLines(sqlfile), collapse = '\n')
-# project = "I-19W001-01"
-# qry <- gsub("USE W0003_00_LIMS", "", qry_tmp)
-# qry <- gsub("<<INSERT_PROJECT_NAME>>", project, qry)
-# 
-# my_data <- RODBC::sqlQuery(conn, qry)
-# dim(my_data)
+library(tidyverse)
 
-#Hoe eenvoudig het echt zou moeten werken
-
-
-
-dfRapport <- lims_report_data(project = c("I-19W001-01", "I-19V010-02"), show_query = TRUE)
+dfRapport <- lims_report_data(project = c("I-19W001-02"), 
+                              show_query = TRUE)
 dfSamp <- lims_report_samples(dfRapport)
 dfXtab <- lims_report_xtab(dfRapport)
 lims_xtab_to_csv(dfXtab, path = "test3.csv")

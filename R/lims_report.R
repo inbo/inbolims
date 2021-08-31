@@ -27,7 +27,15 @@ lims_report_data <- function(project,
     cat(sqlquery)    
   }
   rv <- RODBC::sqlQuery(conn, sqlquery)
-  rv
+  rv %>% transmute(OrigineelStaal, LimsStaalNummer, 
+                   ContractID, Klant, Project, VerantwoordelijkLabo,
+                   ExternSampleID, LaboCode, SampleProduct, ProductGrade, Matrix, 
+                   Monsternemer, Monsternamedatum, Toestand, VoorbehandelingExtern, Opmerking, 
+                   LimsAnalyseNaam, LimsAnalyseVersie, SapCode, AnalyseNaam, Component, 
+                   Resultaattype = ifelse(is.na(NumeriekeWaarde), 'TXT', 'NUM'), 
+                   Instrument, Batch, 
+                   WaardeRuw, WaardeGeformatteerd, Eenheid, NumeriekeWaarde, 
+                   ArchiefStaal, Xcoord, Ycoord, Diepte, Toponiem)
 }
 
 #' Vul de query dynamisch in
@@ -66,7 +74,8 @@ lims_report_xtab <- function(reportdata) {
   reportdata <- reportdata %>% 
     dplyr::mutate(COMBI = paste(LimsAnalyseNaam, 
                                 Component,
-                                #paste(TestReplicaat,ResultaatReplicaat, sep = "."), 
+                                #paste(TestReplicaat,
+                                #ResultaatReplicaat, sep = "."), 
                                 sep = "__"))
   xtab <- reportdata %>% 
     tidyr::pivot_wider(id_cols = OrigineelStaal, 
@@ -75,7 +84,8 @@ lims_report_xtab <- function(reportdata) {
   xtab <- sampledata %>% 
     inner_join(xtab, by = "OrigineelStaal" )
   
-  xtab
+  xtab # %>%  
+    #select()
 }
 
 
@@ -96,18 +106,27 @@ lims_report_samples <- function(reportdata) {
     ungroup()
   
   dfSamplesAll <- reportdata %>% 
-    group_by(Project, LimsStaalNummer, OrigineelStaal, LaboCode, ExternSampleID, 
+    group_by(OrigineelStaal, ContractID, Klant, Project, VerantwoordelijkLabo, 
+             LimsStaalNummer, ExternSampleID, LaboCode, SampleProduct, 
              ProductGrade, Matrix, Monsternamedatum, Monsternemer, Toestand, 
              VoorbehandelingExtern, Opmerking) %>% 
-    summarise(N_Records = n()) %>% 
+    summarise(N_Records = n(), 
+              ArchiefStaal = max(ArchiefStaal), 
+              Xcoord = max(Xcoord), 
+              Ycoord = max(Ycoord), 
+              Diepte = max(Diepte), 
+              Toponiem = max(Toponiem)) %>% 
     ungroup() %>% 
     select(-OrigineelStaal, -ExternSampleID, -Project)
   
   dfSamples <- dfSamplesOnOrig %>% 
     inner_join(dfSamplesAll, 
                by = c("FirstSample" = "LimsStaalNummer")) %>% 
-    select(Project, OrigineelStaal, LaboCode, ExternSampleID, ProductGrade, Matrix, 
-           Monsternemer, Monsternamedatum, Toestand, VoorbehandelingExtern, Opmerking, 
+    select(Project, OrigineelStaal, LaboCode, ExternSampleID, 
+           ProductGrade, Matrix, 
+           Monsternemer, Monsternamedatum, Toestand, 
+           VoorbehandelingExtern, Opmerking,
+           ArchiefStaal, Xcoord, Ycoord, Diepte, Toponiem,
            N_Ana, N_Res, N_Samp) %>% 
     arrange(Project, ExternSampleID)
     
@@ -130,10 +149,11 @@ lims_xtab_to_csv <- function(data, path) {
                      fill = "right")
   header$COMBI <- namen
   newdata <- as.data.frame(t(header))
-  newdata <- newdata %>% mutate(across(.cols = everything(), .funs = as.character))
+  newdata <- newdata %>% 
+    mutate(across(.cols = everything(), .funs = as.character))
   colnames(newdata) <- make.names(header$COMBI)
   
-  datach <- as.data.frame(data) #for loop want mutate across wil niet alles omzetten
+  datach <- as.data.frame(data) #for loop (accross probleem)
   for (i in 1:ncol(datach)) {
     datach[,i] <- as.character(datach[,i]) 
     datach[,i] <- gsub("\\.", ",", datach[,i])
