@@ -14,31 +14,18 @@ output: html_document
 library(inbolims)
 library(tidyverse)
 
-dfRapport <- lims_report_data(project = c("I-19W001-02"), 
+#Haal alle data op
+rapport_data <- lims_report_data(project = c("I-19W001-02"), 
                               show_query = TRUE)
-dfSamp <- lims_report_samples(dfRapport)
-dfXtab <- lims_report_xtab(dfRapport)
-lims_xtab_to_csv(dfXtab, path = "test3.csv")
 
+#Maak een overzicht met enkel de stalen
+staaloverzicht <- lims_report_samples(rapport_data)
 
+#Maak een kruistabel van de resultaten
+kruistabel <- lims_report_xtab(rapport_data)
 
-
-# qry <- lims_report_query(project = "I-19W001-01")
-# #testdat <- odbc::dbGetQuery(conn, qry) #Enkel in PRD
-# my_data <- RODBC::sqlQuery(conn, qry) #enkel in UAT
-# 
-# 
-# #my_data <- lims_report(conn, project = "I-19W001-01")
-# my_staalinfo <- lims_report_sample(my_data)
-# my_xtab <- report_xtab(my_data)
-# my_xtab <- report_xtab(my_data, link = "ExternStaalID")
-# my_xtab <- report_xtab(my_data, link = "ExternStaalID", collapse_repli = "avg")
-
- 
-
-
-
-
+#exporteer rapport naar csv
+lims_report_export(kruistabel, path = "test3.csv")
 
 ```
 
