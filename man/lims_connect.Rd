@@ -4,7 +4,7 @@
 \alias{lims_connect}
 \title{Connect to Data warehouse.}
 \usage{
-lims_connect(deployment = "prd", use_RODBC = TRUE, uidpwd = "")
+lims_connect(deployment = "prd", use_RODBC = FALSE, uidpwd = "")
 }
 \arguments{
 \item{deployment}{"prd" betekent uit de productieserver halen, "uat" is enkel voor testen met het datawarehouse op de uat server. De toegangsrechten moeten voor uat via referentiebeheer in windows gedefinieerd zijn}

@@ -6,7 +6,7 @@
 \usage{
 lims_report_data(
   project,
-  sqlquery = "default",
+  template = "default",
   deployment = "prd",
   show_query = FALSE
 )
@@ -14,7 +14,7 @@ lims_report_data(
 \arguments{
 \item{project}{charactervector met projectnamen}
 
-\item{sqlquery}{indien "default" wordt de standaardquery uitegevoerd, indien iets anders moet  dit een geldige query zijn voor het DWH en minstens de outputvelden ORIGINAL_SAMPLE, ANALYSIS, COMPONENT en ENTRY bevatten}
+\item{template}{indien "default" wordt de standaardquery uitegevoerd, indien iets anders moet  dit een geldige query zijn voor het DWH en minstens de outputvelden ORIGINAL_SAMPLE, ANALYSIS, COMPONENT en ENTRY bevatten}
 
 \item{deployment}{default "prd", "uat" indien op de ontwikkelomgeving gewerkt wordt}
 
