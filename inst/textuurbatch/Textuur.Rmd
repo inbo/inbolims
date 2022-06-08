@@ -1,0 +1,69 @@
+---
+title: "Textuurconversie CMON"
+author: "Pieter"
+date: '2022-06-08'
+output: html_document
+---
+
+# Doelstelling
+
+- De bestaande output van het toestel (kommagescheiden csv bestand) inlezen
+- De file converteren naar een aparte file per staal
+- De link maken tussen het LABO_ID en het CMON_ID (extern id)
+
+# Verwerking
+
+## Inlezen file
+
+Omdat de titels van de file niet uit mooie namen bestaan wordt de file 2x ingelezen, eerst om de header informatie binnen te halen en een tweede keer om de inhoud zelf in te lezen.
+
+In de R code wordt voorbeelddata gebruikt die in het package zit, voor je eigen data kan je gewoon als volgt gebruiken
+```
+filename <- "c:/xxx/yyy/zzz.txt" #absolute pathverwijzing
+filename <- "yyy/zzz.txt" #als je werkdirectory c:/xxx is (relatieve verwijzing)
+```
+
+De outputdirectory kan je specificeren (zowel als absolute of relatieve verwijzing)
+
+```
+target_dir <- "Q:/aaa/bbb"
+```
+
+De voorbeeldfile die in dit script ingelezen wordt is een tabgescheiden bestand met een punt als decimaalteken
+
+Het inbolims package is nodig voor de scripts te laten werken. Als volgt kan je dat installeren
+
+```
+install.packages("remotes")
+remotes::install_github("inbo/inbolims")
+```
+
+```{r parsing}
+
+getwd() #gewoon om te tonen in welke werkdirectory je zit
+
+library(tidyverse) #package met veel datafunctionaliteit
+library(inbolims) #package die de verwerking van de tekstuurfiles regelt
+library(DBI) #package voor DB communicatie
+
+#definieer het path naar de resultatenfile
+filename <- system.file("extdata", "textuur_export_voorbeeld.txt", package = "inbolims")
+
+#definieer de directory voor de geparste bestandjes
+target_dir <- "tijdelijk"
+
+#parse de file naar een geldige R dataset
+textuur_parsed <- parse_texture_content(file, delim = "\t")
+
+#interpreteer de dataset tot een inhoudelijk bruikbaar formaat
+textuur_interpreted <- interprate_texture_content(textuur_parsed)
+
+#maak een connectie met het LIMS datawarehouse
+conn <- lims_connect() #connect to dwh
+textuur_linked <- link_labo_id(conn, textuur_interpreted)
+
+#schrijf de files weg
+write_texture_files(target_dir, textuur_linked)
+
+```
+

@@ -72,7 +72,31 @@ lims_report_sql_create <- function(project = NULL, deployment = "prd") {
 }
 
 
-
+#' Maak kruistabel van de ingelezen rapportdata
+#'
+#' @param reportdata data verkregen uit de functie lims_report_data
+#' @return kruistabel met resultaten
+#' @export
+#' @importFrom dplyr mutate 
+#' @importFrom tidyr pivot_wider
+lims_report_xtab <- function(reportdata) {
+  sampledata <- lims_report_samples(reportdata)
+  reportdata <- reportdata %>% 
+    dplyr::mutate(COMBI = paste(LimsAnalyseNaam, 
+                                Component,
+                                #paste(TestReplicaat,
+                                #ResultaatReplicaat, sep = "."), 
+                                sep = "__"))
+  xtab <- reportdata %>% 
+    tidyr::pivot_wider(id_cols = OrigineelStaal, 
+                names_from = COMBI, 
+                values_from = WaardeRuw)
+  xtab <- sampledata %>% 
+    inner_join(xtab, by = "OrigineelStaal" )
+  
+  xtab # %>%  
+    #select()
+}
 
 
 #' Verkrijg de sample metadata

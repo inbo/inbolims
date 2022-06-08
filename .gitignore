@@ -12,6 +12,8 @@ test_abi_ascii.txt
 tijdelijk/
 workdir/
 _NOT_GIT_/
+test.csv
+test3.csv
 
 # Session Data files
 .RData
