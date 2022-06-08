@@ -10,7 +10,7 @@ lims_report_xtab(reportdata)
 \item{reportdata}{data verkregen uit de functie lims_report_data}
 }
 \value{
-
+kruistabel met resultaten
 }
 \description{
 Maak kruistabel van de ingelezen rapportdata

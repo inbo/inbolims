@@ -15,7 +15,7 @@
 #' dfResults <- dbGetQuery(conn, sql)
 #' str(dfResults)
 #' }
-lims_connect <- function(deployment = "prd", use_RODBC = TRUE, uidpwd = ''){
+lims_connect <- function(deployment = "prd", use_RODBC = FALSE, uidpwd = ''){
   if (deployment != "uat") {
     if (use_RODBC) {
       con <- try(RODBC::odbcDriverConnect(
