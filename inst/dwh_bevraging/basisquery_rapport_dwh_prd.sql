@@ -2,7 +2,7 @@ select top(1000000)
   ContractID =  c.[Contract]
 , Klant = r.Customer
 , r.Project
-, VerantwoordelijkLabo = p.VerantwoordelijkLabo
+, VerantwoordelijkLabo = p.ResponsibleLab
 , LaboLimsGroep = p.ProjectGroupName
 , LimsStaalNummer = s.LIMSSampleNumber
 , ExternSampleID = s.FieldSampleID
@@ -39,7 +39,7 @@ select top(1000000)
 , VisueleMatrix = s.VisualMatrix
 , Plaat = s.samplePlate
 , PlaatPositie = s.SamplePlatePosition
-, ArchiefStaal = s.IsArchiefstaal
+, ArchiefStaal = s.IsArchiveSample
 , Xcoord = s.SampleLambertX
 , Ycoord = s.SampleLambertY
 , Diepte = s.SampleDepth
