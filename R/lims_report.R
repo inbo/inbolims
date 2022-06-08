@@ -152,7 +152,7 @@ lims_report_samples <- function(reportdata) {
 #' Maak kruistabel van de ingelezen rapportdata
 #'
 #' @param reportdata data verkregen uit de functie lims_report_data
-#' @return
+#' @return kruistabel met resultaten
 #' @export
 #' @importFrom dplyr mutate 
 #' @importFrom tidyr pivot_wider
