@@ -4,12 +4,14 @@
 \alias{interprate_texture_content}
 \title{Interpreteer de geparste textuurfile}
 \usage{
-interprate_texture_content(textuurdata, verbose = TRUE)
+interprate_texture_content(textuurdata, verbose = TRUE, digits = 3)
 }
 \arguments{
 \item{textuurdata}{geparste textuurdata}
 
 \item{verbose}{moet output getoond worden tijdens de routine}
+
+\item{digits}{aantal digits voor de waarde en sd}
 }
 \value{
 tidy dataset met alle gegevens
