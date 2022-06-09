@@ -51,11 +51,12 @@ parse_texture_content <- function(file, delim = "\t", verbose = TRUE) {
 #'
 #' @param textuurdata geparste textuurdata
 #' @param verbose moet output getoond worden tijdens de routine
+#' @param digits aantal digits voor de waarde en sd
 #'
 #' @return tidy dataset met alle gegevens
 #' @export
 #'
-interprate_texture_content <- function(textuurdata, verbose = TRUE) {
+interprate_texture_content <- function(textuurdata, verbose = TRUE, digits = 3) {
   textuur_long <- textuurdata %>% 
     pivot_longer(cols = -ends_with("boundary")) %>% 
     separate(name, into = c("sample", "param"), sep = "___")
@@ -64,7 +65,10 @@ interprate_texture_content <- function(textuurdata, verbose = TRUE) {
     pivot_wider(id_cols = c(lower_boundary, upper_boundary, sample),
                 names_from = param, 
                 values_from = value) %>% 
-    mutate(sd = UCL1S - value) %>% 
+    mutate(value = round(value, digits), 
+           sd = round(UCL1S - value, digits),
+           lower_boundary = round(lower_boundary,2),
+           upper_boundary = round(upper_boundary,2)) %>% 
     select(c(1:4,7,5,6))
   
   if (verbose) {
