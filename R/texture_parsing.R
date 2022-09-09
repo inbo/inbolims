@@ -9,7 +9,7 @@
 #' @importFrom readr read_delim
 #' @importFrom dplyr lead
 #' @export
-parse_texture_content <- function(file, delim = "\t", verbose = TRUE) {
+parse_texture_content <- function(filename, delim = "\t", verbose = TRUE) {
   header <- readLines(con = filename, n = 7) #lees de 6 headerrijen + 1 datarij
   textuur <- read_delim(file = filename, 
                         delim = "\t", 
@@ -98,6 +98,11 @@ link_labo_id <- function(conn,
                          extern_id_col = "FieldSampleID") {
 
   data$sample <- data[[labo_id_col]]
+  
+  #aanpassing omdat soms ---testnummer aan de sample gehangen wordt
+  found_indices <- unlist(gregexpr("---", data$sample))
+  last_index <- ifelse(found_indices < 0, nchar(data$sample), found_indices-1)
+  data$sample <- substring(data$sample, 1, last_index)
   
   qry <- paste0("select sample = LabSampleID, ", 
                 extern_id_col, " = FieldSampleID from dimSample ", 
