@@ -1,6 +1,6 @@
 #' Parste texture output file to R readable format
 #'
-#' @param file path to the output file to be parsed 
+#' @param filename path to the output file to be parsed 
 #' @param delim delimiter of the file
 #' @param verbose moet output getoond worden tijdens de uitvoering?
 #'
@@ -52,6 +52,8 @@ parse_texture_content <- function(filename, delim = "\t", verbose = TRUE) {
 #' @param textuurdata geparste textuurdata
 #' @param verbose moet output getoond worden tijdens de routine
 #' @param digits aantal digits voor de waarde en sd
+#' @import dplyr
+#' @import magrittr
 #'
 #' @return tidy dataset met alle gegevens
 #' @export

@@ -4,10 +4,10 @@
 \alias{parse_texture_content}
 \title{Parste texture output file to R readable format}
 \usage{
-parse_texture_content(file, delim = "\\t", verbose = TRUE)
+parse_texture_content(filename, delim = "\\t", verbose = TRUE)
 }
 \arguments{
-\item{file}{path to the output file to be parsed}
+\item{filename}{path to the output file to be parsed}
 
 \item{delim}{delimiter of the file}
 

@@ -28,6 +28,6 @@ Haal rapportdata uit LIMS DWH
 }
 \examples{
 \dontrun{
-lims_report_data(project = c("I-19W001-01"))
+reportdata <- lims_report_data(project = c("I-19W001-01"))
 }
 }

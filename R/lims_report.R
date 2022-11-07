@@ -10,7 +10,7 @@
 #'
 #' @examples
 #' \dontrun{
-#' lims_report_data(project = c("I-19W001-01"))
+#' reportdata <- lims_report_data(project = c("I-19W001-01"))
 #' }
 lims_report_data <- function(project, 
                              template = "default", 
@@ -79,13 +79,18 @@ lims_report_sql_create <- function(project = NULL, deployment = "prd") {
 #' @export
 #' @importFrom dplyr mutate 
 #' @importFrom tidyr pivot_wider
+#' @examples
+#' \dontrun{
+#' long_format <- lims_report_data(project = c("I-19W001-01"))
+#' XTAB_format <- lims_report_xtab(long_format)
+#' }
 lims_report_xtab <- function(reportdata) {
   sampledata <- lims_report_samples(reportdata)
   reportdata <- reportdata %>% 
     dplyr::mutate(COMBI = paste(LimsAnalyseNaam, 
                                 Component,
-                                #paste(TestReplicaat,
-                                #ResultaatReplicaat, sep = "."), 
+                                paste(TestReplicaat,
+                                      ResultaatReplicaat, sep = "."), 
                                 sep = "__"))
   xtab <- reportdata %>% 
     tidyr::pivot_wider(id_cols = OrigineelStaal, 
@@ -105,6 +110,11 @@ lims_report_xtab <- function(reportdata) {
 #'
 #' @return dataset met sample informatie
 #' @export
+#' @examples 
+#' \dontrun{
+#' reportdata <- lims_report_data(project = c("I-19W001-01"))
+#' sampledata <- lims_report_samples(reportdata)
+#' }
 #'
 lims_report_samples <- function(reportdata) {
   dfSamplesOnOrig <- reportdata %>%
@@ -116,6 +126,14 @@ lims_report_samples <- function(reportdata) {
                                                     Component)),
               .groups = "drop_last") %>% 
     ungroup()
+  
+  df_parent <- reportdata %>% 
+    select(OrigineelStaal, LimsStaalNummer, HoofdLaboCode = LaboCode) %>% 
+    filter(OrigineelStaal == LimsStaalNummer) %>% 
+    distinct(OrigineelStaal, HoofdLaboCode) 
+
+  dfSamplesOnOrig <- dfSamplesOnOrig %>% 
+    left_join(df_parent, by = "OrigineelStaal") 
   
   dfSamplesAll <- reportdata %>% 
     group_by(OrigineelStaal, ContractID, Klant, Project, VerantwoordelijkLabo, 
@@ -134,7 +152,7 @@ lims_report_samples <- function(reportdata) {
   dfSamples <- dfSamplesOnOrig %>% 
     inner_join(dfSamplesAll, 
                by = c("FirstSample" = "LimsStaalNummer")) %>% 
-    select(Project, OrigineelStaal, LaboCode, ExternSampleID, 
+    select(Project, HoofdLaboCode, LaboCode, ExternSampleID, 
            ProductGrade, Matrix, 
            Monsternemer, Monsternamedatum, Toestand, 
            VoorbehandelingExtern, Opmerking,
@@ -144,10 +162,6 @@ lims_report_samples <- function(reportdata) {
   
   dfSamples
 }
-
-
-
-
 
 #' Maak kruistabel van de ingelezen rapportdata
 #'
@@ -181,9 +195,6 @@ lims_report_xtab <- function(reportdata) {
     #select()
 }
 
-
-
-
 #' Kruistabel naar csv wegschtrijven met toevoeging header
 #'
 #' @param data kruistabeldata uit lims_report_xtab
@@ -214,6 +225,42 @@ lims_report_export <- function(data, path) {
   newdata <- bind_rows(newdata, datach)
   newdata[is.na(newdata)] <- ""
   write_excel_csv2(newdata, file = path) #niet csv2 want alles is character
+}
+
+
+#' Title
+#'
+#' @param data lims report data (from lims_report_data)
+#' @param plot logical if values are to be put in a graph
+#' @param log when plot, use the log-scale?
+#'
+#' @return list with measured parameters and some base statistics
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' view(lims_measured_parameters(reportdata))
+#' }
+lims_measured_parameters <- function(data, plot = TRUE, log =TRUE) {
+  rv <- data %>% 
+    group_by(AnalyseNaam, Component, Eenheid) %>% 
+    summarise(min = min(NumeriekeWaarde, na.rm=TRUE),
+              q25 = quantile(NumeriekeWaarde, 0.25, na.rm=TRUE),
+              med = quantile(NumeriekeWaarde, 0.50, na.rm=TRUE),
+              avg = round(mean(NumeriekeWaarde, na.rm=TRUE),5),
+              q75 = quantile(NumeriekeWaarde, 0.75, na.rm=TRUE),
+              max = max(NumeriekeWaarde, na.rm=TRUE),
+              aantal = n(), 
+              aantalstalen = n_distinct(OrigineelStaal),
+              aantalmissend = sum(is.na(NumeriekeWaarde)),)
+  if (plot) {
+    ggobj <- ggplot(data, aes(x = Component, y = NumeriekeWaarde)) + 
+      geom_boxplot() + 
+      facet_wrap(~AnalyseNaam, scales = "free")
+  if (log) ggobj <- ggobj + scale_y_log10()
+  print(ggobj)
+  }
+  rv
 }
 
 

@@ -15,3 +15,10 @@ dataset met sample informatie
 \description{
 Verkrijg de sample metadata
 }
+\examples{
+\dontrun{
+reportdata <- lims_report_data(project = c("I-19W001-01"))
+sampledata <- lims_report_samples(reportdata)
+}
+
+}

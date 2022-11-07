@@ -21,3 +21,9 @@ Maak kruistabel van de ingelezen rapportdata
 
 Maak kruistabel van de ingelezen rapportdata
 }
+\examples{
+\dontrun{
+long_format <- lims_report_data(project = c("I-19W001-01"))
+XTAB_format <- lims_report_xtab(long_format)
+}
+}
