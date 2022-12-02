@@ -1,8 +1,8 @@
 Type: Package
 Package: inbolims
 Title: Utilities to query the INBO lab analysis datawarehouse
-Version: 0.1.1
-Date: 2019-12-12
+Version: 0.2.0
+Date: 2022-12-02
 Author: Pieter Verschelde
 Maintainer: Pieter Verschelde<pieter.verschelde@inbo.be>
 Description: Some utilities that expand the Lims program in INBO. It
@@ -20,11 +20,8 @@ Imports:
     odbc,
     purrr,
     readr,
-    rlang,
     stats,
-    tibble,
     tidyr,
-    utils,
 Suggests:
     knitr,
     rmarkdown,

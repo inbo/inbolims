@@ -33,7 +33,7 @@ parse_texture_content <- function(filename, delim = "\t", verbose = TRUE) {
   colnames(textuur) <- header_names
   
   textuur <- textuur %>% 
-    mutate(upper_boundary = c(lead(lower_boundary, 1)))
+    mutate(upper_boundary = c(lead(.data$lower_boundary, 1)))
   if (verbose) {
     cat("\nOK\nDataset geimporteerd: \n",
         "dimensies: ", 
@@ -53,6 +53,7 @@ parse_texture_content <- function(filename, delim = "\t", verbose = TRUE) {
 #' @param verbose moet output getoond worden tijdens de routine
 #' @param digits aantal digits voor de waarde en sd
 #' @import dplyr
+#' @importFrom tidyr pivot_longer separate
 #' @import magrittr
 #'
 #' @return tidy dataset met alle gegevens
@@ -61,16 +62,18 @@ parse_texture_content <- function(filename, delim = "\t", verbose = TRUE) {
 interprate_texture_content <- function(textuurdata, verbose = TRUE, digits = 3) {
   textuur_long <- textuurdata %>% 
     pivot_longer(cols = -ends_with("boundary")) %>% 
-    separate(name, into = c("sample", "param"), sep = "___")
+    separate(.data$name, into = c("sample", "param"), sep = "___")
   
   textuur_wide <- textuur_long %>% 
-    pivot_wider(id_cols = c(lower_boundary, upper_boundary, sample),
-                names_from = param, 
-                values_from = value) %>% 
-    mutate(value = round(value, digits), 
-           sd = round(UCL1S - value, digits),
-           lower_boundary = round(lower_boundary,2),
-           upper_boundary = round(upper_boundary,2)) %>% 
+    pivot_wider(id_cols = c(.data$lower_boundary,
+                            .data$upper_boundary, 
+                            .data$sample),
+                names_from = .data$param, 
+                values_from = .data$value) %>% 
+    mutate(value = round(.data$value, digits), 
+           sd = round(.data$UCL1S - .data$value, digits),
+           lower_boundary = round(.data$lower_boundary,2),
+           upper_boundary = round(.data$upper_boundary,2)) %>% 
     select(c(1:4,7,5,6))
   
   if (verbose) {
@@ -89,6 +92,7 @@ interprate_texture_content <- function(textuurdata, verbose = TRUE, digits = 3) 
 #' @param data dataset waarvan het labo_id gelinkt moet worden aan het externe id
 #' @param labo_id_col naam van de kolom die het labo_id bevat
 #' @param extern_id_col naam van de kolom waar je het externe id in wil
+#' @importFrom DBI dbGetQuery
 #'
 #' @return dezelfde dataset maar met een extra kolom die het externe staalid bevat
 #' @export
@@ -141,16 +145,18 @@ link_labo_id <- function(conn,
 #' @importFrom readr write_excel_csv2
 #'
 write_texture_files <- function(target_path, data, verbose = TRUE) {
-  for (samp in unique(data %>% pull(sample))) {
-    tmp <- data %>% filter(sample == samp) %>% 
-      select(sample, FieldSampleID, lower_boundary, upper_boundary, value, sd)
-    if (any(is.na(tmp %>% pull(FieldSampleID)))) {
+  for (samp in unique(data %>% pull(.data$sample))) {
+    tmp <- data %>% filter(.data$sample == samp) %>% 
+      select(.data$sample, .data$FieldSampleID, 
+             .data$lower_boundary, .data$upper_boundary,
+             .data$value, .data$sd)
+    if (any(is.na(tmp %>% pull(.data$FieldSampleID)))) {
       if (verbose) {
         print(paste0(samp, "niet weggeschreven want geen extern id"))
       }
       next
     }
-    fn <- paste0(max(tmp %>% pull(FieldSampleID)), ".csv")
+    fn <- paste0(max(tmp %>% pull(.data$FieldSampleID)), ".csv")
     if(verbose) print(fn)
     write_excel_csv2(tmp,
                      file = file.path(target_path, fn))
