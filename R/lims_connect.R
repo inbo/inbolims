@@ -26,7 +26,7 @@ lims_connect <- function(deployment = "prd", use_RODBC = FALSE, uidpwd = ''){
         con <- RODBC::odbcDriverConnect(
           connection = cstr)       
       }
-      if(class(con) != "RODBC") print("Connectie niet gelukt. Ben je op het INBO netwerk of via VPN verbonden? Contacteer de database administrator")
+      if(!inherits(con, "RODBC")) print("Connectie niet gelukt. Ben je op het INBO netwerk of via VPN verbonden? Contacteer de database administrator")
       
     } else {
       con <- DBI::dbConnect(odbc::odbc(), 
@@ -35,7 +35,7 @@ lims_connect <- function(deployment = "prd", use_RODBC = FALSE, uidpwd = ''){
                             port = 1433, #toegevoegd voor via vpn, weghalen indien dit problemen geeft
                             Database = "W0003_00_Lims", 
                             Trusted_Connection = "True")   
-      if(class(con) != "Microsoft SQL Server") 
+      if(!inherits(con, "Microsoft SQL Server")) 
         print("Connectie niet gelukt. Ben je op het INBO netwerk of via VPN verbonden? Contacteer de database administrator")
     }
 
@@ -44,15 +44,17 @@ lims_connect <- function(deployment = "prd", use_RODBC = FALSE, uidpwd = ''){
     #Referentiebeheer zoeken in windows
     #toevoegen inbo-sql06-uat.inbouat.be  gebruikersnaam INBOUAT\pieter_verschelde
     
-    con <- try(RODBC::odbcDriverConnect(
-      connection = "Driver={ODBC Driver 13 for SQL Server};Server=inbo-sql06-uat.inbouat.be,1435;Database=W0003_00_Lims;Trusted_Connection=yes;"), silent = TRUE)
+    con <- try(
+      RODBC::odbcDriverConnect(
+        connection = "Driver={ODBC Driver 13 for SQL Server};Server=inbo-sql06-uat.inbouat.be,1435;Database=W0003_00_Lims;Trusted_Connection=yes;"), silent = TRUE)
+    
     if (inherits(con, "try-error") | inherits(con, "integer")) {
       cstr <- paste0("Driver={ODBC Driver 13 for SQL Server};Server=inbo-sql06-uat.inbouat.be,1435;Database=W0003_00_Lims;",
                      uidpwd)
       con <- RODBC::odbcDriverConnect(
         connection = cstr)       
     }
-    if(class(con) != "RODBC") print("Connectie niet gelukt. Ben je op het INBO netwerk of via VPN verbonden? Contacteer de database administrator")
+    if(!inherits(con, "RODBC")) print("Connectie niet gelukt. Ben je op het INBO netwerk of via VPN verbonden? Contacteer de database administrator")
     
   }
   con

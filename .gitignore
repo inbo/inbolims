@@ -48,3 +48,6 @@ inbolims/inst/*.html
 *.utf8.md
 *.knit.md
 .Rproj.user
+
+#test output
+tijdelijk/

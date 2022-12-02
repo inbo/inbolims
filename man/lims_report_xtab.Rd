@@ -5,19 +5,19 @@
 \title{Maak kruistabel van de ingelezen rapportdata}
 \usage{
 lims_report_xtab(reportdata)
-
-lims_report_xtab(reportdata)
 }
 \arguments{
 \item{reportdata}{data verkregen uit de functie lims_report_data}
 }
 \value{
 kruistabel met resultaten
-
-kruistabel met resultaten
 }
 \description{
 Maak kruistabel van de ingelezen rapportdata
-
-Maak kruistabel van de ingelezen rapportdata
+}
+\examples{
+\dontrun{
+long_format <- lims_report_data(project = c("I-19W001-01"))
+XTAB_format <- lims_report_xtab(long_format)
+}
 }

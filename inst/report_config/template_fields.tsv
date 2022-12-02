@@ -1,0 +1,64 @@
+Type	Veldnaam	Tabel	Afkorting	Kolom	Beschrijving	template:default
+select	ContractID	dimContract	c	Contract	Contractnaam	1
+select	Klant	factResult	r	Customer	Identificatie van de klant	2
+select	Project	factResult	r	Project	Projectnaam	3
+select	VerantwoordelijkLabo	dimProject	p	ResponsibleLab	Labo verantwoordelijk voor de uitvoering of management met externen	4
+select	LaboLimsGroep	dimProject	p	ProjectGroupName	Veiligheidsgroep voor het LIMS systeem	0
+select	LimsStaalNummer	dimSample	s	LIMSSampleNumber	VERPLICHT BEHOUDEN: Intern staalnummer van het LIMS systeem	6
+select	ExternSampleID	dimSample	s	FieldSampleID	Veldcode voor een staal die de klant meegeeft aan het labo	7
+select	LaboCode	dimSample	s	LabSampleID	De interne labocode van het staal	8
+select	OrigineelStaal	dimSample	s	LIMSOriginalSampleNumber	Belangrijk: De code waar alle resultaten van een staal in tercht komen	9
+select	SampleProduct	dimSample	s	Product	Product zoals gedefinieerd in het LIMS	10
+select	ProductGrade	dimSample	s	MatrixDetail	Detailomschrijving staal	11
+select	SamplingPoint	dimSample	s	SamplingPoint	Extra omschrijving staal	12
+select	Matrix	dimSample	s	Matrix	Matrix hoe het staal in het labo verwerkt wordt	13
+select	Monsternamedatum	dimSample	s	FieldSamplingDate	Staalnamedatum	14
+select	Monsternemer	dimSample	s	FieldObserver	Wie heeft het staal genomen in het veld	15
+select	Toestand	dimSample	s	SampleCondition	Toestand van het staal (vooral homogeniteit)	16
+select	VoorbehandelingExtern	dimSample	s	SamplePreparation	Hoe is het staal extern voorbehandeld voor het in het labo terecht kwam	17
+select	Opmerking	dimSample	s	FieldSampleRemark	Opmerking van het labo over het staal  	18
+select	LimsAnalyseNaam	factResult	r	LimsAnalysisName	Interne analysenaam in het LIMS systeem	19
+select	LimsAnalyseVersie	dimAnalysis	a	AnalysisVersion	Analyseversie waarmee het staal is verwerkt	20
+select	SapCode	dimAnalysis	a	SAPcode	Verwijzing naar het analysesprotocol	21
+select	AnalyseNaam	dimAnalysis	a	AnalysisLabName	Analysenaam voor de wetenschappers	22
+select	Component	factResult	r	Component	Componentnaam van het resultaat	23
+select	Gerapporteerd	factResult	r	IsReportable	Is het staal geschikt voor rapportage?	24
+select	TestReplicaat	factResult	r	TestReplicateCount	Hoeveelste replicate voor deze test is dit voor dit staal?	25
+select	ResultaatReplicaat	factResult	r	ResultReplicate	Hoeveelste replicate voor de individuele component is dit?	26
+select	Instrument	factResult	r	Instrument	Instrument waarmee een component gemeten is (OPGELET: DIT ZAL WIJZIGEN NAAR TESTNIVEAU)	27
+select	TestInstrument	<<>>	<<>>	<<>>	Analysetoestel voor een meting (PAS OP: NOG NIET IN DWH)	0
+select	Batch	factResult	r	Batch	De batch waarin de test gemeten is	28
+select	ResultaatType	factResult	r	ResultType	Resultaattype (Numeriek, Tekst, ...)	29
+select	Eenheid	dimUnit	u	Unit	Eenheid van het resultaat	30
+select	WaardeRuw	factResult	r	Result	Ruw resultaat in tekstvorm	31
+select	WaardeGeformatteerd	factResult	r	ResultFormatted	Geformatteerd resultaat met afrondingen en rekening houden met LOQ	32
+select	WaardeNumeriek	factResult	r	ResultNumeric	Numerieke waarde van het resultaat	33
+select	WaardeNumeriekGeformatteerd	factResult	r	ResultFormattedNumeric	Geformatteerde numerieke waarde, indien onder LOQ is dit <LOQ en niet ruwe waarde	34
+select	BinnenSpecs	factResult	r	IsInSpec	Viel het binnen de specificatie van de analyse?	0
+select	BenedenLOQ	factResult	r	isBelowLOQ	Is het resultaat onder de minimum LOQ?	35
+select	BovenMaxLOQ	factResult	r	IsAboveLOQ	Is het resultaat boven de maximum LOQ?	0
+select	VisueleMatrix	dimSample	s	VisualMatrix	Visuele beoordeling van de matrix door het labo	37
+select	Plaat	dimSample	s	samplePlate	Plaatnaam waar het staal op terecht komt	38
+select	PlaatPositie	dimSample	s	SamplePlatePosition	Positie op de plaat waar het staal staat	39
+select	ArchiefStaal	dimSample	s	IsArchiveSample	Is het een staal die gearchiveerd moet worden?	40
+select	Xcoord	dimSample	s	SampleLambertX	De X coordinaat van de veldmeting voor het staal	41
+select	Ycoord	dimSample	s	SampleLambertY	De Y coordinaat van de veldmeting voor het staal	42
+select	Diepte	dimSample	s	SampleDepth	De Diepte coordinaat van de veldmeting voor het staal	43
+select	Toponiem	dimSample	s	SampleToponym	Het toponiem coordinaat van de veldmeting	44
+select	StaalStatus	dimSample	s	SampleStatus	De status van het staal (A = goedgekeurd, X is gecanceld)	45
+select	ResultaatStatus	factResult	r	ResultStatus	De status van het resultaat (A = goedgekeurd, X is gecanceld)	46
+select	TestStatus	<<>>	<<>>	<<>>	De status van de test (NOG NIET IN DB)	0
+select	ProjectOmschrijving	dimProject	p	ProjectDescription	Beschrijving van het project	0
+select	ProjectStatus	dimProject	p	ProjectStatus	De status van het project (A = goedgekeurd)	0
+select	IsLaatsteReplicaat	factResult	r	isLastResultReplicate	Is dit de laatste replicaat van het resultaat 	0
+tabel	StaalTabel	dimSample	s	dimSample s	De staaltabel is de asistabel waarmee de databank bevraging begint	101
+tabel	ResultaatTabel	factResult	r	left join factResult r on r.SampleKey = s.SampleKey	De tabel met de resultaten	102
+tabel	ProjectTabel		p	inner join dimProject p on r.ProjectKey = p.ProjectKey	De tabel met de projectinformatie	103
+tabel	ContractTabel		c	inner join dimContract c on r.ContractKey = c.ContractKey	De tabel met de contractinformatie	104
+tabel	AnalyseTabel		a	inner join dimAnalysis a on r.AnalysisKey = a.AnalysisKey	De tabel met de analyseinformatie	105
+tabel	EenheidTabel		u	left join dimUnit u on r.UnitKey = u.UnitKey	De tabel met de eenheiden voor de testen	106
+filter	Project		r	Project in <<PROJECTEN>>	De projecten worden ingevuld op het moment de data ingelezen wordt <<>> werdt vervangen\	152
+filter	StaalGoedgekeurd		s	SampleStatus = 'A'	Enkel geauthoriseerde stalen	153
+filter	ResultaatGoedgekeurd		r	ResultStatus= 'A'	Enkel geauthoriseerde resultaten	154
+filter	ProjectGoedgekeurd		p	ProjectStatus = 'V'	Enkel geauthoriseerde projecten	155
+filter	ResultaatGerapporteerd		r	IsReportable=1	Enkel resultaten die door het labo als rapporteerbaar gezet zijn	156
