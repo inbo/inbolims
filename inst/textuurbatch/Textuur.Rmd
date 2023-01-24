@@ -50,7 +50,8 @@ library(DBI) #package voor DB communicatie
 filename <- system.file("extdata", "textuur_export_voorbeeld.txt", package = "inbolims")
 
 #definieer de directory voor de geparste bestandjes
-target_dir <- "tijdelijk"
+target_dir <- "resultaatfiles"
+dir.create(target_dir)
 
 #parse de file naar een geldige R dataset
 textuur_parsed <- parse_texture_content(filename, delim = "\t")
