@@ -110,12 +110,15 @@ link_labo_id <- function(conn,
   last_index <- ifelse(found_indices < 0, nchar(data$sample), found_indices-1)
   data$sample <- substring(data$sample, 1, last_index)
   
-  qry <- paste0("select sample = LabSampleID, ", 
-                extern_id_col, " = FieldSampleID from dimSample ", 
-                " where LabSampleID in ",
+  qry <- paste0("select sample = LabSampleID, \n", 
+                extern_id_col, " = FieldSampleID,  \n", 
+                "datum = AnalysisDate\n",
+                " from dimSample s inner join factResult r ", 
+                "on s.SampleKey = r.SampleKey \n", 
+                " where s.LabSampleID in ",
                 "('", paste(unique(data %>% pull(sample)), 
-                            collapse = "','"), 
-                "')")
+                            collapse = "','") ,
+                "') and LimsAnalysisName like 'TEXTUUR_LD%' \n")
   
   linktable <- dbGetQuery(conn, qry)
   
@@ -127,6 +130,23 @@ link_labo_id <- function(conn,
   }
   
   returndata
+}
+
+###################
+
+#' Converteer datumvector of POSIXct vector naar text in formaat yyyy-mm-dd
+#'
+#' @param x vector met datums (character)
+#' @param na_result resultaat indien geen geldige datum
+#'
+#' @return character vector with datums
+#' @export
+#'
+date_as_text <- function(x, na_result = "NODATE") {
+  x[is.na(x) | substring(x,1,2) != "20"] <- NA
+  x <- paste0(substring(x,1,10))
+  x[is.na(x)] <- na_result
+  x
 }
 
 
@@ -147,18 +167,22 @@ link_labo_id <- function(conn,
 write_texture_files <- function(target_path, data, verbose = TRUE) {
   for (samp in unique(data %>% pull(.data$sample))) {
     tmp <- data %>% filter(.data$sample == samp) %>% 
-      select(.data$sample, .data$FieldSampleID, 
+      transmute(.data$sample, .data$FieldSampleID, 
              .data$lower_boundary, .data$upper_boundary,
-             .data$value, .data$sd)
+             .data$value, .data$sd, 
+             .data$datum)
     if (any(is.na(tmp %>% pull(.data$FieldSampleID)))) {
       if (verbose) {
         print(paste0(samp, "niet weggeschreven want geen extern id"))
       }
       next
     }
-    fn <- paste0(max(tmp %>% pull(.data$FieldSampleID)), ".csv")
+    fn <- paste0(max(tmp %>% pull(.data$FieldSampleID)),
+                 "_",
+                 date_as_text(max(tmp %>% pull(.data$datum))), 
+                 ".csv")
     if(verbose) print(fn)
-    write_excel_csv2(tmp,
+    write_excel_csv2(tmp %>% select(-.data$datum),
                      file = file.path(target_path, fn))
   }
   return() 
