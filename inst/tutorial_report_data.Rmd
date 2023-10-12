@@ -1,0 +1,131 @@
+---
+title: "Read data from LIMS datawarehouse database using R"
+description: "Accessing report data from the INBO laboratory, which is stored in a DWH in LIMS. Only accessable for INBO employees connected to the INBO network"
+authors: [pietervsd]
+date: 2023-10-17
+categories: ["r"]
+tags: ["lims", "r", "data"]
+output: 
+  html_document:
+    toc: true
+  md_document:
+    preserve_yaml: true
+    variant: gfm+footnotes
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE)
+```
+
+# Introduction
+
+## Situation
+
+The INBO laboratory uses a LIMS system to manage the result data. All results are saved in a SQL server database.
+
+Daily, the results are loaded into a data warehouse (DWH) that makes querieing easier. All tables are directly connected to the base result table.
+
+The INBO scientists can retreive their lab data using R with or without the help of this `inbolims` package, but this package shoud ease it.
+
+## Usage
+
+To use this package, it should be installed via github. To enable this, it is best to install the package `remotes`. Furthermore the package tidyverse should be installed.
+
+```{r prep, cache=TRUE, results='hide'}
+install.packages(c("remotes", "tidyverse"))
+remotes::install_github("inbo/inbolims")
+```
+
+Load the tidyverse library and the inbolims library.
+
+```{r lib}
+library(tidyverse)
+library(inbolims)
+```
+
+# Import Lims Data
+
+## Make the database connection
+
+Before data can be retrieved from the lims datawarehouse, a connection to the database is needed. The package contains a function for this `lims_connect`.
+`lims_connect` without additional arguments will connect to the database in the production environment using the `DBI` package as a trusted connection via the windows active directory.
+
+If a connection to the test (uat) environment, use the parameter `deployment = "uat"`. If connection should happen via `RODBC` use the argument `use_RODBC = TRUE`
+
+When you have access to the database, but are not in the user list of INBO, you can use your database user-name and password via de parameter `uidpwd ="uid=user001;pwd=secret;"`, replacing the user name and password.
+
+```{r connect}
+#maak connectie met databank
+connection <- lims_connect()
+```
+
+## Retrieve results for a project
+
+Once the connection object is created, this object is used to retrieve the data.
+By default all data are retrieved using a  default sql template. One or more projects can be specified via the argument `project = "projectName"`. Multiple projects can be specified using the `c` function: `project = c("ProjectName1", "ProjectName2")`.
+The results are a R `tibble` dataset that can easily viewed using `view`
+
+```{r basics1, cache = TRUE}
+#haal de rapportgegevens binnen uit de databank
+report_data <- read_lims_data(connection = connection, 
+                              project = c("I-23W001-02"))
+```
+
+```{r basics2, cache = TRUE}
+#Bekijk de gegevens in R
+report_data %>% view()
+```
+
+It is possible to customize the results you get, although some minimal fields should always be present. Some  templates are made available and can be found with
+`list_availaible_templates()` <<<FUNCTIE NOG MAKEN>>>. 
+You can make your own template based on one of these <<<FUNCTIE NOG MAKEN>>>
+
+If you want to get more advanced you can even specify your own query based on the query used in this package.
+
+
+```{r basics3, cache = TRUE}
+#haal de rapportgegevens binnen uit de databank
+report_data <- read_lims_data(connection = connection, 
+                               project = c("I-23W001-02"), 
+                               sql_template = "default", 
+                               show_query = FALSE)
+```
+
+
+
+## Custom query
+
+# Using the data
+
+## Sample overview
+
+
+```{r stalen}
+staaloverzicht <- lims_report_samples(report_data)
+view(staaloverzicht)
+
+## Crosstable
+
+```{r kruistabel}
+kruistabel <- lims_report_xtab(report_data)
+view(kruistabel)
+
+# Exporting the results
+
+```{r export}
+lims_report_export(kruistabel, path = "test_xtab.csv")
+lims_report_export(report_data, path = "test.csv")
+```
+
+
+
+```
+
+
+```
+
+
+
+
+

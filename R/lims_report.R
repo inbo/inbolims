@@ -288,7 +288,7 @@ lims_report_export <- function(data, path) {
   header$COMBI <- namen
   newdata <- as.data.frame(t(header))
   newdata <- newdata %>% 
-    mutate(across(.cols = everything(), .funs = as.character))
+    mutate(across(.cols = everything(), .fns = as.character))
   colnames(newdata) <- make.names(header %>% pull(.data$COMBI) %>% unlist())
   
   check <<- check <- newdata

@@ -14,7 +14,8 @@
   LOQ_label = "LOQ",
   xlab = expression(paste(log[10], "(calculated DNA concentration)")),
   ylab = expression(paste(log[10], "(measured DNA concentration)")),
-  log_add = 1e-04
+  log_add = 1e-04,
+  ...
 )
 }
 \arguments{
@@ -50,6 +51,8 @@
 \item{ylab}{astitel voor de y-as}
 
 \item{log_add}{hoeveel wordt bij de concentratie geteld om de log te nemen (log10(variabele + log_add)). Deze waarde wordt gebruikt om enkel de datarijen te selecteren met een concentratie groter dan 0, en moet overeenstemmen met de log_add in ddPCR_qc_calc}
+
+\item{...}{optional arguments (not used in this function, but needed for R CMD CHECK)}
 }
 \value{
 ggplot object met 5 lagen: de geobserveerde waarden, de fit door de niet-nulwaarden van de geobserveerde waarden, de theoretische waarden, een vertikale lijn voor LOD, een vertikale lijn voor LOQ

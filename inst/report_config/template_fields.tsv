@@ -25,9 +25,10 @@ select	Component	factResult	r	Component	Componentnaam van het resultaat	23
 select	Gerapporteerd	factResult	r	IsReportable	Is het staal geschikt voor rapportage?	24
 select	TestReplicaat	factResult	r	TestReplicateCount	Hoeveelste replicate voor deze test is dit voor dit staal?	25
 select	ResultaatReplicaat	factResult	r	ResultReplicate	Hoeveelste replicate voor de individuele component is dit?	26
-select	Instrument	factResult	r	Instrument	Instrument waarmee een component gemeten is (OPGELET: DIT ZAL WIJZIGEN NAAR TESTNIVEAU)	27
+select	ResultaatInstrument	factResult	r	Instrument	Instrument waarmee een component gemeten is (OPGELET: DIT ZAL WIJZIGEN NAAR TESTNIVEAU)	27
 select	TestInstrument	<<>>	<<>>	<<>>	Analysetoestel voor een meting (PAS OP: NOG NIET IN DWH)	0
 select	Batch	factResult	r	Batch	De batch waarin de test gemeten is	28
+select	BatchInstrument	dimBatch	b	BatchInstrument	Het instrument waarmee de batch gemeten is	47
 select	ResultaatType	factResult	r	ResultType	Resultaattype (Numeriek, Tekst, ...)	29
 select	Eenheid	dimUnit	u	Unit	Eenheid van het resultaat	30
 select	WaardeRuw	factResult	r	Result	Ruw resultaat in tekstvorm	31
@@ -47,7 +48,7 @@ select	Diepte	dimSample	s	SampleDepth	De Diepte coordinaat van de veldmeting voo
 select	Toponiem	dimSample	s	SampleToponym	Het toponiem coordinaat van de veldmeting	44
 select	StaalStatus	dimSample	s	SampleStatus	De status van het staal (A = goedgekeurd, X is gecanceld)	45
 select	ResultaatStatus	factResult	r	ResultStatus	De status van het resultaat (A = goedgekeurd, X is gecanceld)	46
-select	TestStatus	<<>>	<<>>	<<>>	De status van de test (NOG NIET IN DB)	0
+select	TestStatus	factResult	r	TestStatus	De status van de test	0
 select	ProjectOmschrijving	dimProject	p	ProjectDescription	Beschrijving van het project	0
 select	ProjectStatus	dimProject	p	ProjectStatus	De status van het project (A = goedgekeurd)	0
 select	IsLaatsteReplicaat	factResult	r	isLastResultReplicate	Is dit de laatste replicaat van het resultaat 	0
@@ -57,6 +58,7 @@ tabel	ProjectTabel		p	inner join dimProject p on r.ProjectKey = p.ProjectKey	De 
 tabel	ContractTabel		c	inner join dimContract c on r.ContractKey = c.ContractKey	De tabel met de contractinformatie	104
 tabel	AnalyseTabel		a	inner join dimAnalysis a on r.AnalysisKey = a.AnalysisKey	De tabel met de analyseinformatie	105
 tabel	EenheidTabel		u	left join dimUnit u on r.UnitKey = u.UnitKey	De tabel met de eenheiden voor de testen	106
+tabel	Batchtabel		b	left join dimBatch b on r.BatchKey = b.BatchKey	De tabel met de definitie van de batches	107	
 filter	Project		r	Project in <<PROJECTEN>>	De projecten worden ingevuld op het moment de data ingelezen wordt <<>> werdt vervangen\	152
 filter	StaalGoedgekeurd		s	SampleStatus = 'A'	Enkel geauthoriseerde stalen	153
 filter	ResultaatGoedgekeurd		r	ResultStatus= 'A'	Enkel geauthoriseerde resultaten	154

@@ -209,6 +209,7 @@ summary.ddPCR <- function(object, ...) {
 #' @param LOQ_label tekst die bij de LOQ lijn moet gezet worden
 #' @param xlab astitel voor de x-as
 #' @param ylab astitel voor de y-as
+#' @param ... optional arguments (not used in this function, but needed for R CMD CHECK)
 #' @importFrom ggplot2 geom_vline
 #' @param log_add hoeveel wordt bij de concentratie geteld om de log te nemen (log10(variabele + log_add)). Deze waarde wordt gebruikt om enkel de datarijen te selecteren met een concentratie groter dan 0, en moet overeenstemmen met de log_add in ddPCR_qc_calc
 #' @return ggplot object met 5 lagen: de geobserveerde waarden, de fit door de niet-nulwaarden van de geobserveerde waarden, de theoretische waarden, een vertikale lijn voor LOD, een vertikale lijn voor LOQ
@@ -221,7 +222,7 @@ ggplot.ddPCR <- function(data, mapping = NULL,
                          LOQ_label = "LOQ", 
                          xlab = expression(paste(log[10], "(calculated DNA concentration)")),
                          ylab = expression(paste(log[10], "(measured DNA concentration)")),
-                         log_add = 1e-4) {
+                         log_add = 1e-4, ...) {
   dfplot <- data[["plotdata"]]
   maxconc <- max(dfplot$log10Concentration, na.rm = TRUE)
   ggplot(filter(dfplot, .data$log10Theoretical > log10(log_add)), 
