@@ -13,19 +13,19 @@ Depends:
     R (>= 3.5.0)
 Imports:
     DBI,
-    RODBC,
     dplyr,
     ggplot2,
     magrittr,
     odbc,
     purrr,
     readr,
+    RODBC,
     stats,
-    tidyr,
+    tidyr
 Suggests:
     knitr,
     rmarkdown,
     testthat (>= 2.1.0)
 Encoding: UTF-8
-RoxygenNote: 7.2.3
 Language: en-GB
+RoxygenNote: 7.2.3

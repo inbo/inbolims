@@ -1,53 +1,60 @@
-# History files
-.Rhistory
-.Rapp.history
-
-#credentials
-dbcredentials.txt
-figure_html/
-index.html
-platereport.csv
-QC_CHARTS.csv
-test_abi_ascii.txt
-tijdelijk/
-workdir/
-_NOT_GIT_/
-test.csv
-test3.csv
-
-# Session Data files
-.RData
-.RHistory
 
 # Example code in package build process
-*-Ex.R
-
-# Output files from R CMD build
-/*.tar.gz
-
-# Output files from R CMD check
-/*.Rcheck/
-inbolims/.Rbuildignore
-
-# RStudio files
-.Rproj.user/
-
-# produced vignettes
-vignettes/*.html
-vignettes/*.pdf
-inbolims/inst/*.html
-
+# History files
 # OAuth2 token, see https://github.com/hadley/httr/releases/tag/v0.3
-.httr-oauth
-
+# Output files from R CMD build
+# Output files from R CMD check
+# RStudio files
+# Session Data files
+# Temporary files created by R markdown
 # knitr and R markdown default cache directories
+# produced vignettes
+#credentials
+#test output
+*-Ex.R
+*.dbf
+*.doc*
+*.gddoc
+*.gdsheet
+*.gpkg
+*.html
+*.knit.md
+*.mdb
+*.shp*
+*.shx
+*.utf8.md
+*.xls*
+*_files
+.DS_Store
+.RData
+.RHistory
+.Rapp.history
+.Renviron
+.Rhistory
+.Rproj.user
+.Rproj.user/
+.Ruserdata
+.httr-oauth
+/*.Rcheck/
+/*.tar.gz
 /*_cache/
 /cache/
-
-# Temporary files created by R markdown
-*.utf8.md
-*.knit.md
-.Rproj.user
-
-#test output
+QC_CHARTS.csv
+_NOT_GIT_/
+dbcredentials.txt
+docs
+figure_html/
+inbolims/.Rbuildignore
+inbolims/inst/*.html
+index.html
+libs
+output
+platereport.csv
+renv/library
+test.csv
+test3.csv
+test_abi_ascii.txt
 tijdelijk/
+vignettes/*.html
+vignettes/*.pdf
+workdir/
