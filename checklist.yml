@@ -34,3 +34,16 @@ spelling:
   ignore:
   - .github
   - LICENSE.md
+  - inbolims.R
+  - README.md
+  - NEWS.md
+  - R/lims_report.R
+  - R/texture_parsing.R
+  - R/lims_connect.R
+  - R/limsscript_create_archief_labels_bat.R
+  - R/inbolims.R
+  - inst/textuurbatch/textuurvoorbeeld.Rmd
+  - inst/tutorial_report_data.Rmd
+  - inst/voorbeeld_waardenverdeling.Rmd
+  - inst/voorbeeld_data_uit_limsdwh.Rmd
+  
