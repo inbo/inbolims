@@ -3,8 +3,10 @@ Package: inbolims
 Title: Utilities to query the INBO lab analysis datawarehouse
 Version: 0.2.1
 Date: 2022-01-24
-Author: Pieter Verschelde
-Maintainer: Pieter Verschelde<pieter.verschelde@inbo.be>
+Authors@R: 
+    person("Pieter", "Verschelde", , "pieter.verschelde@inbo.be", role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0001-8804-4216", affiliation = "Research Institute for Nature and Forest (INBO)"))
+Maintainer: Pieter Verschelde <pieter.verschelde@inbo.be>
 Description: Some utilities that expand the Lims program in INBO. It
     mainly focuses on post-processing in connection with Quality
     Assurance.
@@ -26,6 +28,10 @@ Suggests:
     knitr,
     rmarkdown,
     testthat (>= 2.1.0)
+VignetteBuilder:
+    knitr
+Config/checklist/communities: inbo
+Config/checklist/keywords: lims; lab results; COA; Certificate of Analysis
 Encoding: UTF-8
-Language: en-GB
+Language: nl-BE
 RoxygenNote: 7.2.3

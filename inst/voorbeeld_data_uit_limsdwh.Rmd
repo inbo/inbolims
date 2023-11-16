@@ -15,7 +15,7 @@ library(inbolims)
 library(tidyverse)
 
 #Haal alle data op
-rapport_data <- lims_report_data(project = c("I-19W001-02"), 
+rapport_data <- lims_report_data(project = c("I-19W001-02"),
                               show_query = TRUE)
 
 #Maak een overzicht met enkel de stalen
@@ -26,7 +26,6 @@ kruistabel <- lims_report_xtab(rapport_data)
 
 #exporteer rapport naar csv
 lims_report_export(kruistabel, path = "test3.csv")
-
 ```
 
 #Werken met basis R commando's

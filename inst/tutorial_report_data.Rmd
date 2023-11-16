@@ -68,7 +68,7 @@ The results are a R `tibble` dataset that can easily viewed using `view`
 
 ```{r basics1, cache = TRUE}
 #haal de rapportgegevens binnen uit de databank
-report_data <- read_lims_data(connection = connection, 
+report_data <- read_lims_data(connection = connection,
                               project = c("I-23W001-02"))
 ```
 
@@ -86,9 +86,9 @@ If you want to get more advanced you can even specify your own query based on th
 
 ```{r basics3, cache = TRUE}
 #haal de rapportgegevens binnen uit de databank
-report_data <- read_lims_data(connection = connection, 
-                               project = c("I-23W001-02"), 
-                               sql_template = "default", 
+report_data <- read_lims_data(connection = connection,
+                               project = c("I-23W001-02"),
+                               sql_template = "default",
                                show_query = FALSE)
 ```
 
@@ -104,12 +104,14 @@ report_data <- read_lims_data(connection = connection,
 ```{r stalen}
 staaloverzicht <- lims_report_samples(report_data)
 view(staaloverzicht)
+```
 
 ## Crosstable
 
 ```{r kruistabel}
 kruistabel <- lims_report_xtab(report_data)
 view(kruistabel)
+```
 
 # Exporting the results
 
@@ -117,15 +119,3 @@ view(kruistabel)
 lims_report_export(kruistabel, path = "test_xtab.csv")
 lims_report_export(report_data, path = "test.csv")
 ```
-
-
-
-```
-
-
-```
-
-
-
-
-

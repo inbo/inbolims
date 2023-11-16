@@ -4,26 +4,30 @@
 \alias{lims_connect}
 \title{Connect to Data warehouse.}
 \usage{
-lims_connect(deployment = "prd", use_RODBC = FALSE, uidpwd = "")
+lims_connect(deployment = "prd", use_rodbc = FALSE, uidpwd = "")
 }
 \arguments{
-\item{deployment}{"prd" betekent uit de productieserver halen, "uat" is enkel voor testen met het datawarehouse op de uat server. De toegangsrechten moeten voor uat via referentiebeheer in windows gedefinieerd zijn}
+\item{deployment}{"prd" betekent uit de productieserver halen,
+"uat" is enkel voor testen met het datawarehouse op de uat server.
+De toegangsrechten moeten voor uat
+via referentiebeheer in windows gedefinieerd zijn}
 
-\item{use_RODBC}{TRUE to use RODBC for the db connection, FALSE for DBI}
+\item{use_rodbc}{TRUE to use RODBC for the db connection, FALSE for DBI}
 
-\item{uidpwd}{connectiesting addendun in de vorm van "uid=user001;pwd=geheim;"}
+\item{uidpwd}{connectiesting addendun in de vorm "uid=user001;pwd=geheim;"}
 }
 \value{
 database connection object
 }
 \description{
-De connectie kan enkel gebeuren via windows authentificatie. Er wordt gebruik gemaakt van DBI::dbConnect en odbc::odbc().
+De connectie kan enkel gebeuren via windows authentificatie.
+Er wordt gebruik gemaakt van DBI::dbConnect en odbc::odbc().
 }
 \examples{
 \dontrun{
 conn <- lims_connect()
 sql <- "select top(10) * from factResult"
-dfResults <- dbGetQuery(conn, sql)
-str(dfResults)
+df_results <- dbGetQuery(conn, sql)
+str(df_results)
 }
 }

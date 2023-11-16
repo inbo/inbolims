@@ -7,7 +7,8 @@
 parse_sql_report_query(template, project)
 }
 \arguments{
-\item{template}{dataset containing the template_information. The structure should be exact as the file shipped with the package}
+\item{template}{dataset containing the template_information.
+The structure should be exact as the file shipped with the package}
 
 \item{project}{character string of projects to filter}
 }

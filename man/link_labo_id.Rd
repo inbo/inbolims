@@ -14,14 +14,14 @@ link_labo_id(
 \arguments{
 \item{conn}{db connectie}
 
-\item{data}{dataset waarvan het labo_id gelinkt moet worden aan het externe id}
+\item{data}{dataset waarvan het labo_id gelinkt moet worden aan het extern id}
 
 \item{labo_id_col}{naam van de kolom die het labo_id bevat}
 
 \item{extern_id_col}{naam van de kolom waar je het externe id in wil}
 }
 \value{
-dezelfde dataset maar met een extra kolom die het externe staalid bevat
+dezelfde dataset met een extra kolom die het extern staalid bevat
 }
 \description{
 Link het labo_id met het externe id

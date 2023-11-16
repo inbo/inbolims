@@ -17,7 +17,7 @@ required:
 - repository secret
 - spelling
 spelling:
-  default: en-GB
+  default: nl-BE
   ignore:
   - .github
   - LICENSE.md

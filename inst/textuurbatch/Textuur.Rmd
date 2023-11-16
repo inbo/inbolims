@@ -47,7 +47,8 @@ library(inbolims) #package die de verwerking van de tekstuurfiles regelt
 library(DBI) #package voor DB communicatie
 
 #definieer het path naar de resultatenfile
-filename <- system.file("extdata", "textuur_export_voorbeeld.txt", package = "inbolims")
+filename <- system.file("extdata", "textuur_export_voorbeeld.txt",
+                        package = "inbolims")
 
 #definieer de directory voor de geparste bestandjes
 target_dir <- "resultaatfiles"
@@ -65,6 +66,5 @@ textuur_linked <- link_labo_id(conn, textuur_interpreted)
 
 #schrijf de files weg
 write_texture_files(target_dir, textuur_linked)
-
 ```
 

@@ -7,7 +7,8 @@
 get_report_config_info(template = "default")
 }
 \arguments{
-\item{template}{a character vector of templates you want info from. If "all" then all templates are shown}
+\item{template}{a character vector of templates you want info from.
+If "all" then all templates are shown}
 }
 \value{
 dataset wih report template information

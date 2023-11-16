@@ -2,38 +2,7 @@
 % Please edit documentation in R/lims_report.R
 \name{lims_report_export}
 \alias{lims_report_export}
-\title{#' Maak kruistabel van de ingelezen rapportdata
-#'
-#' @param reportdata data verkregen uit de functie lims_report_data
-#' @return kruistabel met resultaten
-#' @export
-#' @importFrom dplyr mutate 
-#' @importFrom tidyr pivot_wider
-lims_report_xtab <- function(reportdata) {
-  sampledata <- lims_report_samples(reportdata)
-  xtab <- reportdata %>% 
-    tidyr::pivot_wider(id_cols = .data$OrigineelStaal, 
-                names_from = .data$resultaatcode, 
-                values_from = .data$WaardeRuw)
-  xtab <- sampledata %>% 
-    inner_join(xtab, by = "OrigineelStaal" )
-  
-  for (i in 16:ncol(xtab)) {
-    #print(i)
-    results <- xtab[,i, drop = TRUE]
-    results <- ifelse(results %in% c("OFL", "NA"), NA, results)
-    nas <- sum(is.na(results))
-    suppressWarnings(new <- as.numeric(xtab[,i, drop = TRUE]))
-    newnas <- sum(is.na(new))
-    if (newnas == nas) {
-      xtab[,i] <- new
-    }
-  }
-  
-  xtab # %>%  
-    #select()
-}
-Kruistabel naar csv wegschtrijven met toevoeging header}
+\title{Kruistabel naar csv wegschtrijven met toevoeging header}
 \usage{
 lims_report_export(data, path)
 }
@@ -46,36 +15,5 @@ lims_report_export(data, path)
 csv file
 }
 \description{
-#' Maak kruistabel van de ingelezen rapportdata
-#'
-#' @param reportdata data verkregen uit de functie lims_report_data
-#' @return kruistabel met resultaten
-#' @export
-#' @importFrom dplyr mutate 
-#' @importFrom tidyr pivot_wider
-lims_report_xtab <- function(reportdata) {
-  sampledata <- lims_report_samples(reportdata)
-  xtab <- reportdata %>% 
-    tidyr::pivot_wider(id_cols = .data$OrigineelStaal, 
-                names_from = .data$resultaatcode, 
-                values_from = .data$WaardeRuw)
-  xtab <- sampledata %>% 
-    inner_join(xtab, by = "OrigineelStaal" )
-  
-  for (i in 16:ncol(xtab)) {
-    #print(i)
-    results <- xtab[,i, drop = TRUE]
-    results <- ifelse(results %in% c("OFL", "NA"), NA, results)
-    nas <- sum(is.na(results))
-    suppressWarnings(new <- as.numeric(xtab[,i, drop = TRUE]))
-    newnas <- sum(is.na(new))
-    if (newnas == nas) {
-      xtab[,i] <- new
-    }
-  }
-  
-  xtab # %>%  
-    #select()
-}
 Kruistabel naar csv wegschtrijven met toevoeging header
 }

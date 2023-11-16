@@ -7,7 +7,8 @@
 get_available_report_fields()
 }
 \value{
-dataset containing 2 colums: the name of a field in the database and the corresponding description
+dataset containing 2 colums: the name of a field in the database
+and the corresponding description
 }
 \description{
 Show available fields

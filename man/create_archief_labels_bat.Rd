@@ -2,31 +2,39 @@
 % Please edit documentation in R/limsscript_create_archief_labels_bat.R
 \name{create_archief_labels_bat}
 \alias{create_archief_labels_bat}
-\title{Creëer het .bat bestand waarin R de opdracht krijgt de archieflabels Access DB in te vullen}
+\title{Creëer het .bat bestand waarin R de opdracht krijgt
+de archieflabels Access DB in te vullen}
 \usage{
-create_archief_labels_bat(bat_file, db_location, R_location, Rscript_location)
+create_archief_labels_bat(bat_file, db_location, r_location, r_script_location)
 }
 \arguments{
 \item{bat_file}{the name including path where the .bat file should be created}
 
-\item{db_location}{the name including path to the database for the printable raport}
+\item{db_location}{the name including path to the database
+for the printable raport}
 
-\item{R_location}{the path to the R-32 bit version.  (paste0(R.home, "/bin/i386/Rscript.exe")) is often OK}
+\item{r_location}{the path to the R-32 bit version.
+(paste0(R.home, "/bin/i386/Rscript.exe")) is often OK}
 
-\item{Rscript_location}{the name including path where the .R script is that the .bat file will execute}
+\item{r_script_location}{the name including path where the .R script is
+that the .bat file will execute}
 }
 \value{
-in het gekozen Access bestand wordt de tabel tblTemp ingevuld. De View QueryEtikettenPieter zal deze data dan aanspreken en als bron dienen voor een voorgedefinieerd Access rapportje.
+in het gekozen Access bestand wordt de tabel tblTemp ingevuld.
+De View QueryEtikettenPieter zal deze data dan aanspreken en als bron dienen
+voor een voorgedefinieerd Access rapportje.
 }
 \description{
-Creëer het .bat bestand waarin R de opdracht krijgt de archieflabels Access DB in te vullen
+Creëer het .bat bestand waarin R de opdracht krijgt
+de archieflabels Access DB in te vullen
 }
 \examples{
 \dontrun{
-db_locatie <- system.file("extdata", "Archief_Labels_voorbeeldDB.accdb", package = "inbolims")
-R_locatie <- paste0(R.home, "/bin/i386/Rscript.exe")
+db_locatie <- system.file("extdata", "Archief_Labels_voorbeeldDB.accdb",
+                          package = "inbolims")
+r_locatie <- paste0(R.home, "/bin/i386/Rscript.exe")
 bat_bestand <- "Archieflabels.bat"
-Rscript <- system.file("extdata", "Archief_Labels.R", package = "inbolims")
-create_archief_labels_bat(bat_bestand, db_locatie, R_locatie, Rscript)
+r_script <- system.file("extdata", "Archief_Labels.R", package = "inbolims")
+create_archief_labels_bat(bat_bestand, db_locatie, r_locatie, r_script)
 }
 }

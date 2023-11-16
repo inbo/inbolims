@@ -22,18 +22,36 @@ read_lims_data(
 
 \item{sql_template}{indien "default" wordt de standaardquery uitgevoerd}
 
-\item{show_query}{indien TRUE toon de query op het scherm net voordat deze uitgevoerd wordt, je kan deze eventueel kopiëren en aanpassen en doorgeven aan custom_sql_query}
+\item{show_query}{indien TRUE toon de query op het scherm
+net voordat deze uitgevoerd wordt,
+je kan deze eventueel kopiëren en aanpassen en doorgeven aan custom_sql_query}
 
-\item{custom_fields}{charactervector die controleert welke veldnamen je in de output ziet. De velden ORIGINAL_SAMPLE, ANALYSIS, COMPONENT en ENTRY worden altijd standaard meegeleverd. Via de functie get_available_report_fields kan je alle namen van de velden zien.}
+\item{custom_fields}{charactervector die controleert
+welke veldnamen je in de output ziet.
+De velden ORIGINAL_SAMPLE, ANALYSIS, COMPONENT en ENTRY
+worden altijd standaard meegeleverd.
+Via de functie get_available_report_fields kan je alle namen
+van de velden zien.}
 
-\item{custom_where_clause}{custom SQL where clause dat geplakt wordt aan "where PROJECT in ('project_x')", dus een where clause dat je specificeerd als " ResultNumeric > 0 OR ResultNumeric < 100, zal vertaald worden naar de sql where clause: "where PROJECT in ('project_x') AND (ResultNumeric > 0 OR ResultNumeric < 100)"}
+\item{custom_where_clause}{custom SQL where clause dat geplakt wordt aan
+"where PROJECT in ('project_x')",
+dus een where clause dat je specificeerd als
+" ResultNumeric > 0 OR ResultNumeric < 100,
+zal vertaald worden naar de sql where clause:
+"where PROJECT in ('project_x')
+AND (ResultNumeric > 0 OR ResultNumeric < 100)"}
 
-\item{custom_sql_query}{geldige Sql Query bruikbaar voor de connectie. Indien dit veld actief is, wordt sql_template, custom_fields en custom_where_clause genegeerd}
+\item{custom_sql_query}{geldige Sql Query bruikbaar voor de connectie.
+Indien dit veld actief is, wordt sql_template,
+custom_fields en custom_where_clause genegeerd}
 
-\item{deployment}{default "prd", "uat" indien op de ontwikkelomgeving gewerkt wordt. Voorlopig is enkel "prd" actief ondersteund}
+\item{deployment}{default "prd", "uat" indien op de ontwikkelomgeving
+gewerkt wordt.
+Voorlopig is enkel "prd" actief ondersteund}
 }
 \value{
-data.frame met minstens de velden ORIGINAL_SAMPLE, ANALYSIS, COMPONENT en ENTRY
+data.frame met minstens de velden ORIGINAL_SAMPLE,
+ANALYSIS, COMPONENT en ENTRY
 }
 \description{
 Haal rapportdata uit LIMS DWH
