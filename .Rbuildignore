@@ -8,6 +8,7 @@
 ^\.httr-oauth$
 ^\.zenodo\.json$
 ^_pkgdown.yml$
+^_pkgdown\.yml$
 ^checklist.yml$
 ^codecov\.yml$
 ^data-raw$
@@ -15,4 +16,3 @@
 ^man-roxygen$
 ^pkgdown$
 tijdelijk
-^_pkgdown\.yml$

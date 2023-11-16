@@ -24,5 +24,5 @@ abstract: Some utilities that expand the Lims program in INBO. It mainly focuses
   post-processing in connection with Quality Assurance.
 identifiers:
 - type: url
-  value: []
-version: 0.2.4
+  value: https://inbo.github.io/inbolims/
+version: 0.2.5
