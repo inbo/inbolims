@@ -351,7 +351,7 @@ lims_report_export <- function(data, path) {
 #' @param data lims report data (from lims_report_data)
 #' @param plot logical if values are to be put in a graph
 #' @param log when plot, use the log-scale?
-#' @importFrom ggplot2 scale_y_log10 geom_boxplot facet_wrap
+#' @importFrom ggplot2 scale_y_log10 geom_boxplot facet_wrap ggplot aes
 #' @importFrom stats quantile
 #'
 #' @return list with measured parameters and some base statistics
