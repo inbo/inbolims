@@ -1,3 +1,16 @@
+---
+output: github_document
+---
+
+<!-- badges: start -->
+[![Project Status: The project has reached a stable, usable state and is
+being actively
+developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
+![GitHub](https://img.shields.io/github/license/inbo/protocolhelper)
+[![R build
+status](https://github.com/inbo/protocolhelper/workflows/check%20package%20on%20main/badge.svg)](https://github.com/inbo/protocolhelper/actions)
+[![codecov](https://codecov.io/gh/inbo/protocolhelper/branch/main/graph/badge.svg?token=6W8WRNAZPA)](https://app.codecov.io/gh/inbo/protocolhelper)
+<!-- badges: end --> 
 
 # Beschrijving
 

@@ -5,7 +5,7 @@ authors:
 - given-names: Pieter
   family-names: Verschelde
   affiliation: Research Institute for Nature and Forest (INBO)
-  orcid: 0000-0001-8804-4216
+  orcid: 0000-0002-9199-421X
 keywords:
 - lims
 - lab results
@@ -15,9 +15,9 @@ contact:
 - given-names: Pieter
   family-names: Verschelde
   affiliation: Research Institute for Nature and Forest (INBO)
-  orcid: 0000-0001-8804-4216
+  orcid: 0000-0002-9199-421X
 doi: ~
-license: MIT
+license: GPL-3.0
 repository-code: https://github.com/inbo/inbolims/
 type: software
 abstract: Some utilities that expand the Lims program in INBO. It mainly focuses on
@@ -25,4 +25,4 @@ abstract: Some utilities that expand the Lims program in INBO. It mainly focuses
 identifiers:
 - type: url
   value: []
-version: 0.2.1
+version: 0.2.4
