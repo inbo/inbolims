@@ -7,13 +7,13 @@ Authors@R:
     person("Pieter", "Verschelde", , "pieter.verschelde@inbo.be", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-9199-421X", affiliation = "Research Institute for Nature and Forest (INBO)"))
 Maintainer: Pieter Verschelde <pieter.verschelde@inbo.be>
-Description: Some utilities that expand the Lims program in INBO. It
+Description: Some utilities that expand the Lims program in INBO.  It
     mainly focuses on post-processing in connection with Quality
     Assurance.
 License: GPL-3
 URL: https://github.com/inbo/inbolims, https://inbo.github.io/inbolims/
 BugReports: https://github.com/inbo/inbolims/issues
-Depends: 
+Depends:
     R (>= 3.5.0)
 Imports:
     DBI,
