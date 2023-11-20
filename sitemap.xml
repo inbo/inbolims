@@ -28,19 +28,10 @@
     <loc>https://inbo.github.io/inbolims/reference/date_as_text.html</loc>
   </url>
   <url>
-    <loc>https://inbo.github.io/inbolims/reference/ddPCR_calculate_fit.html</loc>
-  </url>
-  <url>
-    <loc>https://inbo.github.io/inbolims/reference/ddPCR_qc_calc.html</loc>
-  </url>
-  <url>
     <loc>https://inbo.github.io/inbolims/reference/get_available_report_fields.html</loc>
   </url>
   <url>
     <loc>https://inbo.github.io/inbolims/reference/get_report_config_info.html</loc>
-  </url>
-  <url>
-    <loc>https://inbo.github.io/inbolims/reference/ggplot.ddPCR.html</loc>
   </url>
   <url>
     <loc>https://inbo.github.io/inbolims/reference/inbolims.html</loc>
@@ -67,6 +58,9 @@
     <loc>https://inbo.github.io/inbolims/reference/lims_report_xtab.html</loc>
   </url>
   <url>
+    <loc>https://inbo.github.io/inbolims/reference/lims_report_xtab_old.html</loc>
+  </url>
+  <url>
     <loc>https://inbo.github.io/inbolims/reference/link_labo_id.html</loc>
   </url>
   <url>
@@ -77,9 +71,6 @@
   </url>
   <url>
     <loc>https://inbo.github.io/inbolims/reference/read_lims_data.html</loc>
-  </url>
-  <url>
-    <loc>https://inbo.github.io/inbolims/reference/summary.ddPCR.html</loc>
   </url>
   <url>
     <loc>https://inbo.github.io/inbolims/reference/write_texture_files.html</loc>
