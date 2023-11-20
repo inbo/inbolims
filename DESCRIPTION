@@ -25,7 +25,8 @@ Imports:
     readr,
     RODBC,
     stats,
-    tidyr
+    tidyr,
+    tidyverse
 Suggests:
     knitr,
     rmarkdown,

@@ -14,10 +14,6 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r setup}
-library(inbolims)
-```
-
 # Beschrijving
 
 R scripts om de in LIMS bewaarde gegevens van het INBO op te halen. Dit werkt enkel binnen het netwerk van het instituut of indien verbonden via vpn met het netwerk.
@@ -37,7 +33,6 @@ Daarnaast zijn er ook nog enkele andere voorzieningen toegevoegd zoals inlezen v
 Iedere keer R opnieuw opgestart wordt zal je de inbolims library moeten laden
 
 ```{r}
-library(tidyverse)
 library(inbolims)
 ```
 
@@ -64,7 +59,7 @@ Om een overzicht van de stalen te hebben van de ingelezen rapport_data.
 
 ```{r}
 staaloverzicht <- lims_report_samples(rapport_data)
-view(staaloverzicht)
+head(staaloverzicht)
 ```
 
 Op dit moment vereist bovenstaande routine nog heel wat velden, daarom dat dit enkel gegarandeerd is te werken met de *default* `sql_template`.
@@ -75,7 +70,7 @@ Het formaat van `rapport_data` is in een lang dataformaat, waarbij ieder resulta
 
 ```{r}
 kruistabel <- lims_report_xtab(rapport_data)
-View(kruistabel)
+head(kruistabel)
 ```
 
 ### Exporteren
