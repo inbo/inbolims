@@ -52,6 +52,7 @@ output
 platereport.csv
 renv/library
 test.csv
+test_xtab.csv
 test3.csv
 test_abi_ascii.txt
 tijdelijk/
