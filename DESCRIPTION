@@ -1,7 +1,7 @@
 Type: Package
 Package: inbolims
 Title: Utilities to query the INBO lab analysis datawarehouse
-Version: 0.2.6
+Version: 0.2.7
 Date: 2023-11-16
 Authors@R: 
     person("Pieter", "Verschelde", , "pieter.verschelde@inbo.be", role = c("aut", "cre"),
@@ -30,6 +30,8 @@ Suggests:
     knitr,
     rmarkdown,
     testthat (>= 2.1.0)
+VignetteBuilder: 
+    knitr
 Config/checklist/communities: inbo
 Config/checklist/keywords: lims; lab results; COA; Certificate of Analysis
 Encoding: UTF-8
