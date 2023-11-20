@@ -106,7 +106,7 @@ Het formaat van `rapport_data` is in een lang dataformaat, waarbij ieder resulta
 
 ````
 kruistabel <- lims_report_xtab(rapport_data)
-view(kruistabel)
+View(kruistabel)
 
 ```` 
 
@@ -137,9 +137,10 @@ filename <- system.file("extdata", "textuur_export_voorbeeld.txt", package = "in
 
 #definieer de directory voor de geparste bestandjes
 target_dir <- "tijdelijk"
+system2("mkdir", target_dir)
 
 #parse de file naar een geldige R dataset
-textuur_parsed <- parse_texture_content(file, delim = "\t")
+textuur_parsed <- parse_texture_content(filename, delim = "\t")
 
 #interpreteer de dataset tot een inhoudelijk bruikbaar formaat
 textuur_interpreted <- interprate_texture_content(textuur_parsed)

@@ -291,7 +291,7 @@ lims_report_samples <- function(reportdata) {
 #' @export
 #' @importFrom dplyr mutate
 #' @importFrom tidyr pivot_wider
-lims_report_xtab <- function(reportdata) {
+lims_report_xtab_old <- function(reportdata) {
    sampledata <- lims_report_samples(reportdata)
    xtab <- reportdata %>%
      tidyr::pivot_wider(id_cols = .data$OrigineelStaal,
