@@ -2,14 +2,31 @@
 output: github_document
 ---
 
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = file.path("man", "figures", "README-"),
+  out.width = "100%"
+)
+```
+
 <!-- badges: start -->
-[![Project Status: The project has reached a stable, usable state and is
-being actively
-developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
+[![Project Status: Concept – Minimal or no implementation has been done yet, or the repository is only intended to be a limited example, demo, or proof-of-concept.](https://www.repostatus.org/badges/latest/concept.svg)](https://www.repostatus.org/#concept)
+[![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
+[![License](https://img.shields.io/badge/license-GPL--3-blue.svg?style=flat)](https://www.gnu.org/licenses/gpl-3.0.html)
+[![Release](https://img.shields.io/github/release/inbo/inbolims.svg)](https://github.com/inbo/inbolims/releases)
 ![GitHub](https://img.shields.io/github/license/inbo/inbolims)
-[![R build
-status](https://github.com/inbo/inbolims/workflows/check%20package%20on%20main/badge.svg)](https://github.com/inbo/inbolims/actions)
-<!-- badges: end --> 
+[![R build status](https://github.com/inbo/inbolims/workflows/check%20package%20on%20main/badge.svg)](https://github.com/inbo/inbolims/actions)
+![r-universe name](https://inbo.r-universe.dev/badges/:name?color=c04384)
+![r-universe package](https://inbo.r-universe.dev/badges/inbolims)
+[![Codecov test coverage](https://codecov.io/gh/inbo/inbolims/branch/main/graph/badge.svg)](https://app.codecov.io/gh/inbo/inbolims?branch=main)
+![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/inbo/inbolims.svg)
+![GitHub repo size](https://img.shields.io/github/repo-size/inbo/inbolims.svg)
+<!-- badges: end -->
+
 
 # Beschrijving
 
@@ -89,7 +106,7 @@ Het formaat van `rapport_data` is in een lang dataformaat, waarbij ieder resulta
 
 ````
 kruistabel <- lims_report_xtab(rapport_data)
-view(kruistabel)
+View(kruistabel)
 
 ```` 
 
@@ -120,9 +137,10 @@ filename <- system.file("extdata", "textuur_export_voorbeeld.txt", package = "in
 
 #definieer de directory voor de geparste bestandjes
 target_dir <- "tijdelijk"
+system2("mkdir", target_dir)
 
 #parse de file naar een geldige R dataset
-textuur_parsed <- parse_texture_content(file, delim = "\t")
+textuur_parsed <- parse_texture_content(filename, delim = "\t")
 
 #interpreteer de dataset tot een inhoudelijk bruikbaar formaat
 textuur_interpreted <- interprate_texture_content(textuur_parsed)

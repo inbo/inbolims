@@ -67,7 +67,11 @@ lims_connect <- function(deployment = "prd", use_rodbc = FALSE, uidpwd = "") {
         connection = cstr
       )
     }
-    if (!inherits(con, "RODBC")) print("Connectie niet gelukt. Ben je op het INBO netwerk of via VPN verbonden? Contacteer de database administrator") #nolint
+    if (!inherits(con, "RODBC")) {
+      print("Connectie niet gelukt. Ben je op het INBO netwerk of via VPN verbonden? Contacteer de database administrator") #nolint
+    } else {
+      print("Connectie succesvol")
+    }
   }
   con
 }
