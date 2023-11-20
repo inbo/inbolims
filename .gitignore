@@ -59,3 +59,4 @@ tijdelijk/
 vignettes/*.html
 vignettes/*.pdf
 workdir/
+inst/doc
