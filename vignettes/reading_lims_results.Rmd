@@ -38,7 +38,7 @@ library(inbolims)
 
 De belangrijkste functionaliteit in het script is de connectie met de databank en het ophalen van gegevens van een project. Dit doe je als volgt:
 
-```{r}
+````
 #maak connectie met databank
 connection <- lims_connect()
 
@@ -47,7 +47,7 @@ rapport_data <- read_lims_data(connection = connection,
                                project = c("I-19W001-02"),
                                sql_template = "default",
                                show_query = FALSE)
-```
+````
 Bovenstaande code haalt de data op voor het project I-19W001-02 (project = "I-19W001-02") volgens de standaardtemplate  (template = "default") en de query die gebruikt is om het datawarehouse te bevragen wordt getoond (show_query = TRUE). Als eerste variabele moet de databank connectie opgegeven worden, zodat de routine weet waar de gegevens uit gehaald moeten worden.
 
 ## Afgeleide routines (work in progress)
@@ -57,10 +57,10 @@ Bovenstaande code haalt de data op voor het project I-19W001-02 (project = "I-19
 
 Om een overzicht van de stalen te hebben van de ingelezen rapport_data.
 
-```{r}
+````
 staaloverzicht <- lims_report_samples(rapport_data)
 head(staaloverzicht)
-```
+````
 
 Op dit moment vereist bovenstaande routine nog heel wat velden, daarom dat dit enkel gegarandeerd is te werken met de *default* `sql_template`.
 
@@ -68,18 +68,105 @@ Op dit moment vereist bovenstaande routine nog heel wat velden, daarom dat dit e
 
 Het formaat van `rapport_data` is in een lang dataformaat, waarbij ieder resultaat op een andere regel staat. Vaak is eerder gewenst de resultaten van een staal naast elkaar te zien:
 
-```{r}
+````
 kruistabel <- lims_report_xtab(rapport_data)
 head(kruistabel)
-```
+````
 
 ### Exporteren
 
 Bovenstaande kruistabel kan je gemakkelijk naar een door excel leesbaar csv bestand converteren:
 
-```{r}
+````
 lims_report_export(kruistabel, path = "test_xtab.csv")
 lims_report_export(rapport_data, path = "test.csv")
-```
+````
 Ook hier op dit moment enkel gegarandeerd voor de "default" `sql_template` gebruikt bij `read_lims_data`.
+
+# Geavanceerde datafuncties
+
+## Volledige query tonen
+
+Via het argument `show_query = TRUE` kan je de volledige query zien waarmee de data bevraagd is. Deze query kan je dan gebruiken als basis om je data volledig gecustomiseerd binnen te halen.
+
+````
+connection <- lims_connect()
+rapport_data <- read_lims_data(connection = connection,
+                               project = c("I-19W001-02"),
+                               sql_template = "default",
+                               show_query = TRUE)
+                               
+````
+
+Dit is bijvoorbeeld de query die erachter zit op 23 november 2023.
+
+````
+select  ContractID = c.[Contract],
+Klant = r.[Customer],
+Project = r.[Project],
+VerantwoordelijkLabo = p.[ResponsibleLab],
+LimsStaalNummer = s.[LIMSSampleNumber],
+ExternSampleID = s.[FieldSampleID],
+LaboCode = s.[LabSampleID],
+OrigineelStaal = s.[LIMSOriginalSampleNumber],
+SampleProduct = s.[Product],
+ProductGrade = s.[MatrixDetail],
+SamplingPoint = s.[SamplingPoint],
+Matrix = s.[Matrix],
+Monsternamedatum = s.[FieldSamplingDate],
+Monsternemer = s.[FieldObserver],
+Toestand = s.[SampleCondition],
+VoorbehandelingExtern = s.[SamplePreparation],
+Opmerking = s.[FieldSampleRemark],
+LimsAnalyseNaam = r.[LimsAnalysisName],
+LimsAnalyseVersie = a.[AnalysisVersion],
+SapCode = a.[SAPcode],
+AnalyseNaam = a.[AnalysisLabName],
+Component = r.[Component],
+Gerapporteerd = r.[IsReportable],
+TestReplicaat = r.[TestReplicateCount],
+ResultaatReplicaat = r.[ResultReplicate],
+ResultaatInstrument = r.[Instrument],
+Batch = r.[Batch],
+ResultaatType = r.[ResultType],
+Eenheid = u.[Unit],
+WaardeRuw = r.[Result],
+WaardeGeformatteerd = r.[ResultFormatted],
+WaardeNumeriek = r.[ResultNumeric],
+WaardeNumeriekGeformatteerd = r.[ResultFormattedNumeric],
+BenedenLOQ = r.[isBelowLOQ],
+VisueleMatrix = s.[VisualMatrix],
+Plaat = s.[samplePlate],
+PlaatPositie = s.[SamplePlatePosition],
+ArchiefStaal = s.[IsArchiveSample],
+Xcoord = s.[SampleLambertX],
+Ycoord = s.[SampleLambertY],
+Diepte = s.[SampleDepth],
+Toponiem = s.[SampleToponym],
+StaalStatus = s.[SampleStatus],
+ResultaatStatus = r.[ResultStatus],
+BatchInstrument = b.[BatchInstrument] from  dimSample s 
+left join factResult r on r.SampleKey = s.SampleKey 
+inner join dimProject p on r.ProjectKey = p.ProjectKey 
+inner join dimContract c on r.ContractKey = c.ContractKey 
+inner join dimAnalysis a on r.AnalysisKey = a.AnalysisKey 
+left join dimUnit u on r.UnitKey = u.UnitKey 
+left join dimBatch b on r.BatchKey = b.BatchKey where  r.Project in ('I-19W001-02') AND 
+s.SampleStatus = 'A' AND 
+r.ResultStatus= 'A' AND 
+p.ProjectStatus = 'V' AND 
+r.IsReportable=1
+```` 
+Deze query kan je dan gebruiken om een klassieke databankbevraging te doen als volgt:
+
+````
+rapport_data <- dbGetQuery(connection, querynaam)
+````
+
+## Standaard templates
+
+Er worden ook enkele templates voorzien om te selecteren welke velden je wil ophalen in de data, dan zullen enkel deze velden, alsook enkele verplichte velden opgehaald worden.
+
+
+
 
