@@ -171,6 +171,8 @@ parse_sql_report_query <- function(template, project) {
 #' Maak kruistabel van de ingelezen rapportdata
 #'
 #' @param reportdata data verkregen uit de functie lims_report_data
+#' @param resulttype "formatted" voor de geformatteerde waarde bv <1.20 
+#' of "measured" de originele waarde bv 1.185455 
 #' @return kruistabel met resultaten
 #' @export
 #' @importFrom dplyr mutate
@@ -181,7 +183,8 @@ parse_sql_report_query <- function(template, project) {
 #' long_format <- reportdata <- read_lims_data(conn, project = c("I-19W001-01"))
 #' XTAB_format <- lims_report_xtab(long_format)
 #' }
-lims_report_xtab <- function(reportdata) {
+lims_report_xtab <- function(reportdata, 
+                             resulttype = "measured") {
   sampledata <- lims_report_samples(reportdata)
   reportdata <- reportdata %>%
     dplyr::mutate(COMBI = paste(.data$LimsAnalyseNaam,
@@ -192,12 +195,23 @@ lims_report_xtab <- function(reportdata) {
       ),
       sep = "__"
     ))
-  xtab <- reportdata %>%
-    tidyr::pivot_wider(
-      id_cols = .data$OrigineelStaal,
-      names_from = .data$COMBI,
-      values_from = .data$WaardeRuw
+  
+  if (resulttype == "measured") {
+    xtab <- reportdata %>%
+      tidyr::pivot_wider(
+        id_cols = .data$OrigineelStaal,
+        names_from = .data$COMBI,
+        values_from = .data$WaardeRuw
+      )    
+  } else {
+    xtab <- reportdata %>%
+      tidyr::pivot_wider(
+        id_cols = .data$OrigineelStaal,
+        names_from = .data$COMBI,
+        values_from = .data$WaardeGeformatteerd  
     )
+  }
+
   xtab <- sampledata %>%
     inner_join(xtab, by = "OrigineelStaal")
 
