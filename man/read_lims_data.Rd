@@ -20,7 +20,9 @@ read_lims_data(
 
 \item{project}{charactervector met projectnamen}
 
-\item{sql_template}{indien "default" wordt de standaardquery uitgevoerd}
+\item{sql_template}{indien "default" wordt de standaardquery uitgevoerd, 
+indien "all" worden alle voorziene velden geïmporteerd, 
+bij "minimal" worden enkel de essentiële velden geïmporteerd}
 
 \item{show_query}{indien TRUE toon de query op het scherm
 net voordat deze uitgevoerd wordt,
@@ -59,6 +61,8 @@ Haal rapportdata uit LIMS DWH
 \examples{
 \dontrun{
 conn <- lims_connect()
-reportdata <- read_lims_data(conn, project = c("I-19W001-01"))
+reportdata <- read_lims_data(conn,
+                             project = c("I-19W001-01"),
+                             sql_template = "default")
 }
 }

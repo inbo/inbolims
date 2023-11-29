@@ -4,10 +4,20 @@
 \alias{lims_report_xtab}
 \title{Maak kruistabel van de ingelezen rapportdata}
 \usage{
-lims_report_xtab(reportdata)
+lims_report_xtab(
+  reportdata,
+  resulttype = "measured",
+  sample_fields = c("Project", "ExternSampleID")
+)
 }
 \arguments{
 \item{reportdata}{data verkregen uit de functie lims_report_data}
+
+\item{resulttype}{"formatted" voor de geformatteerde waarde bv <1.20 
+of "measured" de originele waarde bv 1.185455}
+
+\item{sample_fields}{Vector of sample fields that should appear 
+in the xtab file which are present in the report data}
 }
 \value{
 kruistabel met resultaten
@@ -17,7 +27,8 @@ Maak kruistabel van de ingelezen rapportdata
 }
 \examples{
 \dontrun{
-long_format <- lims_report_data(project = c("I-19W001-01"))
-XTAB_format <- lims_report_xtab(long_format)
+conn <- lims_connect()
+reportdata <- read_lims_data(conn, project = c("I-19W001-01"))
+xtab <- lims_report_xtab(reportdata)
 }
 }

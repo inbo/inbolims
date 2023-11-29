@@ -59,13 +59,67 @@ get_report_config_info <- function(template = "default") {
 }
 
 
+#########################################################################
+
+#' Parse the query based on the template information and the chosen projects
+#'
+#' @param template dataset containing the template_information.
+#' The structure should be exact as the file shipped with the package
+#' @param project character string of projects to filter
+#'
+#' @return SQL server query
+#' @export
+#' #' @examples{
+#' temp <- get_report_config_info(template = "default")
+#' query <- parse_sql_report_query(temp, "I-19W001-01")
+#' query
+#' }
+#'
+parse_sql_report_query <- function(template, project) {
+  projects <- paste0("('", paste(project, collapse = "','"), "')")
+  template <- template %>% arrange(across(starts_with("template")))
+  template <- template %>%
+    rename(template = matches("^template"))
+  
+  
+  fields <- template %>%
+    filter(.data$Type == "select", !is.na(.data$template)) %>%
+    mutate(ss = ifelse(.data$Afkorting != "expr", 
+                       paste0(.data$Veldnaam, " = ",
+                              .data$Afkorting, ".[", .data$Kolom, "]"),
+                       paste0(.data$Veldnaam, " = ",
+                              .data$Kolom)
+                )
+    ) %>%
+    pull(.data$ss) %>%
+    paste(collapse = ",\n")
+  
+  tables <- template %>%
+    filter(.data$Type == "tabel") %>%
+    pull(.data$Kolom) %>%
+    paste(collapse = " \n")
+  
+  filters <- template %>%
+    filter(.data$Type == "filter") %>%
+    mutate(flt = paste0(.data$Afkorting, ".", .data$Kolom)) %>%
+    pull(.data$flt) %>%
+    paste(collapse = " AND \n")
+  filters <- gsub("NA.where 1 = 1 AND", "", filters)
+  filters <- gsub("<<PROJECTEN>>", projects, filters)
+  
+  qry <- paste("select ", fields, "from ", tables, "where ", filters)
+  return(qry)
+}
+
 #################################################
 
 #' Haal rapportdata uit LIMS DWH
 #'
 #' @param connection DBI connection object (see odbc::dbConnect())
 #' @param project charactervector met projectnamen
-#' @param sql_template indien "default" wordt de standaardquery uitgevoerd
+#' @param sql_template indien "default" wordt de standaardquery uitgevoerd, 
+#' indien "all" worden alle voorziene velden geïmporteerd, 
+#' bij "minimal" worden enkel de essentiële velden geïmporteerd
 #' @param show_query indien TRUE toon de query op het scherm
 #' net voordat deze uitgevoerd wordt,
 #' je kan deze eventueel kopiëren en aanpassen en doorgeven aan custom_sql_query
@@ -95,7 +149,9 @@ get_report_config_info <- function(template = "default") {
 #' @examples
 #' \dontrun{
 #' conn <- lims_connect()
-#' reportdata <- read_lims_data(conn, project = c("I-19W001-01"))
+#' reportdata <- read_lims_data(conn,
+#'                              project = c("I-19W001-01"),
+#'                              sql_template = "default")
 #' }
 read_lims_data <- function(connection,
                            project,
@@ -115,7 +171,7 @@ read_lims_data <- function(connection,
     select(.data$Type, .data$Veldnaam, .data$Afkorting, .data$Kolom,
       template = contains(sql_template)
     ) %>%
-    filter(.data$template > 0) %>%
+    filter(!is.na(.data$template), .data$template > 0) %>%
     arrange(.data$template)
 
   sql_query <- parse_sql_report_query(template_information, project)
@@ -126,53 +182,16 @@ read_lims_data <- function(connection,
   rv <- DBI::dbGetQuery(connection, sql_query)
 }
 
-#########################################################################
 
-#' Parse the query based on the template information and the chosen projects
-#'
-#' @param template dataset containing the template_information.
-#' The structure should be exact as the file shipped with the package
-#' @param project character string of projects to filter
-#'
-#' @return SQL server query
-#' @export
-#'
-parse_sql_report_query <- function(template, project) {
-  projects <- paste0("('", paste(project, collapse = "','"), "')")
-  template <- template %>% arrange(.data$template)
-
-  fields <- template %>%
-    filter(.data$Type == "select") %>%
-    mutate(ss = paste0(
-      .data$Veldnaam, " = ",
-      .data$Afkorting, ".[", .data$Kolom, "]"
-    )) %>%
-    pull(.data$ss) %>%
-    paste(collapse = ",\n")
-
-  tables <- template %>%
-    filter(.data$Type == "tabel") %>%
-    pull(.data$Kolom) %>%
-    paste(collapse = " \n")
-
-  filters <- template %>%
-    filter(.data$Type == "filter") %>%
-    mutate(flt = paste0(.data$Afkorting, ".", .data$Kolom)) %>%
-    pull(.data$flt) %>%
-    paste(collapse = " AND \n")
-  filters <- gsub("NA.where 1 = 1 AND", "", filters)
-  filters <- gsub("<<PROJECTEN>>", projects, filters)
-
-  qry <- paste("select ", fields, "from ", tables, "where ", filters)
-  return(qry)
-}
-
+##############################################################################
 
 #' Maak kruistabel van de ingelezen rapportdata
 #'
 #' @param reportdata data verkregen uit de functie lims_report_data
 #' @param resulttype "formatted" voor de geformatteerde waarde bv <1.20 
 #' of "measured" de originele waarde bv 1.185455 
+#' @param sample_fields Vector of sample fields that should appear 
+#' in the xtab file which are present in the report data
 #' @return kruistabel met resultaten
 #' @export
 #' @importFrom dplyr mutate
@@ -180,44 +199,48 @@ parse_sql_report_query <- function(template, project) {
 #' @examples
 #' \dontrun{
 #' conn <- lims_connect()
-#' long_format <- reportdata <- read_lims_data(conn, project = c("I-19W001-01"))
-#' XTAB_format <- lims_report_xtab(long_format)
+#' reportdata <- read_lims_data(conn, project = c("I-19W001-01"))
+#' xtab <- lims_report_xtab(reportdata)
 #' }
 lims_report_xtab <- function(reportdata, 
-                             resulttype = "measured") {
-  sampledata <- lims_report_samples(reportdata)
-  reportdata <- reportdata %>%
-    dplyr::mutate(COMBI = paste(.data$LimsAnalyseNaam,
-      .data$Component,
-      paste(.data$TestReplicaat,
-        .data$ResultaatReplicaat,
-        sep = "."
-      ),
-      sep = "__"
-    ))
+                             resulttype = "measured",
+                             sample_fields = c("Project", "ExternSampleID")) {
+  #sampledata <- lims_report_samples(reportdata)
   
   if (resulttype == "measured") {
     xtab <- reportdata %>%
       tidyr::pivot_wider(
         id_cols = .data$OrigineelStaal,
-        names_from = .data$COMBI,
+        names_from = .data$Sleutel,
         values_from = .data$WaardeRuw
       )    
   } else {
     xtab <- reportdata %>%
       tidyr::pivot_wider(
         id_cols = .data$OrigineelStaal,
-        names_from = .data$COMBI,
+        names_from = .data$Sleutel,
         values_from = .data$WaardeGeformatteerd  
     )
   }
-
-  xtab <- sampledata %>%
+  
+  if (length(sample_fields)) {
+    print("LEN")
+    columns <- c("OrigineelStaal", sample_fields)
+  } else {
+    columns = "OrigineelStaal"
+  }
+  print(sample_fields)
+  print(length(sample_fields))
+  print(columns)
+  sample_info <- reportdata %>% select(all_of(columns)) %>% distinct()
+  
+  xtab <- sample_info %>%
     inner_join(xtab, by = "OrigineelStaal")
 
   xtab
 }
 
+##########################################################################
 
 #' Verkrijg de sample metadata
 #'
