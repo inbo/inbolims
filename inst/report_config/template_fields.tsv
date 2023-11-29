@@ -58,7 +58,7 @@ tabel	ProjectTabel		p	inner join dimProject p on r.ProjectKey = p.ProjectKey	De 
 tabel	ContractTabel		c	inner join dimContract c on r.ContractKey = c.ContractKey	De tabel met de contractinformatie	104
 tabel	AnalyseTabel		a	inner join dimAnalysis a on r.AnalysisKey = a.AnalysisKey	De tabel met de analyseinformatie	105
 tabel	EenheidTabel		u	left join dimUnit u on r.UnitKey = u.UnitKey	De tabel met de eenheiden voor de testen	106
-tabel	Batchtabel		b	left join dimBatch b on r.BatchKey = b.BatchKey	De tabel met de definitie van de batches	107	
+tabel	Batchtabel		b	left join dimBatch b on r.BatchKey = b.BatchKey	De tabel met de definitie van de batches	107
 filter	Project		r	Project in <<PROJECTEN>>	De projecten worden ingevuld op het moment de data ingelezen wordt <<>> werdt vervangen\	152
 filter	StaalGoedgekeurd		s	SampleStatus = 'A'	Enkel geauthoriseerde stalen	153
 filter	ResultaatGoedgekeurd		r	ResultStatus= 'A'	Enkel geauthoriseerde resultaten	154
