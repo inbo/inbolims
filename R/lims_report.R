@@ -177,7 +177,8 @@ parse_sql_report_query <- function(template, project) {
 #' @importFrom tidyr pivot_wider
 #' @examples
 #' \dontrun{
-#' long_format <- lims_report_data(project = c("I-19W001-01"))
+#' conn <- lims_connect()
+#' long_format <- reportdata <- read_lims_data(conn, project = c("I-19W001-01"))
 #' XTAB_format <- lims_report_xtab(long_format)
 #' }
 lims_report_xtab <- function(reportdata) {
@@ -212,7 +213,8 @@ lims_report_xtab <- function(reportdata) {
 #' @export
 #' @examples
 #' \dontrun{
-#' reportdata <- lims_report_data(project = c("I-19W001-01"))
+#' conn <- lims_connect()
+#' reportdata <- read_lims_data(conn, project = c("I-19W001-01"))
 #' sampledata <- lims_report_samples(reportdata)
 #' }
 #'
@@ -282,35 +284,6 @@ lims_report_samples <- function(reportdata) {
     arrange(.data$Project, .data$ExternSampleID)
 
   df_samples
-}
-
-#' Maak kruistabel van de ingelezen rapportdata
-#'
-#' @param reportdata data verkregen uit de functie lims_report_data
-#' @return kruistabel met resultaten
-#' @export
-#' @importFrom dplyr mutate
-#' @importFrom tidyr pivot_wider
-lims_report_xtab_old <- function(reportdata) {
-   sampledata <- lims_report_samples(reportdata)
-   xtab <- reportdata %>%
-     tidyr::pivot_wider(id_cols = .data$OrigineelStaal,
-                 names_from = .data$resultaatcode,
-                 values_from = .data$WaardeRuw)
-   xtab <- sampledata %>%
-     inner_join(xtab, by = "OrigineelStaal")
-
-   for (i in 16:ncol(xtab)) {
-     results <- xtab[, i, drop = TRUE]
-     results <- ifelse(results %in% c("OFL", "NA"), NA, results)
-     nas <- sum(is.na(results))
-     suppressWarnings(new <- as.numeric(xtab[, i, drop = TRUE]))
-     newnas <- sum(is.na(new))
-     if (newnas == nas) {
-       xtab[, i] <- new
-     }
-   }
-   xtab
 }
 
 #' Kruistabel naar csv wegschtrijven met toevoeging header
