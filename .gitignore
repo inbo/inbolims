@@ -24,6 +24,7 @@
 *.shx
 *.utf8.md
 *.xls*
+*.RDS
 *_files
 .DS_Store
 .RData

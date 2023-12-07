@@ -1,14 +1,14 @@
 Type	Veldnaam	Tabel	Afkorting	Kolom	Beschrijving	template:all	template:default	template:minimal
-select	Sleutel	factResult	expr	concat(r.LimsAnalysisName, '__', r.Component, '__', r.TestReplicateCount, '__', r.ResultReplicate)		1	1	1
-select	OrigineelStaal	dimSample	s	LIMSOriginalSampleNumber	Belangrijk: De code waar alle resultaten van een staal in tercht komen	2	2	2
-select	Project	factResult	r	Project	Projectnaam	3	3	3
-select	ContractID	dimContract	c	Contract	Contractnaam	4	4	
-select	Klant	factResult	r	Customer	Identificatie van de klant	5	5	
-select	VerantwoordelijkLabo	dimProject	p	ResponsibleLab	Labo verantwoordelijk voor de uitvoering of management met externen	6	6	
-select	LaboLimsGroep	dimProject	p	ProjectGroupName	Veiligheidsgroep voor het LIMS systeem	7		
-select	LimsStaalNummer	dimSample	s	LIMSSampleNumber	VERPLICHT BEHOUDEN: Intern staalnummer van het LIMS systeem	8	7	
-select	ExternSampleID	dimSample	s	FieldSampleID	Veldcode voor een staal die de klant meegeeft aan het labo	9	8	4
-select	LaboCode	dimSample	s	LabSampleID	De interne labocode van het staal	10	9	
+select	Sleutel	factResult	expr	concat(r.LimsAnalysisName, '__', r.Component, '__', r.TestReplicateCount, '__', r.ResultReplicate)	VERPLICHT	1	1	1
+select	LimsStaalNummer	dimSample	s	LIMSSampleNumber	VERPLICHT BEHOUDEN: Intern staalnummer van het LIMS systeem	2	2	2
+select	OrigineelStaal	dimSample	s	LIMSOriginalSampleNumber	VERPLICHT: De code waar alle resultaten van een staal in tercht komen	3	3	3
+select	Project	factResult	r	Project	VERPLICHT: Projectnaam	4	4	4
+select	LaboCode	dimSample	s	LabSampleID	De interne labocode van het staal	5	5	5
+select	ContractID	dimContract	c	Contract	Contractnaam	6	6	
+select	Klant	factResult	r	Customer	Identificatie van de klant	7	7	
+select	VerantwoordelijkLabo	dimProject	p	ResponsibleLab	Labo verantwoordelijk voor de uitvoering of management met externen	8	8	
+select	LaboLimsGroep	dimProject	p	ProjectGroupName	Veiligheidsgroep voor het LIMS systeem	9		
+select	ExternSampleID	dimSample	s	FieldSampleID	Veldcode voor een staal die de klant meegeeft aan het labo	10	9	6
 select	SampleProduct	dimSample	s	Product	Product zoals gedefinieerd in het LIMS	11	10	
 select	ProductGrade	dimSample	s	MatrixDetail	Detailomschrijving staal	12	11	
 select	SamplingPoint	dimSample	s	SamplingPoint	Extra omschrijving staal	13	12	
@@ -18,11 +18,11 @@ select	Monsternemer	dimSample	s	FieldObserver	Wie heeft het staal genomen in het
 select	Toestand	dimSample	s	SampleCondition	Toestand van het staal (vooral homogeniteit)	17	16	
 select	VoorbehandelingExtern	dimSample	s	SamplePreparation	Hoe is het staal extern voorbehandeld voor het in het labo terecht kwam	18	17	
 select	Opmerking	dimSample	s	FieldSampleRemark	Opmerking van het labo over het staal  	19	18	
-select	LimsAnalyseNaam	factResult	r	LimsAnalysisName	Interne analysenaam in het LIMS systeem	20	19	5
+select	LimsAnalyseNaam	factResult	r	LimsAnalysisName	Interne analysenaam in het LIMS systeem	20	19	7
 select	LimsAnalyseVersie	dimAnalysis	a	AnalysisVersion	Analyseversie waarmee het staal is verwerkt	21	20	
 select	SapCode	dimAnalysis	a	SAPcode	Verwijzing naar het analysesprotocol	22	21	
 select	AnalyseNaam	dimAnalysis	a	AnalysisLabName	Analysenaam voor de wetenschappers	23	22	
-select	Component	factResult	r	Component	Componentnaam van het resultaat	24	23	6
+select	Component	factResult	r	Component	Componentnaam van het resultaat	24	23	8
 select	Gerapporteerd	factResult	r	IsReportable	Is het staal geschikt voor rapportage?	25	24	
 select	TestReplicaat	factResult	r	TestReplicateCount	Hoeveelste replicate voor deze test is dit voor dit staal?	26	25	
 select	ResultaatReplicaat	factResult	r	ResultReplicate	Hoeveelste replicate voor de individuele component is dit?	27	26	
@@ -32,12 +32,12 @@ select	Batch	factResult	r	Batch	De batch waarin de test gemeten is	30	28
 select	BatchInstrument	dimBatch	b	BatchInstrument	Het instrument waarmee de batch gemeten is	31	47	
 select	ResultaatType	factResult	r	ResultType	Resultaattype (Numeriek, Tekst, ...)	32	29	
 select	Eenheid	dimUnit	u	Unit	Eenheid van het resultaat	33	30	
-select	WaardeRuw	factResult	r	Result	Ruw resultaat in tekstvorm	34	31	7
-select	WaardeGeformatteerd	factResult	r	ResultFormatted	Geformatteerd resultaat met afrondingen en rekening houden met LOQ	35	32	8
+select	WaardeRuw	factResult	r	Result	Ruw resultaat in tekstvorm	34	31	9
+select	WaardeGeformatteerd	factResult	r	ResultFormatted	Geformatteerd resultaat met afrondingen en rekening houden met LOQ	35	32	10
 select	WaardeNumeriek	factResult	r	ResultNumeric	Numerieke waarde van het resultaat	36	33	
 select	WaardeNumeriekGeformatteerd	factResult	r	ResultFormattedNumeric	Geformatteerde numerieke waarde, indien onder LOQ is dit <LOQ en niet ruwe waarde	37	34	
 select	BinnenSpecs	factResult	r	IsInSpec	Viel het binnen de specificatie van de analyse?	38		
-select	BenedenLOQ	factResult	r	isBelowLOQ	Is het resultaat onder de minimum LOQ?	39	35	9
+select	BenedenLOQ	factResult	r	isBelowLOQ	Is het resultaat onder de minimum LOQ?	39	35	11
 select	BovenMaxLOQ	factResult	r	IsAboveLOQ	Is het resultaat boven de maximum LOQ?	40		
 select	VisueleMatrix	dimSample	s	VisualMatrix	Visuele beoordeling van de matrix door het labo	41	37	
 select	Plaat	dimSample	s	samplePlate	Plaatnaam waar het staal op terecht komt	42	38	

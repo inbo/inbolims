@@ -69,7 +69,7 @@ get_report_config_info <- function(template = "default") {
 #'
 #' @return SQL server query
 #' @export
-#' #' @examples{
+#' @examples{
 #' temp <- get_report_config_info(template = "default")
 #' query <- parse_sql_report_query(temp, "I-19W001-01")
 #' query
@@ -224,14 +224,10 @@ lims_report_xtab <- function(reportdata,
   }
   
   if (length(sample_fields)) {
-    print("LEN")
     columns <- c("OrigineelStaal", sample_fields)
   } else {
     columns = "OrigineelStaal"
   }
-  print(sample_fields)
-  print(length(sample_fields))
-  print(columns)
   sample_info <- reportdata %>% select(all_of(columns)) %>% distinct()
   
   xtab <- sample_info %>%
@@ -256,67 +252,83 @@ lims_report_xtab <- function(reportdata,
 #' }
 #'
 lims_report_samples <- function(reportdata) {
+  
+  columns_present <- c("Project",
+                       "OrigineelStaal",
+                       "ExternSampleID",
+                       "LimsStaalNummer",
+                       "LaboCode") %in% colnames(reportdata) 
+  if (!all(columns_present)) {
+    stop("De kolommen Project, OrigineelStaal, ExternSampleID en LimsStaalNummer
+         moeten minstens aanwezig zijn")
+  } 
+
   df_samples_on_orig <- reportdata %>%
     group_by(.data$Project, .data$OrigineelStaal, .data$ExternSampleID) %>%
     summarize(
-      FirstSample = min(.data$LimsStaalNummer),
-      Aantal_stalen = n_distinct(.data$LimsStaalNummer),
-      Aantal_analyses = n_distinct(.data$LimsAnalyseNaam),
-      Aantal_resultaten = n_distinct(paste0(
-        .data$LimsAnalyseNaam,
-        .data$Component
-      )),
-      .groups = "drop_last"
-    ) %>%
-    ungroup()
+      Hoofdstaal = min(.data$LimsStaalNummer),
+      Aantal_substalen = n_distinct(.data$LimsStaalNummer),
+      .groups = "keep"
+    )
+  
+  if("AnalyseNaam" %in% colnames(reportdata)) {
+    reportdata$Analyse <- reportdata$AnalyseNaam    
+  } else if ("LimsAnalyseNaam" %in% colnames(reportdata)) {
+    reportdata$Analyse <- reportdata$LimsAnalyseNaam  
+  }
+
+  if (all(c("Analyse", "Component") %in% colnames(reportdata))) {
+    df_analyses <- reportdata %>% 
+      group_by(.data$Project, .data$OrigineelStaal, .data$ExternSampleID) %>%
+      summarise(Aantal_analyses = n_distinct(.data$Analyse),
+                Aantal_resultaten = n_distinct(paste0(.data$Analyse,
+                                                      .data$Component)),
+      .groups = "keep") %>%
+      ungroup()     
+    df_samples_on_orig <- df_samples_on_orig %>% left_join(df_analyses)
+  }
 
   df_parent <- reportdata %>%
     select(.data$OrigineelStaal,
-      .data$LimsStaalNummer,
-      HoofdLaboCode = .data$LaboCode
-    ) %>%
+           .data$LimsStaalNummer,
+           HoofdLaboCode = .data$LaboCode) %>%
     filter(.data$OrigineelStaal == .data$LimsStaalNummer) %>%
     distinct(.data$OrigineelStaal, .data$HoofdLaboCode)
 
   df_samples_on_orig <- df_samples_on_orig %>%
     left_join(df_parent, by = "OrigineelStaal")
 
+  groupbycols <- c("OrigineelStaal", "ContractID", "Klant", "Project",
+                   "VerantwoordelijkLabo", "LimsStaalNummer", "ExternSampleID",
+                   "LaboCode", "SampleProduct", "ProductGrade", "Matrix",
+                   "Monsternamedatum", "Monsternemer", "Toestand",
+                   "VoorbehandelingExtern", "Opmerking")
   df_samples_all <- reportdata %>%
-    group_by(
-      .data$OrigineelStaal, .data$ContractID, .data$Klant,
-      .data$Project, .data$VerantwoordelijkLabo,
-      .data$LimsStaalNummer, .data$ExternSampleID,
-      .data$LaboCode, .data$SampleProduct,
-      .data$ProductGrade, .data$Matrix, .data$Monsternamedatum,
-      .data$Monsternemer, .data$Toestand,
-      .data$VoorbehandelingExtern, .data$Opmerking
-    ) %>%
+    group_by(across(all_of(intersect(groupbycols, colnames(.))))) %>%
     summarise(
       Aantal_records = n(),
-      ArchiefStaal = max(.data$ArchiefStaal),
-      Xcoord = max(.data$Xcoord),
-      Ycoord = max(.data$Ycoord),
-      Diepte = max(.data$Diepte),
-      Toponiem = max(.data$Toponiem), .groups = "drop_last"
-    ) %>%
+      ArchiefStaal = if_any(c("ArchiefStaal"), ~ max(.)),
+      Xcoord = if_any(c("Xcoord"), ~ max(.)),
+      Ycoord = if_any(c("Ycoord"), ~ max(.)),
+      Diepte = if_any(c("Diepte"), ~ max(.)),
+      Toponiem = if_any(c("Toponiem"), ~ max(.)),
+      .groups = "drop_last") %>%
     ungroup() %>%
     select(-.data$OrigineelStaal, -.data$ExternSampleID, -.data$Project)
 
+  
+  collist <- c("Project", "OrigineelStaal", "LaboCode",
+               "ExternSampleID", "ProductGrade", "Matrix" ,"Monsternemer",
+               "Monsternamedatum", "Toestand", "VoorbehandelingExtern",
+               "Opmerking", "ArchiefStaal", "Xcoord", "Ycoord", "Diepte",
+               "Toponiem", "Aantal_analyses", "Aantal_resultaten",
+               "Aantal_resultaten")
   df_samples <- df_samples_on_orig %>%
     inner_join(df_samples_all,
-      by = c("FirstSample" = "LimsStaalNummer")
+      by = c("Hoofdstaal" = "LimsStaalNummer")
     ) %>%
     select(
-      .data$Project, .data$OrigineelStaal, .data$HoofdLaboCode,
-      .data$LaboCode, .data$ExternSampleID,
-      .data$ProductGrade, .data$Matrix,
-      .data$Monsternemer, .data$Monsternamedatum, .data$Toestand,
-      .data$VoorbehandelingExtern, .data$Opmerking,
-      .data$ArchiefStaal, .data$Xcoord, .data$Ycoord,
-      .data$Diepte, .data$Toponiem,
-      .data$Aantal_analyses,
-      .data$Aantal_resultaten,
-      .data$Aantal_stalen
+      intersect(collist, colnames(.))
     ) %>%
     arrange(.data$Project, .data$ExternSampleID)
 
@@ -359,9 +371,11 @@ lims_report_export <- function(data, path) {
 #' Title
 #'
 #' @param data lims report data (from lims_report_data)
-#' @param plot logical if values are to be put in a graph
+#' @param plot if NULL no plot is created, if "boxplot" a boxplot is shown,
+#' if "histogram" a histogram
 #' @param log when plot, use the log-scale?
 #' @importFrom ggplot2 scale_y_log10 geom_boxplot facet_wrap ggplot aes
+#' @importFrom ggplot2 element_text element_blank theme xlab rel geom_histogram
 #' @importFrom stats quantile
 #'
 #' @return list with measured parameters and some base statistics
@@ -371,9 +385,14 @@ lims_report_export <- function(data, path) {
 #' \dontrun{
 #' view(lims_measured_parameters(reportdata))
 #' }
-lims_measured_parameters <- function(data, plot = TRUE, log = TRUE) {
+lims_measured_parameters <- function(data, plot = "boxplot", log = TRUE) {
+  cols_to_check <- c("LimsAnalyseNaam", "AnalyseNaam", "Component", "Eenheid")
+  if (!("NumeriekeWaarde" %in% colnames(data))) {
+    data$NumeriekeWaarde <- as.numeric(data$WaardeRuw)
+  }
+  
   rv <- data %>%
-    group_by(.data$AnalyseNaam, .data$Component, .data$Eenheid) %>%
+    group_by(across(all_of(intersect(cols_to_check, colnames(.))))) %>%
     summarise(
       min = min(.data$NumeriekeWaarde, na.rm = TRUE),
       q25 = quantile(.data$NumeriekeWaarde, 0.25, na.rm = TRUE),
@@ -385,10 +404,26 @@ lims_measured_parameters <- function(data, plot = TRUE, log = TRUE) {
       aantalstalen = n_distinct(.data$OrigineelStaal),
       aantalmissend = sum(is.na(.data$NumeriekeWaarde)),
     )
-  if (plot) {
-    ggobj <- ggplot(data, aes(x = .data$Component, y = .data$NumeriekeWaarde)) +
-      geom_boxplot() +
-      facet_wrap(~AnalyseNaam, scales = "free")
+  if (length(plot)) {
+    ggobj <- ggplot(data, 
+                    aes(x = substring(.data$Sleutel, 1, nchar(.data$Sleutel)-6),
+                        y = .data$NumeriekeWaarde))
+      if (plot == "boxplot") {
+        ggobj <- ggobj + geom_boxplot()
+      } else if (plot == "histogram") {
+        ggobj <- ggobj + 
+          geom_histogram(aes(x = .data$NumeriekeWaarde), inherit.aes = FALSE)
+      } else {
+        stop("no valid plot type")
+      }
+      ggobj <- ggobj + 
+        facet_wrap(~substring(.data$Sleutel, 1, nchar(.data$Sleutel)-6),
+                   scales = "free") +
+      xlab("Analysecomponent") +
+      theme(strip.text = element_blank(),
+            axis.text.x = element_text(size = rel(0.8)))
+      if (plot == "histogram") ggobj <- ggobj +
+        theme(strip.text = element_text(size = rel(0.5)))
     if (log) ggobj <- ggobj + scale_y_log10()
     print(ggobj)
   }
