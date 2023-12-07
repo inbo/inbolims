@@ -167,6 +167,22 @@ rapport_data <- dbGetQuery(connection, querynaam)
 
 Er worden ook enkele templates voorzien om te selecteren welke velden je wil ophalen in de data, dan zullen enkel deze velden, alsook enkele verplichte velden opgehaald worden.
 
+```
+rapport_data <- read_lims_data(connection = connection,
+                               project = c("I-19W001-02"),
+                               sql_template = "minimal")
+
+```
+
+# Basisstatistieken
+
+Je kan heel rudimentair een overzicht en overzichtsplot opvragen van de data. Indien je geen plot wenst kan je `plot = NULL` zetten
+
+```
+statistieken <- lims_measured_parameters(rapport_data, plot = "boxplot")
+
+```
+
 
 
 

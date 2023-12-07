@@ -4,12 +4,13 @@
 \alias{lims_measured_parameters}
 \title{Title}
 \usage{
-lims_measured_parameters(data, plot = TRUE, log = TRUE)
+lims_measured_parameters(data, plot = "boxplot", log = TRUE)
 }
 \arguments{
 \item{data}{lims report data (from lims_report_data)}
 
-\item{plot}{logical if values are to be put in a graph}
+\item{plot}{if NULL no plot is created, if "boxplot" a boxplot is shown,
+if "histogram" a histogram}
 
 \item{log}{when plot, use the log-scale?}
 }

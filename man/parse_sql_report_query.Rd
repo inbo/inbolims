@@ -18,3 +18,11 @@ SQL server query
 \description{
 Parse the query based on the template information and the chosen projects
 }
+\examples{
+{
+temp <- get_report_config_info(template = "default")
+query <- parse_sql_report_query(temp, "I-19W001-01")
+query
+}
+
+}
