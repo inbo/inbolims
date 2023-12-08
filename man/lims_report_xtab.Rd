@@ -13,10 +13,10 @@ lims_report_xtab(
 \arguments{
 \item{reportdata}{data verkregen uit de functie lims_report_data}
 
-\item{resulttype}{"formatted" voor de geformatteerde waarde bv <1.20 
+\item{resulttype}{"formatted" voor de geformatteerde waarde bv <1.20
 of "measured" de originele waarde bv 1.185455}
 
-\item{sample_fields}{Vector of sample fields that should appear 
+\item{sample_fields}{Vector of sample fields that should appear
 in the xtab file which are present in the report data}
 }
 \value{

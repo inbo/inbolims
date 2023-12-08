@@ -20,8 +20,8 @@ read_lims_data(
 
 \item{project}{charactervector met projectnamen}
 
-\item{sql_template}{indien "default" wordt de standaardquery uitgevoerd, 
-indien "all" worden alle voorziene velden geïmporteerd, 
+\item{sql_template}{indien "default" wordt de standaardquery uitgevoerd,
+indien "all" worden alle voorziene velden geïmporteerd,
 bij "minimal" worden enkel de essentiële velden geïmporteerd}
 
 \item{show_query}{indien TRUE toon de query op het scherm
