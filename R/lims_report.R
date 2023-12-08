@@ -80,11 +80,10 @@ parse_sql_report_query <- function(template, project) {
   template <- template %>% arrange(across(starts_with("template")))
   template <- template %>%
     rename(template = matches("^template"))
-  
-  
+
   fields <- template %>%
     filter(.data$Type == "select", !is.na(.data$template)) %>%
-    mutate(ss = ifelse(.data$Afkorting != "expr", 
+    mutate(ss = ifelse(.data$Afkorting != "expr",
                        paste0(.data$Veldnaam, " = ",
                               .data$Afkorting, ".[", .data$Kolom, "]"),
                        paste0(.data$Veldnaam, " = ",
@@ -93,12 +92,11 @@ parse_sql_report_query <- function(template, project) {
     ) %>%
     pull(.data$ss) %>%
     paste(collapse = ",\n")
-  
   tables <- template %>%
     filter(.data$Type == "tabel") %>%
     pull(.data$Kolom) %>%
     paste(collapse = " \n")
-  
+
   filters <- template %>%
     filter(.data$Type == "filter") %>%
     mutate(flt = paste0(.data$Afkorting, ".", .data$Kolom)) %>%
@@ -106,7 +104,7 @@ parse_sql_report_query <- function(template, project) {
     paste(collapse = " AND \n")
   filters <- gsub("NA.where 1 = 1 AND", "", filters)
   filters <- gsub("<<PROJECTEN>>", projects, filters)
-  
+
   qry <- paste("select ", fields, "from ", tables, "where ", filters)
   return(qry)
 }
@@ -117,8 +115,8 @@ parse_sql_report_query <- function(template, project) {
 #'
 #' @param connection DBI connection object (see odbc::dbConnect())
 #' @param project charactervector met projectnamen
-#' @param sql_template indien "default" wordt de standaardquery uitgevoerd, 
-#' indien "all" worden alle voorziene velden geïmporteerd, 
+#' @param sql_template indien "default" wordt de standaardquery uitgevoerd,
+#' indien "all" worden alle voorziene velden geïmporteerd,
 #' bij "minimal" worden enkel de essentiële velden geïmporteerd
 #' @param show_query indien TRUE toon de query op het scherm
 #' net voordat deze uitgevoerd wordt,
@@ -188,9 +186,9 @@ read_lims_data <- function(connection,
 #' Maak kruistabel van de ingelezen rapportdata
 #'
 #' @param reportdata data verkregen uit de functie lims_report_data
-#' @param resulttype "formatted" voor de geformatteerde waarde bv <1.20 
-#' of "measured" de originele waarde bv 1.185455 
-#' @param sample_fields Vector of sample fields that should appear 
+#' @param resulttype "formatted" voor de geformatteerde waarde bv <1.20
+#' of "measured" de originele waarde bv 1.185455
+#' @param sample_fields Vector of sample fields that should appear
 #' in the xtab file which are present in the report data
 #' @return kruistabel met resultaten
 #' @export
@@ -202,34 +200,33 @@ read_lims_data <- function(connection,
 #' reportdata <- read_lims_data(conn, project = c("I-19W001-01"))
 #' xtab <- lims_report_xtab(reportdata)
 #' }
-lims_report_xtab <- function(reportdata, 
+lims_report_xtab <- function(reportdata,
                              resulttype = "measured",
                              sample_fields = c("Project", "ExternSampleID")) {
-  #sampledata <- lims_report_samples(reportdata)
-  
+
   if (resulttype == "measured") {
     xtab <- reportdata %>%
       tidyr::pivot_wider(
         id_cols = .data$OrigineelStaal,
         names_from = .data$Sleutel,
         values_from = .data$WaardeRuw
-      )    
+      )
   } else {
     xtab <- reportdata %>%
       tidyr::pivot_wider(
         id_cols = .data$OrigineelStaal,
         names_from = .data$Sleutel,
-        values_from = .data$WaardeGeformatteerd  
+        values_from = .data$WaardeGeformatteerd
     )
   }
-  
+
   if (length(sample_fields)) {
     columns <- c("OrigineelStaal", sample_fields)
   } else {
-    columns = "OrigineelStaal"
+    columns <- "OrigineelStaal"
   }
   sample_info <- reportdata %>% select(all_of(columns)) %>% distinct()
-  
+
   xtab <- sample_info %>%
     inner_join(xtab, by = "OrigineelStaal")
 
@@ -252,16 +249,16 @@ lims_report_xtab <- function(reportdata,
 #' }
 #'
 lims_report_samples <- function(reportdata) {
-  
+
   columns_present <- c("Project",
                        "OrigineelStaal",
                        "ExternSampleID",
                        "LimsStaalNummer",
-                       "LaboCode") %in% colnames(reportdata) 
+                       "LaboCode") %in% colnames(reportdata)
   if (!all(columns_present)) {
     stop("De kolommen Project, OrigineelStaal, ExternSampleID en LimsStaalNummer
          moeten minstens aanwezig zijn")
-  } 
+  }
 
   df_samples_on_orig <- reportdata %>%
     group_by(.data$Project, .data$OrigineelStaal, .data$ExternSampleID) %>%
@@ -270,21 +267,21 @@ lims_report_samples <- function(reportdata) {
       Aantal_substalen = n_distinct(.data$LimsStaalNummer),
       .groups = "keep"
     )
-  
-  if("AnalyseNaam" %in% colnames(reportdata)) {
-    reportdata$Analyse <- reportdata$AnalyseNaam    
+
+  if ("AnalyseNaam" %in% colnames(reportdata)) {
+    reportdata$Analyse <- reportdata$AnalyseNaam
   } else if ("LimsAnalyseNaam" %in% colnames(reportdata)) {
-    reportdata$Analyse <- reportdata$LimsAnalyseNaam  
+    reportdata$Analyse <- reportdata$LimsAnalyseNaa
   }
 
   if (all(c("Analyse", "Component") %in% colnames(reportdata))) {
-    df_analyses <- reportdata %>% 
+    df_analyses <- reportdata %>%
       group_by(.data$Project, .data$OrigineelStaal, .data$ExternSampleID) %>%
       summarise(Aantal_analyses = n_distinct(.data$Analyse),
                 Aantal_resultaten = n_distinct(paste0(.data$Analyse,
                                                       .data$Component)),
       .groups = "keep") %>%
-      ungroup()     
+      ungroup()
     df_samples_on_orig <- df_samples_on_orig %>% left_join(df_analyses)
   }
 
@@ -316,9 +313,8 @@ lims_report_samples <- function(reportdata) {
     ungroup() %>%
     select(-.data$OrigineelStaal, -.data$ExternSampleID, -.data$Project)
 
-  
   collist <- c("Project", "OrigineelStaal", "LaboCode",
-               "ExternSampleID", "ProductGrade", "Matrix" ,"Monsternemer",
+               "ExternSampleID", "ProductGrade", "Matrix", "Monsternemer",
                "Monsternamedatum", "Toestand", "VoorbehandelingExtern",
                "Opmerking", "ArchiefStaal", "Xcoord", "Ycoord", "Diepte",
                "Toponiem", "Aantal_analyses", "Aantal_resultaten",
@@ -390,7 +386,7 @@ lims_measured_parameters <- function(data, plot = "boxplot", log = TRUE) {
   if (!("NumeriekeWaarde" %in% colnames(data))) {
     data$NumeriekeWaarde <- as.numeric(data$WaardeRuw)
   }
-  
+
   rv <- data %>%
     group_by(across(all_of(intersect(cols_to_check, colnames(.))))) %>%
     summarise(
@@ -405,19 +401,20 @@ lims_measured_parameters <- function(data, plot = "boxplot", log = TRUE) {
       aantalmissend = sum(is.na(.data$NumeriekeWaarde)),
     )
   if (length(plot)) {
-    ggobj <- ggplot(data, 
-                    aes(x = substring(.data$Sleutel, 1, nchar(.data$Sleutel)-6),
+    ggobj <- ggplot(data,
+                    aes(x = substring(.data$Sleutel, 1,
+                                      nchar(.data$Sleutel) - 6),
                         y = .data$NumeriekeWaarde))
       if (plot == "boxplot") {
         ggobj <- ggobj + geom_boxplot()
       } else if (plot == "histogram") {
-        ggobj <- ggobj + 
+        ggobj <- ggobj +
           geom_histogram(aes(x = .data$NumeriekeWaarde), inherit.aes = FALSE)
       } else {
         stop("no valid plot type")
       }
-      ggobj <- ggobj + 
-        facet_wrap(~substring(.data$Sleutel, 1, nchar(.data$Sleutel)-6),
+      ggobj <- ggobj +
+        facet_wrap(~substring(.data$Sleutel, 1, nchar(.data$Sleutel) - 6),
                    scales = "free") +
       xlab("Analysecomponent") +
       theme(strip.text = element_blank(),

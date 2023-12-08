@@ -25,4 +25,4 @@ abstract: Some utilities that expand the Lims program in INBO. It mainly focuses
 identifiers:
 - type: url
   value: https://inbo.github.io/inbolims/
-version: 0.2.7
+version: 0.2.9

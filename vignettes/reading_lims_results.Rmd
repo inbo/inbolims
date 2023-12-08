@@ -73,6 +73,8 @@ kruistabel <- lims_report_xtab(rapport_data)
 head(kruistabel)
 ````
 
+Let hierbij wel op het gebruik, want informatie rond het al dan niet rond de detectielimiet te liggen verdwijnt in dit formaat.
+
 ### Exporteren
 
 Bovenstaande kruistabel kan je gemakkelijk naar een door excel leesbaar csv bestand converteren:
