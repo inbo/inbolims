@@ -16,19 +16,22 @@ knitr::opts_chunk$set(
 
 # Beschrijving
 
-R scripts om de in LIMS bewaarde gegevens van het INBO op te halen. Dit werkt enkel binnen het netwerk van het instituut of indien verbonden via vpn met het netwerk.
+Deze vignette omvat de instructies om de in het LIMS bewaarde resultaten op te halen in R. Dit werkt enkel binnen het netwerk van het INBO of indien verbonden via vpn met het netwerk.
 
-Voorlopig zijn er 3 hoofdbrokken in dit pakket:
-
-- Inlezen van rapportagegegevens van het labo uit het LIMS datawarehouse
-- parsen textuurmetingen uit de output van het laserdiffractietoestel 
-- Kwaliteitskenmerken digital droplet PCR voor het genetisch labo
-
-Daarnaast zijn er ook nog enkele andere voorzieningen toegevoegd zoals inlezen van textuurdata en verwerken van gegevens.
 
 # Gegevens uit het LIMS Datawarehouse halen
 
 ## Eerste gebruik
+
+Indien het pakket nog nooit gebruikt is moet je het installeren via github met volgende code:
+```
+devtools::install_github("inbo/inbolims")
+```
+
+Ook als je het pakket lang niet meer gebruikt hebt kan het handig zijn deze bovenstaande code opnieuw te laten lopen zodat package updates geïnstalleerd worden.
+
+
+## Gewone gebruik
 
 Iedere keer R opnieuw opgestart wordt zal je de inbolims library moeten laden
 
@@ -45,10 +48,16 @@ connection <- lims_connect()
 #haal de rapportgegevens binnen uit de databank
 rapport_data <- read_lims_data(connection = connection,
                                project = c("I-19W001-02"),
-                               sql_template = "default",
-                               show_query = FALSE)
+                               sql_template = "default")
 ````
-Bovenstaande code haalt de data op voor het project I-19W001-02 (project = "I-19W001-02") volgens de standaardtemplate  (template = "default") en de query die gebruikt is om het datawarehouse te bevragen wordt getoond (show_query = TRUE). Als eerste variabele moet de databank connectie opgegeven worden, zodat de routine weet waar de gegevens uit gehaald moeten worden.
+Bovenstaande code haalt de data op voor het project I-19W001-02 (project = "I-19W001-02") volgens de standaardtemplate  (template = "default"). Als eerste variabele moet de databank connectie opgegeven worden, zodat de routine weet waar de gegevens uit gehaald moeten worden.
+
+De beschikbare templates en geïmporteerde velden kan je terugvinden via volgende functies:
+
+```
+show_available_templates()
+get_report_config_info(template="default")
+```
 
 ## Afgeleide routines (work in progress)
 
@@ -83,8 +92,6 @@ Bovenstaande kruistabel kan je gemakkelijk naar een door excel leesbaar csv best
 lims_report_export(kruistabel, path = "test_xtab.csv")
 lims_report_export(rapport_data, path = "test.csv")
 ````
-Ook hier op dit moment enkel gegarandeerd voor de "default" `sql_template` gebruikt bij `read_lims_data`.
-
 # Geavanceerde datafuncties
 
 ## Volledige query tonen
@@ -181,7 +188,8 @@ rapport_data <- read_lims_data(connection = connection,
 Je kan heel rudimentair een overzicht en overzichtsplot opvragen van de data. Indien je geen plot wenst kan je `plot = NULL` zetten
 
 ```
-statistieken <- lims_measured_parameters(rapport_data, plot = "boxplot")
+statistieken <- lims_result_statistics(rapport_data, plot = "boxplot")
+statistieken
 
 ```
 
