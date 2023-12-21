@@ -1,0 +1,4 @@
+template_name	description
+default	Standaard template met de meest informatieve velden
+minimal	Het absolute minimale aantal velden die opgeroepen moeten worden  zodat de functies werken
+all	Het template met alle ter beschikking gezette velden
