@@ -4,11 +4,7 @@
 \alias{lims_report_xtab}
 \title{Maak kruistabel van de ingelezen rapportdata}
 \usage{
-lims_report_xtab(
-  reportdata,
-  resulttype = "measured",
-  sample_fields = c("Project", "ExternSampleID")
-)
+lims_report_xtab(reportdata)
 }
 \arguments{
 \item{reportdata}{data verkregen uit de functie lims_report_data}

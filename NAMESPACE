@@ -2,14 +2,22 @@
 
 export(create_archief_labels_bat)
 export(date_as_text)
+<<<<<<< HEAD
 export(get_all_report_fields)
+=======
+export(get_available_report_fields)
+>>>>>>> 645d34a87b17cf01931bc7850f92fc7b5fee6030
 export(get_report_config_info)
 export(interprate_texture_content)
 export(lims_connect)
 export(lims_report_export)
 export(lims_report_samples)
 export(lims_report_xtab)
+<<<<<<< HEAD
 export(lims_result_statistics)
+=======
+export(lims_report_xtab_old)
+>>>>>>> 645d34a87b17cf01931bc7850f92fc7b5fee6030
 export(link_labo_id)
 export(parse_sql_report_query)
 export(parse_texture_content)
@@ -31,9 +39,13 @@ importFrom(ggplot2,element_blank)
 importFrom(ggplot2,element_text)
 importFrom(ggplot2,facet_wrap)
 importFrom(ggplot2,geom_boxplot)
+<<<<<<< HEAD
 importFrom(ggplot2,geom_histogram)
 importFrom(ggplot2,ggplot)
 importFrom(ggplot2,rel)
+=======
+importFrom(ggplot2,ggplot)
+>>>>>>> 645d34a87b17cf01931bc7850f92fc7b5fee6030
 importFrom(ggplot2,scale_y_log10)
 importFrom(ggplot2,theme)
 importFrom(ggplot2,xlab)
