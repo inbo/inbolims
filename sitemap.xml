@@ -13,6 +13,12 @@
     <loc>https://inbo.github.io/inbolims/LICENSE.html</loc>
   </url>
   <url>
+    <loc>https://inbo.github.io/inbolims/articles/index.html</loc>
+  </url>
+  <url>
+    <loc>https://inbo.github.io/inbolims/articles/reading_lims_results.html</loc>
+  </url>
+  <url>
     <loc>https://inbo.github.io/inbolims/authors.html</loc>
   </url>
   <url>
@@ -26,6 +32,9 @@
   </url>
   <url>
     <loc>https://inbo.github.io/inbolims/reference/date_as_text.html</loc>
+  </url>
+  <url>
+    <loc>https://inbo.github.io/inbolims/reference/get_all_report_fields.html</loc>
   </url>
   <url>
     <loc>https://inbo.github.io/inbolims/reference/get_available_report_fields.html</loc>
@@ -61,6 +70,9 @@
     <loc>https://inbo.github.io/inbolims/reference/lims_report_xtab_old.html</loc>
   </url>
   <url>
+    <loc>https://inbo.github.io/inbolims/reference/lims_result_statistics.html</loc>
+  </url>
+  <url>
     <loc>https://inbo.github.io/inbolims/reference/link_labo_id.html</loc>
   </url>
   <url>
@@ -71,6 +83,9 @@
   </url>
   <url>
     <loc>https://inbo.github.io/inbolims/reference/read_lims_data.html</loc>
+  </url>
+  <url>
+    <loc>https://inbo.github.io/inbolims/reference/show_available_templates.html</loc>
   </url>
   <url>
     <loc>https://inbo.github.io/inbolims/reference/write_texture_files.html</loc>
