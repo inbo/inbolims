@@ -1,13 +1,8 @@
 Type: Package
 Package: inbolims
 Title: Utilities to query the INBO lab analysis datawarehouse
-<<<<<<< HEAD
 Version: 0.2.9
 Date: 2023-12-08
-=======
-Version: 0.2.6
-Date: 2023-11-16
->>>>>>> 645d34a87b17cf01931bc7850f92fc7b5fee6030
 Authors@R: 
     person("Pieter", "Verschelde", , "pieter.verschelde@inbo.be", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-9199-421X", affiliation = "Research Institute for Nature and Forest (INBO)"))

@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # inbolims 0.2.9
 
 * Change the minimal necessary fields
@@ -13,9 +12,8 @@
 which makes customizing report field easier
 
 # inbolims 0.2.7
-=======
+
 # inbolims 0.2.6
->>>>>>> 645d34a87b17cf01931bc7850f92fc7b5fee6030
 
 * Added a `NEWS.md` file to track changes to the package.
 * Add [`checklist`](https://inbo.github.io/checklist/) infrastructure.
