@@ -134,7 +134,8 @@ link_labo_id <- function(conn,
   qry <- paste0(
     "select sample = LabSampleID, \n",
     extern_id_col, " = FieldSampleID,  \n",
-    "datum = AnalysisDate\n",
+    "datum = AnalysisDate, \n",
+    "analyse = LimsAnalysisName \n",
     " from dimSample s inner join factResult r ",
     "on s.SampleKey = r.SampleKey \n",
     " where s.LabSampleID in ",
@@ -145,7 +146,12 @@ link_labo_id <- function(conn,
   )
 
   linktable <- dbGetQuery(conn, qry)
-  unique_ana
+  unique_analyses <- unique(linktable$analysis)
+  if (length(unique_analyses) > 1) {
+    cat("Verschillende analyses:\n")
+    print(unique_analyses)
+    stop("Meer dan 1 analyse die voldoet aan de voorwaarde. Kies er één")
+  }
 
   returndata <- data %>%
     left_join(linktable, by = c("sample" = "sample"))
