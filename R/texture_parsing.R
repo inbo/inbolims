@@ -102,6 +102,7 @@ interprate_texture_content <-
 #'
 #' @param conn db connectie
 #' @param data dataset waarvan het labo_id gelinkt moet worden aan het extern id
+#' @param analysis naam van de textuuranalyse. Indien de exacte naam niet gekend is kan met jokertekens gewerkt worden, bv "TEXTUUR%" wat zoekt in alle analyses die begint met TEXTUUR
 #' @param labo_id_col naam van de kolom die het labo_id bevat
 #' @param extern_id_col naam van de kolom waar je het externe id in wil
 #' @importFrom DBI dbGetQuery
@@ -109,9 +110,18 @@ interprate_texture_content <-
 #' @return dezelfde dataset met een extra kolom die het extern staalid bevat
 #' @export
 #' @import dplyr
+#' @examples
+#'  # example code
+#'  #conn <- #zorg dat je een connectie-object met de databank hebt
+#'  data <- data.frame(sample = c(('24-004722','24-004723','24-004724','24-004725')))
+#'  link_labo_id(conn, data, analysis = "TEXTUUR%")
+#' \dontrun{
+#' }
+#' 
 #'
 link_labo_id <- function(conn,
                          data,
+                         analysis = "TEXTUUR_LD%",
                          labo_id_col = "sample",
                          extern_id_col = "FieldSampleID") {
   data$sample <- data[[labo_id_col]]
@@ -131,10 +141,11 @@ link_labo_id <- function(conn,
     "('", paste(unique(data %>% pull(sample)),
       collapse = "','"
     ),
-    "') and LimsAnalysisName like 'TEXTUUR_LD%' \n"
+    "') and LimsAnalysisName like '", analysis, "' \n"
   )
 
   linktable <- dbGetQuery(conn, qry)
+  unique_ana
 
   returndata <- data %>%
     left_join(linktable, by = c("sample" = "sample"))
