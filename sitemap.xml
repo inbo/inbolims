@@ -37,25 +37,19 @@
     <loc>https://inbo.github.io/inbolims/reference/get_all_report_fields.html</loc>
   </url>
   <url>
-    <loc>https://inbo.github.io/inbolims/reference/get_available_report_fields.html</loc>
-  </url>
-  <url>
     <loc>https://inbo.github.io/inbolims/reference/get_report_config_info.html</loc>
   </url>
   <url>
-    <loc>https://inbo.github.io/inbolims/reference/inbolims.html</loc>
+    <loc>https://inbo.github.io/inbolims/reference/inbolims-package.html</loc>
   </url>
   <url>
     <loc>https://inbo.github.io/inbolims/reference/index.html</loc>
   </url>
   <url>
-    <loc>https://inbo.github.io/inbolims/reference/interprate_texture_content.html</loc>
+    <loc>https://inbo.github.io/inbolims/reference/interprete_texture_content.html</loc>
   </url>
   <url>
     <loc>https://inbo.github.io/inbolims/reference/lims_connect.html</loc>
-  </url>
-  <url>
-    <loc>https://inbo.github.io/inbolims/reference/lims_measured_parameters.html</loc>
   </url>
   <url>
     <loc>https://inbo.github.io/inbolims/reference/lims_report_export.html</loc>
@@ -65,9 +59,6 @@
   </url>
   <url>
     <loc>https://inbo.github.io/inbolims/reference/lims_report_xtab.html</loc>
-  </url>
-  <url>
-    <loc>https://inbo.github.io/inbolims/reference/lims_report_xtab_old.html</loc>
   </url>
   <url>
     <loc>https://inbo.github.io/inbolims/reference/lims_result_statistics.html</loc>
