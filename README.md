@@ -143,7 +143,7 @@ system2("mkdir", target_dir)
 textuur_parsed <- parse_texture_content(filename, delim = "\t")
 
 #interpreteer de dataset tot een inhoudelijk bruikbaar formaat
-textuur_interpreted <- interprate_texture_content(textuur_parsed)
+textuur_interpreted <- interpret_texture_content(textuur_parsed)
 
 #maak een connectie met het LIMS datawarehouse
 conn <- lims_connect() #connect to dwh
