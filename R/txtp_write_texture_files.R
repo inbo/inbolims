@@ -36,7 +36,7 @@ write_texture_files <- function(target_path, data, verbose = TRUE) {
     )
     if (verbose) print(fn)
     write_excel_csv2(tmp %>% select(-.data$datum),
-                     file = file.path(target_path, fn)
+      file = file.path(target_path, fn)
     )
   }
   return()

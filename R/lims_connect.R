@@ -22,18 +22,18 @@ lims_connect <- function(deployment = "prd", use_rodbc = FALSE, uidpwd = "") {
   if (deployment != "uat") {
     if (use_rodbc) {
       con <- try(RODBC::odbcDriverConnect(
-        connection = "Driver={ODBC Driver 13 for SQL Server};Server=inbo-sql08-prd.inbo.be;Database=W0003_00_Lims;Trusted_Connection=yes;Port=1433;" #nolint
+        connection = "Driver={ODBC Driver 13 for SQL Server};Server=inbo-sql08-prd.inbo.be;Database=W0003_00_Lims;Trusted_Connection=yes;Port=1433;" # nolint
       ), silent = TRUE)
       if (inherits(con, "try-error") || inherits(con, "integer")) {
         cstr <- paste0(
-          "Driver={ODBC Driver 13 for SQL Server};Server=inbo-sql08-prd.inbouat.be;Database=W0003_00_Lims;Port=1435;",#nolint
+          "Driver={ODBC Driver 13 for SQL Server};Server=inbo-sql08-prd.inbouat.be;Database=W0003_00_Lims;Port=1435;", # nolint
           uidpwd
         )
         con <- RODBC::odbcDriverConnect(
           connection = cstr
         )
       }
-      if (!inherits(con, "RODBC")) print("Connectie niet gelukt. Ben je op het INBO netwerk of via VPN verbonden? Contacteer de database administrator")#nolint
+      if (!inherits(con, "RODBC")) print("Connectie niet gelukt. Ben je op het INBO netwerk of via VPN verbonden? Contacteer de database administrator") # nolint
     } else {
       con <- DBI::dbConnect(odbc::odbc(),
         Driver = "SQL Server",
@@ -43,7 +43,7 @@ lims_connect <- function(deployment = "prd", use_rodbc = FALSE, uidpwd = "") {
         Trusted_Connection = "True"
       )
       if (!inherits(con, "Microsoft SQL Server")) {
-        print("Connectie niet gelukt. Ben je op het INBO netwerk of via VPN verbonden? Contacteer de database administrator") #nolint
+        print("Connectie niet gelukt. Ben je op het INBO netwerk of via VPN verbonden? Contacteer de database administrator") # nolint
       }
     }
   } else {
@@ -53,14 +53,14 @@ lims_connect <- function(deployment = "prd", use_rodbc = FALSE, uidpwd = "") {
 
     con <- try(
       RODBC::odbcDriverConnect(
-        connection = "Driver={ODBC Driver 13 for SQL Server};Server=inbo-sql06-uat.inbouat.be,1435;Database=W0003_00_Lims;Trusted_Connection=yes;"#nolint
+        connection = "Driver={ODBC Driver 13 for SQL Server};Server=inbo-sql06-uat.inbouat.be,1435;Database=W0003_00_Lims;Trusted_Connection=yes;" # nolint
       ),
       silent = TRUE
     )
 
     if (inherits(con, "try-error") || inherits(con, "integer")) {
       cstr <- paste0(
-        "Driver={ODBC Driver 13 for SQL Server};Server=inbo-sql06-uat.inbouat.be,1435;Database=W0003_00_Lims;",#nolint
+        "Driver={ODBC Driver 13 for SQL Server};Server=inbo-sql06-uat.inbouat.be,1435;Database=W0003_00_Lims;", # nolint
         uidpwd
       )
       con <- RODBC::odbcDriverConnect(
@@ -68,7 +68,7 @@ lims_connect <- function(deployment = "prd", use_rodbc = FALSE, uidpwd = "") {
       )
     }
     if (!inherits(con, "RODBC")) {
-      print("Connectie niet gelukt. Ben je op het INBO netwerk of via VPN verbonden? Contacteer de database administrator") #nolint
+      print("Connectie niet gelukt. Ben je op het INBO netwerk of via VPN verbonden? Contacteer de database administrator") # nolint
     } else {
       print("Connectie succesvol")
     }

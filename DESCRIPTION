@@ -1,8 +1,8 @@
 Type: Package
 Package: inbolims
 Title: Utilities to query the INBO lab analysis datawarehouse
-Version: 0.2.10
-Date: 2024-06-17
+Version: 0.2.11
+Date: 2024-06-19
 Authors@R: 
     person("Pieter", "Verschelde", , "pieter.verschelde@inbo.be", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-9199-421X", affiliation = "Research Institute for Nature and Forest (INBO)"))
@@ -19,13 +19,16 @@ Imports:
     DBI,
     dplyr,
     ggplot2,
+    jsonlite,
+    lubridate,
     magrittr,
     odbc,
     readr,
     RODBC,
     stats,
     stringr,
-    tidyr
+    tidyr,
+    utils
 Suggests:
     knitr,
     rmarkdown,

@@ -12,12 +12,13 @@
 #' }
 #'
 lims_report_samples <- function(reportdata) {
-
-  columns_present <- c("Project",
-                       "OrigineelStaal",
-                       "ExternSampleID",
-                       "LimsStaalNummer",
-                       "LaboCode") %in% colnames(reportdata)
+  columns_present <- c(
+    "Project",
+    "OrigineelStaal",
+    "ExternSampleID",
+    "LimsStaalNummer",
+    "LaboCode"
+  ) %in% colnames(reportdata)
   if (!all(columns_present)) {
     stop("De kolommen Project, OrigineelStaal, ExternSampleID en LimsStaalNummer
          moeten minstens aanwezig zijn")
@@ -40,29 +41,36 @@ lims_report_samples <- function(reportdata) {
   if (all(c("Analyse", "Component") %in% colnames(reportdata))) {
     df_analyses <- reportdata %>%
       group_by(.data$Project, .data$OrigineelStaal, .data$ExternSampleID) %>%
-      summarise(Aantal_analyses = n_distinct(.data$Analyse),
-                Aantal_resultaten = n_distinct(paste0(.data$Analyse,
-                                                      .data$Component)),
-                .groups = "keep") %>%
+      summarise(
+        Aantal_analyses = n_distinct(.data$Analyse),
+        Aantal_resultaten = n_distinct(paste0(
+          .data$Analyse,
+          .data$Component
+        )),
+        .groups = "keep"
+      ) %>%
       ungroup()
     df_samples_on_orig <- df_samples_on_orig %>% left_join(df_analyses)
   }
 
   df_parent <- reportdata %>%
     select(.data$OrigineelStaal,
-           .data$LimsStaalNummer,
-           HoofdLaboCode = .data$LaboCode) %>%
+      .data$LimsStaalNummer,
+      HoofdLaboCode = .data$LaboCode
+    ) %>%
     filter(.data$OrigineelStaal == .data$LimsStaalNummer) %>%
     distinct(.data$OrigineelStaal, .data$HoofdLaboCode)
 
   df_samples_on_orig <- df_samples_on_orig %>%
     left_join(df_parent, by = "OrigineelStaal")
 
-  groupbycols <- c("OrigineelStaal", "ContractID", "Klant", "Project",
-                   "VerantwoordelijkLabo", "LimsStaalNummer", "ExternSampleID",
-                   "LaboCode", "SampleProduct", "ProductGrade", "Matrix",
-                   "Monsternamedatum", "Monsternemer", "Toestand",
-                   "VoorbehandelingExtern", "Opmerking")
+  groupbycols <- c(
+    "OrigineelStaal", "ContractID", "Klant", "Project",
+    "VerantwoordelijkLabo", "LimsStaalNummer", "ExternSampleID",
+    "LaboCode", "SampleProduct", "ProductGrade", "Matrix",
+    "Monsternamedatum", "Monsternemer", "Toestand",
+    "VoorbehandelingExtern", "Opmerking"
+  )
   df_samples_all <- reportdata %>%
     group_by(across(all_of(intersect(groupbycols, colnames(.))))) %>%
     summarise(
@@ -72,19 +80,22 @@ lims_report_samples <- function(reportdata) {
       Ycoord = if_any(c("Ycoord"), ~ max(.)),
       Diepte = if_any(c("Diepte"), ~ max(.)),
       Toponiem = if_any(c("Toponiem"), ~ max(.)),
-      .groups = "drop_last") %>%
+      .groups = "drop_last"
+    ) %>%
     ungroup() %>%
     select(-.data$OrigineelStaal, -.data$ExternSampleID, -.data$Project)
 
-  collist <- c("Project", "OrigineelStaal", "LaboCode",
-               "ExternSampleID", "ProductGrade", "Matrix", "Monsternemer",
-               "Monsternamedatum", "Toestand", "VoorbehandelingExtern",
-               "Opmerking", "ArchiefStaal", "Xcoord", "Ycoord", "Diepte",
-               "Toponiem", "Aantal_analyses", "Aantal_resultaten",
-               "Aantal_resultaten")
+  collist <- c(
+    "Project", "OrigineelStaal", "LaboCode",
+    "ExternSampleID", "ProductGrade", "Matrix", "Monsternemer",
+    "Monsternamedatum", "Toestand", "VoorbehandelingExtern",
+    "Opmerking", "ArchiefStaal", "Xcoord", "Ycoord", "Diepte",
+    "Toponiem", "Aantal_analyses", "Aantal_resultaten",
+    "Aantal_resultaten"
+  )
   df_samples <- df_samples_on_orig %>%
     inner_join(df_samples_all,
-               by = c("Hoofdstaal" = "LimsStaalNummer")
+      by = c("Hoofdstaal" = "LimsStaalNummer")
     ) %>%
     select(
       intersect(collist, colnames(.))

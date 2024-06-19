@@ -17,7 +17,9 @@ link_labo_id(
 
 \item{data}{dataset waarvan het labo_id gelinkt moet worden aan het extern id}
 
-\item{analysis}{naam van de textuuranalyse. Indien de exacte naam niet gekend is kan met jokertekens gewerkt worden, bv "TEXTUUR\%" wat zoekt in alle analyses die begint met TEXTUUR}
+\item{analysis}{naam van de textuuranalyse.
+Indien de exacte naam niet gekend is kan met jokertekens gewerkt worden,
+bv "TEXTUUR\%" wat zoekt in alle analyses die begint met TEXTUUR}
 
 \item{labo_id_col}{naam van de kolom die het labo_id bevat}
 
@@ -27,13 +29,15 @@ link_labo_id(
 dezelfde dataset met een extra kolom die het extern staalid bevat
 }
 \description{
-De wetenschappers en labo gebruiken een ander ID voor stalen te identificeren, hiermee worden deze gekoppeld.
+De wetenschappers en labo gebruiken een ander ID om stalen te identificeren,
+hiermee worden deze gekoppeld.
 }
 \examples{
 \dontrun{
- # example code
- #conn <- #zorg dat je een connectie-object met de databank hebt
- data <- data.frame(sample = c(('24-004722','24-004723','24-004724','24-004725')))
- link_labo_id(conn, data, analysis = "TEXTUUR\%")
+# example code
+# conn <- #zorg dat je een connectie-object met de databank hebt
+# data <- data.frame(sample = c(('24-004722','24-004723',
+                                 '24-004724','24-004725')))
+link_labo_id(conn, data, analysis = "TEXTUUR\%")
 }
 }

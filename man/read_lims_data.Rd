@@ -62,7 +62,8 @@ Haal rapportdata uit LIMS DWH
 \dontrun{
 conn <- lims_connect()
 reportdata <- read_lims_data(conn,
-                             project = c("I-19W001-01"),
-                             sql_template = "default")
+  project = c("I-19W001-01"),
+  sql_template = "default"
+)
 }
 }

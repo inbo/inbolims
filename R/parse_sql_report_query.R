@@ -21,12 +21,15 @@ parse_sql_report_query <- function(template, project) {
   fields <- template %>%
     filter(.data$Type == "select", !is.na(.data$template)) %>%
     mutate(ss = ifelse(.data$Afkorting != "expr",
-                       paste0(.data$Veldnaam, " = ",
-                              .data$Afkorting, ".[", .data$Kolom, "]"),
-                       paste0(.data$Veldnaam, " = ",
-                              .data$Kolom)
-    )
-    ) %>%
+      paste0(
+        .data$Veldnaam, " = ",
+        .data$Afkorting, ".[", .data$Kolom, "]"
+      ),
+      paste0(
+        .data$Veldnaam, " = ",
+        .data$Kolom
+      )
+    )) %>%
     pull(.data$ss) %>%
     paste(collapse = ",\n")
   tables <- template %>%
