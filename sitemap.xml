@@ -46,7 +46,7 @@
     <loc>https://inbo.github.io/inbolims/reference/index.html</loc>
   </url>
   <url>
-    <loc>https://inbo.github.io/inbolims/reference/interprete_texture_content.html</loc>
+    <loc>https://inbo.github.io/inbolims/reference/interpret_texture_content.html</loc>
   </url>
   <url>
     <loc>https://inbo.github.io/inbolims/reference/lims_connect.html</loc>
@@ -77,6 +77,9 @@
   </url>
   <url>
     <loc>https://inbo.github.io/inbolims/reference/show_available_templates.html</loc>
+  </url>
+  <url>
+    <loc>https://inbo.github.io/inbolims/reference/tex_csv_2_json.html</loc>
   </url>
   <url>
     <loc>https://inbo.github.io/inbolims/reference/write_texture_files.html</loc>
