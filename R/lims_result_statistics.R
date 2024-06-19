@@ -1,4 +1,3 @@
-
 #' Title
 #'
 #' @param data lims report data (from lims_report_data)
@@ -36,26 +35,37 @@ lims_result_statistics <- function(data, plot = "boxplot", log = TRUE) {
       aantalmissend = sum(is.na(.data$NumeriekeWaarde)),
     )
   if (length(plot)) {
-    ggobj <- ggplot(data,
-                    aes(x = substring(.data$Sleutel, 1,
-                                      nchar(.data$Sleutel) - 6),
-                        y = .data$NumeriekeWaarde))
-      if (plot == "boxplot") {
-        ggobj <- ggobj + geom_boxplot()
-      } else if (plot == "histogram") {
-        ggobj <- ggobj +
-          geom_histogram(aes(x = .data$NumeriekeWaarde), inherit.aes = FALSE)
-      } else {
-        stop("no valid plot type")
-      }
+    ggobj <- ggplot(
+      data,
+      aes(
+        x = substring(
+          .data$Sleutel, 1,
+          nchar(.data$Sleutel) - 6
+        ),
+        y = .data$NumeriekeWaarde
+      )
+    )
+    if (plot == "boxplot") {
+      ggobj <- ggobj + geom_boxplot()
+    } else if (plot == "histogram") {
       ggobj <- ggobj +
-        facet_wrap(~substring(.data$Sleutel, 1, nchar(.data$Sleutel) - 6),
-                   scales = "free") +
+        geom_histogram(aes(x = .data$NumeriekeWaarde), inherit.aes = FALSE)
+    } else {
+      stop("no valid plot type")
+    }
+    ggobj <- ggobj +
+      facet_wrap(~ substring(.data$Sleutel, 1, nchar(.data$Sleutel) - 6),
+        scales = "free"
+      ) +
       xlab("Analysecomponent") +
-      theme(strip.text = element_blank(),
-            axis.text.x = element_text(size = rel(0.8)))
-      if (plot == "histogram") ggobj <- ggobj +
+      theme(
+        strip.text = element_blank(),
+        axis.text.x = element_text(size = rel(0.8))
+      )
+    if (plot == "histogram") {
+      ggobj <- ggobj +
         theme(strip.text = element_text(size = rel(0.5)))
+    }
     if (log) ggobj <- ggobj + scale_y_log10()
     print(ggobj)
   }

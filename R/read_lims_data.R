@@ -1,4 +1,3 @@
-
 #' Haal rapportdata uit LIMS DWH
 #'
 #' @param connection DBI connection object (see odbc::dbConnect())
@@ -36,8 +35,9 @@
 #' \dontrun{
 #' conn <- lims_connect()
 #' reportdata <- read_lims_data(conn,
-#'                              project = c("I-19W001-01"),
-#'                              sql_template = "default")
+#'   project = c("I-19W001-01"),
+#'   sql_template = "default"
+#' )
 #' }
 read_lims_data <- function(connection,
                            project,
@@ -55,7 +55,7 @@ read_lims_data <- function(connection,
 
   template_information <- get_report_config_info(template = sql_template) %>%
     select(.data$Type, .data$Veldnaam, .data$Afkorting, .data$Kolom,
-           template = contains(sql_template)
+      template = contains(sql_template)
     ) %>%
     filter(!is.na(.data$template), .data$template > 0) %>%
     arrange(.data$template)

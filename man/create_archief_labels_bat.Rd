@@ -31,7 +31,8 @@ de archieflabels Access DB in te vullen
 \examples{
 \dontrun{
 db_locatie <- system.file("extdata", "Archief_Labels_voorbeeldDB.accdb",
-                          package = "inbolims")
+  package = "inbolims"
+)
 r_locatie <- paste0(R.home, "/bin/i386/Rscript.exe")
 bat_bestand <- "Archieflabels.bat"
 r_script <- system.file("extdata", "Archief_Labels.R", package = "inbolims")

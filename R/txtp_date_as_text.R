@@ -1,6 +1,4 @@
 
-###################
-
 #' Converteer datumvector of POSIXct vector naar text in formaat yyyy-mm-dd
 #'
 #' @param x vector met datums (character)
@@ -15,4 +13,3 @@ date_as_text <- function(x, na_result = "NODATE") {
   x[is.na(x)] <- na_result
   x
 }
-

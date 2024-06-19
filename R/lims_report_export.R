@@ -9,9 +9,9 @@ lims_report_export <- function(data, path) {
   namen <- tibble(Naam = colnames(data))
 
   header <- separate(namen,
-                     col = .data$Naam, sep = "___",
-                     into = c("Analyse", "Component", "Iteratie"),
-                     fill = "right"
+    col = .data$Naam, sep = "___",
+    into = c("Analyse", "Component", "Iteratie"),
+    fill = "right"
   )
   header$COMBI <- namen
   newdata <- as.data.frame(t(header))

@@ -15,18 +15,15 @@ get_report_config_info <- function(template = "default") {
     "report_config",
     "template_fields.tsv"
   ))
-
   names <- colnames(data)
   if (template == "all") {
     template_cols <- names[substring(names, 1, 9) == "template:"]
   } else {
     template_cols <- paste0("template:", template)
   }
-
   base_cols <- c(
     "Type", "Veldnaam", "Tabel", "Afkorting",
     "Kolom", "Beschrijving"
   )
-
   data %>% select(all_of(c(base_cols, template_cols)))
 }

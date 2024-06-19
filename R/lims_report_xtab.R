@@ -18,7 +18,6 @@
 lims_report_xtab <- function(reportdata,
                              resulttype = "measured",
                              sample_fields = c("Project", "ExternSampleID")) {
-
   if (resulttype == "measured") {
     xtab <- reportdata %>%
       tidyr::pivot_wider(
@@ -40,7 +39,9 @@ lims_report_xtab <- function(reportdata,
   } else {
     columns <- "OrigineelStaal"
   }
-  sample_info <- reportdata %>% select(all_of(columns)) %>% distinct()
+  sample_info <- reportdata %>%
+    select(all_of(columns)) %>%
+    distinct()
 
   xtab <- sample_info %>%
     inner_join(xtab, by = "OrigineelStaal")
