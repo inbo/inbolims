@@ -1,87 +1,31 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>https://inbo.github.io/inbolims/404.html</loc>
-  </url>
-  <url>
-    <loc>https://inbo.github.io/inbolims/CODE_OF_CONDUCT.html</loc>
-  </url>
-  <url>
-    <loc>https://inbo.github.io/inbolims/CONTRIBUTING.html</loc>
-  </url>
-  <url>
-    <loc>https://inbo.github.io/inbolims/LICENSE.html</loc>
-  </url>
-  <url>
-    <loc>https://inbo.github.io/inbolims/articles/index.html</loc>
-  </url>
-  <url>
-    <loc>https://inbo.github.io/inbolims/articles/reading_lims_results.html</loc>
-  </url>
-  <url>
-    <loc>https://inbo.github.io/inbolims/authors.html</loc>
-  </url>
-  <url>
-    <loc>https://inbo.github.io/inbolims/index.html</loc>
-  </url>
-  <url>
-    <loc>https://inbo.github.io/inbolims/news/index.html</loc>
-  </url>
-  <url>
-    <loc>https://inbo.github.io/inbolims/reference/create_archief_labels_bat.html</loc>
-  </url>
-  <url>
-    <loc>https://inbo.github.io/inbolims/reference/date_as_text.html</loc>
-  </url>
-  <url>
-    <loc>https://inbo.github.io/inbolims/reference/get_all_report_fields.html</loc>
-  </url>
-  <url>
-    <loc>https://inbo.github.io/inbolims/reference/get_report_config_info.html</loc>
-  </url>
-  <url>
-    <loc>https://inbo.github.io/inbolims/reference/inbolims-package.html</loc>
-  </url>
-  <url>
-    <loc>https://inbo.github.io/inbolims/reference/index.html</loc>
-  </url>
-  <url>
-    <loc>https://inbo.github.io/inbolims/reference/interpret_texture_content.html</loc>
-  </url>
-  <url>
-    <loc>https://inbo.github.io/inbolims/reference/lims_connect.html</loc>
-  </url>
-  <url>
-    <loc>https://inbo.github.io/inbolims/reference/lims_report_export.html</loc>
-  </url>
-  <url>
-    <loc>https://inbo.github.io/inbolims/reference/lims_report_samples.html</loc>
-  </url>
-  <url>
-    <loc>https://inbo.github.io/inbolims/reference/lims_report_xtab.html</loc>
-  </url>
-  <url>
-    <loc>https://inbo.github.io/inbolims/reference/lims_result_statistics.html</loc>
-  </url>
-  <url>
-    <loc>https://inbo.github.io/inbolims/reference/link_labo_id.html</loc>
-  </url>
-  <url>
-    <loc>https://inbo.github.io/inbolims/reference/parse_sql_report_query.html</loc>
-  </url>
-  <url>
-    <loc>https://inbo.github.io/inbolims/reference/parse_texture_content.html</loc>
-  </url>
-  <url>
-    <loc>https://inbo.github.io/inbolims/reference/read_lims_data.html</loc>
-  </url>
-  <url>
-    <loc>https://inbo.github.io/inbolims/reference/show_available_templates.html</loc>
-  </url>
-  <url>
-    <loc>https://inbo.github.io/inbolims/reference/tex_csv_2_json.html</loc>
-  </url>
-  <url>
-    <loc>https://inbo.github.io/inbolims/reference/write_texture_files.html</loc>
-  </url>
+<urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
+<url><loc>https://inbo.github.io/inbolims/404.html</loc></url>
+<url><loc>https://inbo.github.io/inbolims/CODE_OF_CONDUCT.html</loc></url>
+<url><loc>https://inbo.github.io/inbolims/CONTRIBUTING.html</loc></url>
+<url><loc>https://inbo.github.io/inbolims/LICENSE.html</loc></url>
+<url><loc>https://inbo.github.io/inbolims/articles/index.html</loc></url>
+<url><loc>https://inbo.github.io/inbolims/articles/reading_lims_results.html</loc></url>
+<url><loc>https://inbo.github.io/inbolims/authors.html</loc></url>
+<url><loc>https://inbo.github.io/inbolims/index.html</loc></url>
+<url><loc>https://inbo.github.io/inbolims/news/index.html</loc></url>
+<url><loc>https://inbo.github.io/inbolims/reference/create_archief_labels_bat.html</loc></url>
+<url><loc>https://inbo.github.io/inbolims/reference/date_as_text.html</loc></url>
+<url><loc>https://inbo.github.io/inbolims/reference/get_all_report_fields.html</loc></url>
+<url><loc>https://inbo.github.io/inbolims/reference/get_report_config_info.html</loc></url>
+<url><loc>https://inbo.github.io/inbolims/reference/inbolims-package.html</loc></url>
+<url><loc>https://inbo.github.io/inbolims/reference/index.html</loc></url>
+<url><loc>https://inbo.github.io/inbolims/reference/interpret_texture_content.html</loc></url>
+<url><loc>https://inbo.github.io/inbolims/reference/lims_connect.html</loc></url>
+<url><loc>https://inbo.github.io/inbolims/reference/lims_report_export.html</loc></url>
+<url><loc>https://inbo.github.io/inbolims/reference/lims_report_samples.html</loc></url>
+<url><loc>https://inbo.github.io/inbolims/reference/lims_report_xtab.html</loc></url>
+<url><loc>https://inbo.github.io/inbolims/reference/lims_result_statistics.html</loc></url>
+<url><loc>https://inbo.github.io/inbolims/reference/link_labo_id.html</loc></url>
+<url><loc>https://inbo.github.io/inbolims/reference/parse_sql_report_query.html</loc></url>
+<url><loc>https://inbo.github.io/inbolims/reference/parse_texture_content.html</loc></url>
+<url><loc>https://inbo.github.io/inbolims/reference/read_lims_data.html</loc></url>
+<url><loc>https://inbo.github.io/inbolims/reference/show_available_templates.html</loc></url>
+<url><loc>https://inbo.github.io/inbolims/reference/tex_csv_2_json.html</loc></url>
+<url><loc>https://inbo.github.io/inbolims/reference/write_texture_files.html</loc></url>
 </urlset>
+
