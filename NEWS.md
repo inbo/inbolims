@@ -1,3 +1,9 @@
+# inbolims 0.2.11
+
+* some improvements in texture_parsing
+    * handle files with only one sample (slightly different format)
+    * handle sample_file_names that have no underscore behind the sample name
+
 # inbolims 0.2.9
 
 * Change the minimal necessary fields

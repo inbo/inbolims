@@ -17,23 +17,21 @@ tex_csv_2_json <- function(fullfilename) {
   nc <- nchar(fullfilename)
   obsdate <- substr(fullfilename, nc - 13, nc - 4)
   # making a list for json data export
-  # names(TEXTUUR.CSV)
-  SID <- unique(textuur_csv$FieldSampleID)
-  LabSampleCode <- unique(textuur_csv$sample)
-  ObservationDate <- obsdate
-  AnalyseVariabele <- "FRAC.0.2000\u00B5m.ld.c0"
+  s_id <- unique(textuur_csv$FieldSampleID)
+  lab_sample_code <- unique(textuur_csv$sample)
+  observation_date <- obsdate
+  analyse_variabele <- "FRAC.0.2000\u00B5m.ld.c0"
   metingen <- textuur_csv[, c(3:6)]
 
   textuur_list <- list(
-    SID = SID,
-    LabSampleCode = LabSampleCode,
-    ObservationDate = ObservationDate,
-    AnalyseVariabele = AnalyseVariabele,
+    s_id = s_id,
+    lab_sample_code = lab_sample_code,
+    observation_date = observation_date,
+    analyse_variabele = analyse_variabele,
     metingen = metingen
   )
 
   # convert to json in compact format
-  #  TEXTUUR.json.pretty<-toJSON(TEXTUUR.list, pretty=TRUE)
   textuur_json <- toJSON(textuur_list, pretty = FALSE) ###  INBOdem readin
   textuur_json
   # write output in same folder but with json extension
