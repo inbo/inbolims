@@ -20,10 +20,13 @@
 <url><loc>https://inbo.github.io/inbolims/reference/lims_report_samples.html</loc></url>
 <url><loc>https://inbo.github.io/inbolims/reference/lims_report_xtab.html</loc></url>
 <url><loc>https://inbo.github.io/inbolims/reference/lims_result_statistics.html</loc></url>
+<url><loc>https://inbo.github.io/inbolims/reference/lims_sample_information.html</loc></url>
+<url><loc>https://inbo.github.io/inbolims/reference/lims_table_fields.html</loc></url>
 <url><loc>https://inbo.github.io/inbolims/reference/link_labo_id.html</loc></url>
 <url><loc>https://inbo.github.io/inbolims/reference/parse_sql_report_query.html</loc></url>
 <url><loc>https://inbo.github.io/inbolims/reference/parse_texture_content.html</loc></url>
 <url><loc>https://inbo.github.io/inbolims/reference/read_lims_data.html</loc></url>
+<url><loc>https://inbo.github.io/inbolims/reference/sample_fields_from_template.html</loc></url>
 <url><loc>https://inbo.github.io/inbolims/reference/show_available_templates.html</loc></url>
 <url><loc>https://inbo.github.io/inbolims/reference/tex_csv_2_json.html</loc></url>
 <url><loc>https://inbo.github.io/inbolims/reference/write_texture_files.html</loc></url>

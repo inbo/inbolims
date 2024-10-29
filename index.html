@@ -112,14 +112,19 @@
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/inbo/inbolims" class="external-link">inbolims</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="co">#maak connectie met databank</span></span>
-<span><span class="va">connection</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/lims_connect.html">lims_connect</a></span><span class="op">(</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co">#haal de rapportgegevens binnen uit de databank</span></span>
+<span><span class="va">connection</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/lims_connect.html">lims_connect</a></span><span class="op">(</span><span class="op">)</span></span></code></pre>
+<p>Je kan op voorhand al de staalinformatie ophalen via lims_sample_information. Je kan je project selecteren. Dit mogen er ook meerdere zijn en eventueel joker karakters mogen ook gebruikt worden.</p>
+<p>Standaard worden defaultvelden getoond, maar je kan zelf ook kiezen welke velden je wil zien eventueel gecombineerd met een template, met de variabele fields.</p>
+<p>Via de functie <code>sample_fields_from_template</code> kan je te weten komen welke templates beschikbaar zijn en welke velden onderdeem uitmaken in elk van de templates. Met de functie <code>lims_table_fields</code> kan je voor elke tabel zien welke velden het datawarehouse in aanbieding heeft.</p>
+<pre><code><span><span class="co">#illustratieve stap: krijg de staalinformatie (optioneel)</span></span>
+<span><span class="va">staal_info</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/lims_sample_information.html">lims_sample_information</a></span><span class="op">(</span><span class="va">connection</span>, project <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"I-19W001-02"</span><span class="op">)</span><span class="op">)</span></span></code></pre>
+<p>De belangrijkste functie is het inlezen van alle rapportdata. In de toekomst zal die functie ook verbeterd worden zodat ook gemakkelijk kan achterhaald worden wat er historisch allemaal bestond van analyse- en componentnamen.</p>
+<pre><code><span><span class="co">#haal de rapportgegevens binnen uit de databank</span></span>
 <span><span class="va">rapport_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/read_lims_data.html">read_lims_data</a></span><span class="op">(</span>connection <span class="op">=</span> <span class="va">connection</span>,</span>
 <span>                               project <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"I-19W001-02"</span><span class="op">)</span>,</span>
 <span>                               sql_template <span class="op">=</span> <span class="st">"default"</span>,</span>
 <span>                               show_query <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
-<span></span></code></pre>
+<span>                                 </span></code></pre>
 <p>Bovenstaande code haalt de data op voor het project I-19W001-02 (project = “I-19W001-02”) volgens de standaardtemplate (template = “default”) en de query die gebruikt is om het datawarehouse te bevragen wordt getoond (show_query = TRUE). Als eerste variabele moet de databank connectie opgegeven worden, zodat de routine weet waar de gegevens uit gehaald moeten worden.</p>
 </div>
 <div class="section level2">
@@ -251,7 +256,7 @@
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.0.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
 </div>
 
       </footer>
