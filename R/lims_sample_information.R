@@ -1,10 +1,15 @@
 #' Verkrijg de sample informatie
-#' 
+#'
 #' Verkrijg de informatie van stalen voor gekozen projecten
 #'
-#' @param con connectie naar lims dwh 
-#' @param project een character string met projecten, eventueel met SQL jokertekens "\%" en "_"
-#' @param fields welke velden wil je terugkrijgen, indien het begint met "template:" wordt een staaltemplate gekozen , anders is dat gewoon een vector van velden. Je kan "template:" en eigen veldnamen combineren bv. c("template:default", "FieldObserver", "FieldSamplingDate")
+#' @param con connectie naar lims dwh
+#' @param project een character string met projecten,
+#' eventueel met SQL jokertekens "\%" en "_"
+#' @param fields welke velden wil je terugkrijgen,
+#' indien het begint met "template:" wordt een staaltemplate gekozen,
+#' anders is dat gewoon een vector van velden. Je kan "template:"
+#' en eigen veldnamen combineren bv.
+#' c("template:default", "FieldObserver", "FieldSamplingDate")
 #'
 #' @return tibble met sample informatie
 #' @importFrom DBI dbGetQuery
@@ -16,7 +21,7 @@
 #' library(inbolims)
 #' con <- lims_connect()
 #' sample_info <- lims_sample_information(con, project = "I-20G%")
-#' sample_info <- 
+#' sample_info <-
 #'  lims_sample_information(
 #'    con,
 #'    project = c("I-19G024-01", "I-20G%"),
@@ -39,17 +44,15 @@ lims_sample_information <-
       }
     }
   }
-  
+
   project_conditions <- paste(
     sprintf("project LIKE '%s'", project),
     collapse = " OR "
   )
-  
+
   qry <- paste0("select ",
                 paste(chosen_fields, collapse = ", "),
                 " from dimSample",
                 " where ", project_conditions)
   dbGetQuery(conn = con, qry)
 }
-
-

@@ -9,9 +9,14 @@ lims_sample_information(con, project, fields = "template:default")
 \arguments{
 \item{con}{connectie naar lims dwh}
 
-\item{project}{een character string met projecten, eventueel met SQL jokertekens "\%" en "_"}
+\item{project}{een character string met projecten,
+eventueel met SQL jokertekens "\%" en "_"}
 
-\item{fields}{welke velden wil je terugkrijgen, indien het begint met "template:" wordt een staaltemplate gekozen , anders is dat gewoon een vector van velden. Je kan "template:" en eigen veldnamen combineren bv. c("template:default", "FieldObserver", "FieldSamplingDate")}
+\item{fields}{welke velden wil je terugkrijgen,
+indien het begint met "template:" wordt een staaltemplate gekozen,
+anders is dat gewoon een vector van velden. Je kan "template:"
+en eigen veldnamen combineren bv.
+c("template:default", "FieldObserver", "FieldSamplingDate")}
 }
 \value{
 tibble met sample informatie
@@ -23,9 +28,9 @@ Verkrijg de informatie van stalen voor gekozen projecten
 library(inbolims)
 con <- lims_connect()
 sample_info <- lims_sample_information(con, project = "I-20G\%")
-sample_info <- 
-lims_sample_information(
- con,
- project = c("I-19G024-01", "I-20G\%"),
- fields = c("template:default", "FieldSamplingDate"))
+sample_info <-
+ lims_sample_information(
+   con,
+   project = c("I-19G024-01", "I-20G\%"),
+   fields = c("template:default", "FieldSamplingDate"))
 }

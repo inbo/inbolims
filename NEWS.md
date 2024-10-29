@@ -1,3 +1,10 @@
+# inbolims 0.2.12
+
+* Toevoegen functionaliteit om staalinformatie op te halen
+    * `lims_sample_information` (hoofdfunctie)
+    * `lims_table_fields`
+    * `sample_fields_from_template`
+
 # inbolims 0.2.11
 
 * some improvements in texture_parsing

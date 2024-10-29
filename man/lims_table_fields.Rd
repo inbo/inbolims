@@ -9,7 +9,8 @@ lims_table_fields(con, table_name, export_type = "character")
 \arguments{
 \item{con}{connection to the lims Dwh. Typically by lims_connect()}
 
-\item{table_name}{name of the table from which the fields are wanted. Important tables are dimSample and factResult.}
+\item{table_name}{name of the table from which the fields are wanted.
+Important tables are dimSample and factResult.}
 
 \item{export_type}{how to return: "character", "tibble" or "data.frame"}
 }
