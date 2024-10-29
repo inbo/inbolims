@@ -76,13 +76,32 @@ library(inbolims)
 #maak connectie met databank
 connection <- lims_connect()
 
+````
+
+Je kan op voorhand al de staalinformatie ophalen via lims_sample_information.
+Je kan je project selecteren. Dit mogen er ook meerdere zijn en eventueel joker
+karakters mogen ook gebruikt worden.
+
+Standaard worden defaultvelden getoond, maar je kan zelf ook kiezen welke velden je wil zien eventueel gecombineerd met een template, met de variabele fields.
+
+Via de functie `sample_fields_from_template` kan je te weten komen welke templates beschikbaar zijn en welke velden onderdeem uitmaken in elk van de templates. Met de functie `lims_table_fields` kan je voor elke tabel zien welke velden het datawarehouse in aanbieding heeft.
+
+````
+#illustratieve stap: krijg de staalinformatie (optioneel)
+staal_info <- lims_sample_information(connection, project = c("I-19W001-02"))
+
+````
+
+De belangrijkste functie is het inlezen van alle rapportdata.
+In de toekomst zal die functie ook verbeterd worden zodat ook gemakkelijk kan achterhaald worden wat er historisch allemaal bestond van analyse- en componentnamen.
+
+````
 #haal de rapportgegevens binnen uit de databank
 rapport_data <- read_lims_data(connection = connection, 
                                project = c("I-19W001-02"), 
                                sql_template = "default", 
                                show_query = FALSE)
                                  
-
 ```` 
 Bovenstaande code haalt de data op voor het project I-19W001-02 (project = "I-19W001-02") volgens de standaardtemplate  (template = "default") en de query die gebruikt is om het datawarehouse te bevragen wordt getoond (show_query = TRUE). Als eerste variabele moet de databank connectie opgegeven worden, zodat de routine weet waar de gegevens uit gehaald moeten worden.
 

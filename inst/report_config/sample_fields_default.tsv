@@ -1,0 +1,6 @@
+field_name	used	description
+Project	TRUE	Project waaraan het staal gekoppeld is
+LabSampleID	TRUE	Labo identificatie voor het staal
+FieldSampleID	TRUE	Identificatie van het staal zoals door de klant doorgegeven
+LIMSOriginalSampleNumber	TRUE	Identificatie van het moederstaal, zodat je alle info van de substalen samen kunt brengen
+SampleStatus	TRUE	Status van het staal. "A" betekent goedgekeurd door het labo, "X" afgekeurd door het labo. Andere letters zijn tussenliggende statusssen.

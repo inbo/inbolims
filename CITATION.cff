@@ -1,6 +1,6 @@
 cff-version: 1.2.0
 message: If you use this software, please cite it using these metadata.
-title: 'inbolims: Utilities to query the INBO lab analysis datawarehouse'
+title: "inbolims: Utilities to query the INBO lab analysis datawarehouse"
 authors:
 - given-names: Pieter
   family-names: Verschelde
@@ -20,9 +20,9 @@ doi: ~
 license: GPL-3.0
 repository-code: https://github.com/inbo/inbolims/
 type: software
-abstract: Some utilities that expand the Lims program in INBO. It mainly focuses on
-  post-processing in connection with Quality Assurance.
+abstract: "Some utilities that expand the Lims program in INBO. It mainly focuses
+  on post-processing in connection with Quality Assurance."
 identifiers:
 - type: url
   value: https://inbo.github.io/inbolims/
-version: 0.2.10
+version: 0.2.11

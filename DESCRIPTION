@@ -17,7 +17,7 @@ Depends:
     R (>= 4.0.0)
 Imports:
     DBI,
-    dplyr,
+    dplyr (>= 1.1.0),
     ggplot2,
     jsonlite,
     lubridate,
@@ -39,4 +39,4 @@ Config/checklist/communities: inbo
 Config/checklist/keywords: lims; lab results; COA; Certificate of Analysis
 Encoding: UTF-8
 Language: nl-BE
-RoxygenNote: 7.3.1
+RoxygenNote: 7.3.2
