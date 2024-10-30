@@ -18,11 +18,10 @@
 
 # inbolims 0.2.8
 
-* Change the code so it only depends on:
+* Change the code so it only depends on hereunder to easier customizing report fields:
     * combi field
     * original sample
     * project
-which makes customizing report field easier
 
 # inbolims 0.2.7
 
