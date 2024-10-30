@@ -1,3 +1,5 @@
+# inbolims 0.2.13
+
 # inbolims 0.2.12
 
 * Toevoegen functionaliteit om staalinformatie op te halen
