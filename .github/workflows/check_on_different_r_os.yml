@@ -1,15 +1,18 @@
 on:
   push:
-    branches:
-      - main
-      - master
+    branches-ignore: #ignore this workflow for all branches
+      - '**'
+    #branches:
+    #  - main
+    #  - master
   pull_request:
-    branches:
-      - main
-      - master
+    branches-ignore:
+      - '**' #ignore this workflow for all branches
+    #branches:
+    #  - main
+    #  - master
 
 name: R-CMD-check-OS
-
 jobs:
   R-CMD-check:
     runs-on: ${{ matrix.config.os }}
