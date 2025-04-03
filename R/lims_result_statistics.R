@@ -7,6 +7,7 @@
 #' @importFrom ggplot2 scale_y_log10 geom_boxplot facet_wrap ggplot aes
 #' @importFrom ggplot2 element_text element_blank theme xlab rel geom_histogram
 #' @importFrom stats quantile
+#' @importFrom dplyr group_by summarise across n n_distinct .
 #'
 #' @return list with measured parameters and some base statistics
 #' @export

@@ -19,7 +19,6 @@ lims_table_fields <- function(con, table_name, export_type = "character") {
              paste0("select COLUMN_NAME ",
                     "from INFORMATION_SCHEMA.COLUMNS ",
                     "where TABLE_NAME = '", table_name, "'"))
-
   switch(export_type,
              "character" = as.character(rv |> pull("COLUMN_NAME")),
              "tibble"  = tibble(rv),

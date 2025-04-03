@@ -3,6 +3,7 @@
 #' @param template dataset containing the template_information.
 #' The structure should be exact as the file shipped with the package
 #' @param project character string of projects to filter
+#' @param sample_types character vector of sample types to filter
 #'
 #' @return SQL server query
 #' @export
@@ -12,8 +13,11 @@
 #' query
 #' }
 #'
-parse_sql_report_query <- function(template, project) {
+parse_sql_report_query <- function(template,
+                                   project,
+                                   sample_types = c("Project")) {
   projects <- paste0("('", paste(project, collapse = "','"), "')")
+  sample_types <- paste0("('", paste(sample_types, collapse = "','"), "')")
   template <- template %>% arrange(across(starts_with("template")))
   template <- template %>%
     rename(template = matches("^template"))
@@ -36,7 +40,7 @@ parse_sql_report_query <- function(template, project) {
     filter(.data$Type == "tabel") %>%
     pull(.data$Kolom) %>%
     paste(collapse = " \n")
-
+  
   filters <- template %>%
     filter(.data$Type == "filter") %>%
     mutate(flt = paste0(.data$Afkorting, ".", .data$Kolom)) %>%
@@ -44,7 +48,9 @@ parse_sql_report_query <- function(template, project) {
     paste(collapse = " AND \n")
   filters <- gsub("NA.where 1 = 1 AND", "", filters)
   filters <- gsub("<<PROJECTEN>>", projects, filters)
-
+  filters <- gsub("<<SAMPLE_TYPES>>", sample_types, filters)
+  filters <- gsub("-\\.", "", filters)
+  
   qry <- paste("select ", fields, "from ", tables, "where ", filters)
   return(qry)
 }

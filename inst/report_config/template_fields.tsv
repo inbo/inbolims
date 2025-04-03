@@ -23,6 +23,7 @@ select	LimsAnalyseVersie	dimAnalysis	a	AnalysisVersion	Analyseversie waarmee het
 select	SapCode	dimAnalysis	a	SAPcode	Verwijzing naar het analysesprotocol	22	21	
 select	AnalyseNaam	dimAnalysis	a	AnalysisLabName	Analysenaam voor de wetenschappers	23	22	
 select	Component	factResult	r	Component	Componentnaam van het resultaat	24	23	8
+select	GeneriekeComponent	<<>>	<<>>	GenericComponent	Generieke componentnaam, die over de analyseversies heen en analyses heen bruikbaar is (OPGELET: NOG NIET IN DWH)			
 select	Gerapporteerd	factResult	r	IsReportable	Is het staal geschikt voor rapportage?	25	24	
 select	TestReplicaat	factResult	r	TestReplicateCount	Hoeveelste replicate voor deze test is dit voor dit staal?	26	25	
 select	ResultaatReplicaat	factResult	r	ResultReplicate	Hoeveelste replicate voor de individuele component is dit?	27	26	
@@ -52,16 +53,19 @@ select	ResultaatStatus	factResult	r	ResultStatus	De status van het resultaat (A 
 select	TestStatus	factResult	r	TestStatus	De status van de test	51		
 select	ProjectOmschrijving	dimProject	p	ProjectDescription	Beschrijving van het project	52		
 select	ProjectStatus	dimProject	p	ProjectStatus	De status van het project (A = goedgekeurd)	53		
-select	IsLaatsteReplicaat	factResult	r	isLastResultReplicate	Is dit de laatste replicaat van het resultaat 	54		
+select	LOQ	dimComponent	cmp	LOQ	De lage rapportagelimiet (LOQ)	54	47	
+select	IsLaatsteReplicaat	factResult	r	isLastResultReplicate	Is dit de laatste replicaat van het resultaat 	55		
 tabel	StaalTabel	dimSample	s	dimSample s	De staaltabel is de asistabel waarmee de databank bevraging begint	101	101	101
 tabel	ResultaatTabel	factResult	r	left join factResult r on r.SampleKey = s.SampleKey	De tabel met de resultaten	102	102	102
 tabel	ProjectTabel		p	inner join dimProject p on r.ProjectKey = p.ProjectKey	De tabel met de projectinformatie	103	103	103
 tabel	ContractTabel		c	inner join dimContract c on r.ContractKey = c.ContractKey	De tabel met de contractinformatie	104	104	104
-tabel	AnalyseTabel		a	inner join dimAnalysis a on r.AnalysisKey = a.AnalysisKey	De tabel met de analyseinformatie	105	105	105
-tabel	EenheidTabel		u	left join dimUnit u on r.UnitKey = u.UnitKey	De tabel met de eenheiden voor de testen	106	106	106
-tabel	Batchtabel		b	left join dimBatch b on r.BatchKey = b.BatchKey	De tabel met de definitie van de batches	107	107	107
+tabel	ComponentTabel		cmp	inner join dimComponent cmp on r.ComponentKey = cmp.ComponentKey	De tabel met componentinformatie (zoals loq)	105	105	105
+tabel	AnalyseTabel		a	inner join dimAnalysis a on r.AnalysisKey = a.AnalysisKey	De tabel met de analyseinformatie	106	106	106
+tabel	EenheidTabel		u	left join dimUnit u on r.UnitKey = u.UnitKey	De tabel met de eenheiden voor de testen	107	107	107
+tabel	Batchtabel		b	left join dimBatch b on r.BatchKey = b.BatchKey	De tabel met de definitie van de batches	108	108	108
 filter	Project		r	Project in <<PROJECTEN>>	De projecten worden ingevuld op het moment de data ingelezen wordt <<>> werdt vervangen\	151	151	151
 filter	StaalGoedgekeurd		s	SampleStatus = 'A'	Enkel geauthoriseerde stalen	152	152	152
 filter	ResultaatGoedgekeurd		r	ResultStatus= 'A'	Enkel geauthoriseerde resultaten	153	153	153
 filter	ProjectGoedgekeurd		p	ProjectStatus = 'V'	Enkel geauthoriseerde projecten	154	154	154
 filter	ResultaatGerapporteerd		r	IsReportable=1	Enkel resultaten die door het labo als rapporteerbaar gezet zijn	155	155	155
+filter	Staaltype		-	(s.SampleType is NULL OR s.SampleType in <<SAMPLE_TYPES>>)	Welke stalen moeten meekomen (NULL zijn projectstalen, de andere controlestalen)	156	156	156

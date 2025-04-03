@@ -5,7 +5,7 @@
 #' @param con connectie naar lims dwh
 #' @param project een character string met projecten,
 #' eventueel met SQL jokertekens "\%" en "_"
-#' @param fields welke velden wil je terugkrijgen,
+#' @param fields welke velden wil je terugkrijgen, #nolint
 #' indien het begint met "template:" wordt een staaltemplate gekozen,
 #' anders is dat gewoon een vector van velden. Je kan "template:"
 #' en eigen veldnamen combineren bv.

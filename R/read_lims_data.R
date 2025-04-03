@@ -5,6 +5,9 @@
 #' @param sql_template indien "default" wordt de standaardquery uitgevoerd,
 #' indien "all" worden alle voorziene velden geïmporteerd,
 #' bij "minimal" worden enkel de essentiële velden geïmporteerd
+#' @param sample_types charactervector met de types staal die je wil inlezen
+#' c("Project", "DUP", "BLANK", "CONTROL", "PRBLANCO", "STANDARD")
+#' Voor genetica heb je nog andere stalen als QC_METHOD, SUBSAMPLE, ...
 #' @param show_query indien TRUE toon de query op het scherm
 #' net voordat deze uitgevoerd wordt,
 #' je kan deze eventueel kopiëren en aanpassen en doorgeven aan custom_sql_query
@@ -42,6 +45,7 @@
 read_lims_data <- function(connection,
                            project,
                            sql_template = "default",
+                           sample_types = c("Project"),
                            show_query = FALSE,
                            custom_fields = NULL,
                            custom_where_clause = NULL,
@@ -59,8 +63,14 @@ read_lims_data <- function(connection,
     ) %>%
     filter(!is.na(.data$template), .data$template > 0) %>%
     arrange(.data$template)
-
-  sql_query <- parse_sql_report_query(template_information, project)
+  
+  
+  if(!length(sample_types))
+    sample_types <- c("Project")
+  
+  sql_query <- parse_sql_report_query(template_information,
+                                      project,
+                                      sample_types)
   if (show_query) {
     cat(sql_query)
   }

@@ -1,3 +1,11 @@
+# inbolims 0.3.0
+
+* Added dimComponent.LOQ as selectable field in the
+"all" and "default" report template.
+* Added inbolims-package.R to the package,
+so ?inbolims gives a package overview.
+* Allow to specify the sample types  you want, defaults to only project samples
+
 # inbolims 0.2.13
 
 # inbolims 0.2.12
