@@ -63,11 +63,9 @@ read_lims_data <- function(connection,
     ) %>%
     filter(!is.na(.data$template), .data$template > 0) %>%
     arrange(.data$template)
-  
-  
-  if(!length(sample_types))
+
+  if (!length(sample_types))
     sample_types <- c("Project")
-  
   sql_query <- parse_sql_report_query(template_information,
                                       project,
                                       sample_types)

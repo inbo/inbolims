@@ -39,7 +39,7 @@ lims_connect <- function(deployment = "prd", use_rodbc = FALSE, uidpwd = "") {
         DBI::dbConnect(odbc::odbc(),
                        Driver = "SQL Server",
                        Server = "inbo-sql08-prd.inbo.be",
-                       port = 1433, # toegevoegd voor vpn, weghalen indien dit problemen geeft
+                       port = 1433,
                        Database = "W0003_00_Lims",
                        Trusted_Connection = "True"
       ), silent = TRUE)

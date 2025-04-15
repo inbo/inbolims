@@ -5,6 +5,7 @@
 * Added inbolims-package.R to the package,
 so ?inbolims gives a package overview.
 * Allow to specify the sample types  you want, defaults to only project samples
+* Add package startup message
 
 # inbolims 0.2.13
 
@@ -28,7 +29,8 @@ so ?inbolims gives a package overview.
 
 # inbolims 0.2.8
 
-* Change the code so it only depends on hereunder to easier customizing report fields:
+* Change the code so it only depends on hereunder
+to easier customizing report fields:
     * combi field
     * original sample
     * project

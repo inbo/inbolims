@@ -5,6 +5,7 @@
     "  connection <- lims_connect()\n",
     "  rapport_data <- read_lims_data(connection, c(\"I-19W001-02\"))\n",
     "  kruistabel <- lims_report_xtab(rapport_data)\n\n",
-    "To suppress this message, use 'suppressPackageStartupMessages(library(inbolims))'.\n"
+    "To suppress this message,
+    use 'suppressPackageStartupMessages(library(inbolims))'.\n"
   )
 }

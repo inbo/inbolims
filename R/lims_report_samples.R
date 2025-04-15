@@ -1,7 +1,6 @@
 #' Verkrijg de sample metadata
 #'
 #' @param reportdata data verkregen uit de functie lims_report_data
-#' @importFrom dplyr .
 #'
 #' @return dataset met sample informatie
 #' @export

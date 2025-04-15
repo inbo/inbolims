@@ -5,7 +5,6 @@ library(inbolims)
 is_github_actions <- function() {
   Sys.getenv("GITHUB_ACTIONS") == "true"
 }
-
 if (!is_github_actions()) {
   test_check("inbolims")
 }

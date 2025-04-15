@@ -40,7 +40,7 @@ parse_sql_report_query <- function(template,
     filter(.data$Type == "tabel") %>%
     pull(.data$Kolom) %>%
     paste(collapse = " \n")
-  
+
   filters <- template %>%
     filter(.data$Type == "filter") %>%
     mutate(flt = paste0(.data$Afkorting, ".", .data$Kolom)) %>%
@@ -50,7 +50,7 @@ parse_sql_report_query <- function(template,
   filters <- gsub("<<PROJECTEN>>", projects, filters)
   filters <- gsub("<<SAMPLE_TYPES>>", sample_types, filters)
   filters <- gsub("-\\.", "", filters)
-  
+
   qry <- paste("select ", fields, "from ", tables, "where ", filters)
   return(qry)
 }

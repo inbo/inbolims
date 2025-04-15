@@ -4,13 +4,15 @@
 \alias{parse_sql_report_query}
 \title{Parse the query based on the template information and the chosen projects}
 \usage{
-parse_sql_report_query(template, project)
+parse_sql_report_query(template, project, sample_types = c("Project"))
 }
 \arguments{
 \item{template}{dataset containing the template_information.
 The structure should be exact as the file shipped with the package}
 
 \item{project}{character string of projects to filter}
+
+\item{sample_types}{character vector of sample types to filter}
 }
 \value{
 SQL server query
