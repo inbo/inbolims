@@ -35,15 +35,16 @@ lims_connect <- function(deployment = "prd", use_rodbc = FALSE, uidpwd = "") {
       }
       if (!inherits(con, "RODBC")) print("Connectie niet gelukt. Ben je op het INBO netwerk of via VPN verbonden? Contacteer de database administrator") # nolint
     } else {
-      con <- DBI::dbConnect(odbc::odbc(),
-        Driver = "SQL Server",
-        Server = "inbo-sql08-prd.inbo.be",
-        port = 1433, # toegevoegd voor vpn, weghalen indien dit problemen geeft
-        Database = "W0003_00_Lims",
-        Trusted_Connection = "True"
-      )
+      con <- try(
+        DBI::dbConnect(odbc::odbc(),
+                       Driver = "SQL Server",
+                       Server = "inbo-sql08-prd.inbo.be",
+                       port = 1433, # toegevoegd voor vpn, weghalen indien dit problemen geeft
+                       Database = "W0003_00_Lims",
+                       Trusted_Connection = "True"
+      ), silent = TRUE)
       if (!inherits(con, "Microsoft SQL Server")) {
-        print("Connectie niet gelukt. Ben je op het INBO netwerk of via VPN verbonden? Contacteer de database administrator") # nolint
+        print("Connectie niet gelukt. Ben je op het INBO netwerk of via VPN verbonden? Contacteer de database administrator indien dit het geval is.") # nolint
       }
     }
   } else {
