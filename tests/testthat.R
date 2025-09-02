@@ -1,5 +1,6 @@
 library(testthat)
 library(inbolims)
+library(here)
 
 # This helper function checks if we are inside GitHub Actions
 is_github_actions <- function() {

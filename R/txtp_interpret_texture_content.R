@@ -18,13 +18,9 @@ interpret_texture_content <-
       separate(.data$name, into = c("sample", "param"), sep = "___")
     textuur_wide <- textuur_long %>%
       pivot_wider(
-        id_cols = c(
-          .data$lower_boundary,
-          .data$upper_boundary,
-          .data$sample
-        ),
-        names_from = .data$param,
-        values_from = .data$value
+        id_cols = c("lower_boundary", "upper_boundary","sample"),
+        names_from = "param",
+        values_from = "value"
       ) %>%
       mutate(
         value = round(.data$value, digits),

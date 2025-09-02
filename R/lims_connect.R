@@ -19,6 +19,12 @@
 #' str(df_results)
 #' }
 lims_connect <- function(deployment = "prd", use_rodbc = FALSE, uidpwd = "") {
+  if (.Platform$OS.type == "windows") {
+    if (!(is_on_inbo_domain())) {
+      stop("Not on INBO domain, connection cannot be established")
+    }    
+  }
+
   if (deployment != "uat") {
     if (use_rodbc) {
       con <- try(RODBC::odbcDriverConnect(
