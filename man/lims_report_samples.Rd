@@ -19,8 +19,9 @@ Verkrijg de sample metadata
 \dontrun{
 conn <- lims_connect()
 reportdata <- read_lims_data(conn,
-                             project = c("I-19W001-01"),
-                             show_query = TRUE)
+  project = c("I-19W001-01"),
+  show_query = TRUE
+)
 sampledata <- lims_report_samples(reportdata)
 }
 

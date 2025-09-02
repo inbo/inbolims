@@ -26,7 +26,8 @@ read_lims_data(
 indien "all" worden alle voorziene velden geïmporteerd,
 bij "minimal" worden enkel de essentiële velden geïmporteerd}
 
-\item{sample_types}{NOT USED FOR THE MOMENT charactervector met de types staal die je wil inlezen
+\item{sample_types}{NOT USED FOR THE MOMENT charactervector
+met de types staal die je wil inlezen
 c("Project", "DUP", "BLANK", "CONTROL", "PRBLANCO", "STANDARD")
 Voor genetica heb je nog andere stalen als QC_METHOD, SUBSAMPLE, ...}
 

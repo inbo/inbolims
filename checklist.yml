@@ -23,6 +23,11 @@ allowed:
       Maintainer: 'Pieter Verschelde <pieter.verschelde@inbo.be>'
 
       New submission
+  - motivation: not important
+    value: |-
+      checking dependencies in R code ... NOTE
+      Namespace in Imports field not imported from: 'here'
+        All declared Imports should be used.
   - motivation: added a badge, no idea where it is for
     value: in README fix Add a status badge cf e.g repostatus.org
   - motivation: Intern gebruik

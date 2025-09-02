@@ -18,6 +18,7 @@
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' library(inbolims)
 #' con <- lims_connect()
 #' sample_info <- lims_sample_information(con, project = "I-20G%")
@@ -27,6 +28,7 @@
 #'     project = c("I-19G024-01", "I-20G%"),
 #'     fields = c("template:default", "FieldSamplingDate")
 #'   )
+#' }
 lims_sample_information <-
   function(con,
            project,
