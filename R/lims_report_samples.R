@@ -7,7 +7,10 @@
 #' @examples
 #' \dontrun{
 #' conn <- lims_connect()
-#' reportdata <- read_lims_data(conn, project = c("I-19W001-01"))
+#' reportdata <- read_lims_data(conn,
+#'   project = c("I-19W001-01"),
+#'   show_query = TRUE
+#' )
 #' sampledata <- lims_report_samples(reportdata)
 #' }
 #'
@@ -54,9 +57,9 @@ lims_report_samples <- function(reportdata) {
   }
 
   df_parent <- reportdata %>%
-    select(.data$OrigineelStaal,
-      .data$LimsStaalNummer,
-      HoofdLaboCode = .data$LaboCode
+    select("OrigineelStaal",
+      "LimsStaalNummer",
+      HoofdLaboCode = "LaboCode"
     ) %>%
     filter(.data$OrigineelStaal == .data$LimsStaalNummer) %>%
     distinct(.data$OrigineelStaal, .data$HoofdLaboCode)
@@ -83,7 +86,7 @@ lims_report_samples <- function(reportdata) {
       .groups = "drop_last"
     ) %>%
     ungroup() %>%
-    select(-.data$OrigineelStaal, -.data$ExternSampleID, -.data$Project)
+    select(-"OrigineelStaal", -"ExternSampleID", -"Project")
 
   collist <- c(
     "Project", "OrigineelStaal", "LaboCode",
@@ -100,7 +103,7 @@ lims_report_samples <- function(reportdata) {
     select(
       intersect(collist, colnames(.))
     ) %>%
-    arrange(.data$Project, .data$ExternSampleID)
+    arrange("Project", "ExternSampleID")
 
   df_samples
 }

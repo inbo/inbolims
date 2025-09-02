@@ -1,8 +1,8 @@
 Type: Package
 Package: inbolims
 Title: Utilities to query the INBO lab analysis datawarehouse
-Version: 0.2.13
-Date: 2024-10-30
+Version: 0.3.1
+Date: 2025-09-02
 Authors@R: 
     person("Pieter", "Verschelde", , "pieter.verschelde@inbo.be", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-9199-421X", affiliation = "Research Institute for Nature and Forest (INBO)"))
@@ -14,11 +14,12 @@ License: GPL-3
 URL: https://github.com/inbo/inbolims, https://inbo.github.io/inbolims/
 BugReports: https://github.com/inbo/inbolims/issues
 Depends:
-    R (>= 4.0.0)
+    R (>= 4.1.0)
 Imports:
     DBI,
     dplyr (>= 1.1.0),
     ggplot2,
+    here,
     jsonlite,
     lubridate,
     magrittr,

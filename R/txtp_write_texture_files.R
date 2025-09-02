@@ -31,11 +31,11 @@ write_texture_files <- function(target_path, data, verbose = TRUE) {
     fn <- paste0(
       max(tmp %>% pull(.data$FieldSampleID)),
       "_",
-      date_as_text(max(tmp %>% pull(.data$datum))),
+      date_as_text(max(tmp %>% pull("datum"))),
       ".csv"
     )
     if (verbose) print(fn)
-    write_excel_csv2(tmp %>% select(-.data$datum),
+    write_excel_csv2(tmp %>% select(-"datum"),
       file = file.path(target_path, fn)
     )
   }

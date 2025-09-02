@@ -1,32 +1,37 @@
 library(readr)
+library(here)
+
 test_that("texture parsing", {
   d1m <- suppressWarnings(
-    read_tsv("../testdata/multiple_samples.txt",
+    read_tsv(
+      here(
+        "tests", "testthat", "fixtures",
+        "source_texture_multiple_samples.txt"
+      ),
+      show_col_types = FALSE,
       n_max = 6,
       col_names = FALSE
     )
   )
-  d1 <- read_tsv("../testdata/multiple_samples.txt",
-    col_names = FALSE,
-    skip = 6
-  )
-  expect_gt(nrow(d1), 1)
+  expect_gt(nrow(d1m), 1)
 
   d2m <- suppressWarnings(
-    read_tsv("../testdata/single_sample.txt",
+    read_tsv(
+      here(
+        "tests", "testthat", "fixtures",
+        "source_texture_single_sample.txt"
+      ),
+      show_col_types = FALSE,
       n_max = 6,
       col_names = FALSE
     )
   )
-  d2 <- read_tsv("../testdata/single_sample.txt",
-    col_names = FALSE,
-    skip = 6
-  )
-  expect_gt(nrow(d2), 1)
+  expect_gt(nrow(d2m), 1)
 
-  source_path <- "../testdata/"
-  source_pattern <- "sample"
-  target_path <- "../testdata/result/"
+  source_path <- here("tests", "testthat", "fixtures")
+  source_pattern <- "^source_texture.*sample.*\\.txt$"
+  target_path <- here("tests", "testthat", "result")
+  if (!dir.exists(target_path)) dir.create(target_path)
 
   list_fn <- list.files(
     path = source_path,
@@ -60,31 +65,32 @@ test_that("texture parsing", {
       file.path(
         target_path,
         "CMON_P44652fb_laag_10_30_MG_2023_2023-09-29.csv"
-      )
+      ),
+      show_col_types = FALSE
     )
-
 
   multiple_new <-
     read_csv2(
       file.path(
         target_path,
         "CMON_P1d22877_laag_0_10_MG_2023_2023-09-25.csv"
-      )
+      ),
+      show_col_types = FALSE
     )
 
   # importeer eerder gegenereerde files
   single_old <-
     read_csv2(
       file.path(
-        target_path,
-        "single_sample_output.csv"
+        source_path,
+        "expected_texture_single_sample_output.csv"
       )
     )
   multiple_old <-
     read_csv2(
       file.path(
-        target_path,
-        "multiple_sample_first_output.csv"
+        source_path,
+        "expected_texture_multiple_sample_first_output.csv"
       )
     )
 

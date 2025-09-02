@@ -21,16 +21,16 @@ lims_report_xtab <- function(reportdata,
   if (resulttype == "measured") {
     xtab <- reportdata %>%
       tidyr::pivot_wider(
-        id_cols = .data$OrigineelStaal,
-        names_from = .data$Sleutel,
-        values_from = .data$WaardeRuw
+        id_cols = "OrigineelStaal",
+        names_from = "Sleutel",
+        values_from = "WaardeRuw"
       )
   } else {
     xtab <- reportdata %>%
       tidyr::pivot_wider(
-        id_cols = .data$OrigineelStaal,
-        names_from = .data$Sleutel,
-        values_from = .data$WaardeGeformatteerd
+        id_cols = "OrigineelStaal",
+        names_from = "Sleutel",
+        values_from = "WaardeGeformatteerd"
       )
   }
 

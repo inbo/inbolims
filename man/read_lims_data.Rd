@@ -8,6 +8,8 @@ read_lims_data(
   connection,
   project,
   sql_template = "default",
+  sample_types = c("Project"),
+  include_non_reportable = FALSE,
   show_query = FALSE,
   custom_fields = NULL,
   custom_where_clause = NULL,
@@ -23,6 +25,12 @@ read_lims_data(
 \item{sql_template}{indien "default" wordt de standaardquery uitgevoerd,
 indien "all" worden alle voorziene velden geïmporteerd,
 bij "minimal" worden enkel de essentiële velden geïmporteerd}
+
+\item{sample_types}{NOT USED FOR THE MOMENT charactervector met de types staal die je wil inlezen
+c("Project", "DUP", "BLANK", "CONTROL", "PRBLANCO", "STANDARD")
+Voor genetica heb je nog andere stalen als QC_METHOD, SUBSAMPLE, ...}
+
+\item{include_non_reportable}{Voorlopig is enkel "prd" actief ondersteund}
 
 \item{show_query}{indien TRUE toon de query op het scherm
 net voordat deze uitgevoerd wordt,
@@ -48,8 +56,7 @@ Indien dit veld actief is, wordt sql_template,
 custom_fields en custom_where_clause genegeerd}
 
 \item{deployment}{default "prd", "uat" indien op de ontwikkelomgeving
-gewerkt wordt.
-Voorlopig is enkel "prd" actief ondersteund}
+gewerkt wordt.}
 }
 \value{
 data.frame met minstens de velden ORIGINAL_SAMPLE,
