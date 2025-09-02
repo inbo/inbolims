@@ -11,9 +11,11 @@
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' library(inbolims)
 #' con <- lims_connect()
 #' lims_table_fields(con, "dimSample")
+#' }
 lims_table_fields <- function(con, table_name, export_type = "character") {
   rv <- dbGetQuery(
     conn = con,
