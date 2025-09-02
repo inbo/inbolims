@@ -22,7 +22,7 @@ lims_connect <- function(deployment = "prd", use_rodbc = FALSE, uidpwd = "") {
   if (.Platform$OS.type == "windows") {
     if (!(is_on_inbo_domain())) {
       stop("Not on INBO domain, connection cannot be established")
-    }    
+    }
   }
 
   if (deployment != "uat") {
@@ -43,12 +43,14 @@ lims_connect <- function(deployment = "prd", use_rodbc = FALSE, uidpwd = "") {
     } else {
       con <- try(
         DBI::dbConnect(odbc::odbc(),
-                       Driver = "SQL Server",
-                       Server = "inbo-sql08-prd.inbo.be",
-                       port = 1433,
-                       Database = "W0003_00_Lims",
-                       Trusted_Connection = "True"
-      ), silent = TRUE)
+          Driver = "SQL Server",
+          Server = "inbo-sql08-prd.inbo.be",
+          port = 1433,
+          Database = "W0003_00_Lims",
+          Trusted_Connection = "True"
+        ),
+        silent = TRUE
+      )
       if (!inherits(con, "Microsoft SQL Server")) {
         print("Connectie niet gelukt. Ben je op het INBO netwerk of via VPN verbonden? Contacteer de database administrator indien dit het geval is.") # nolint
       }

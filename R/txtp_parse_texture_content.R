@@ -34,7 +34,6 @@ parse_texture_content <- function(filename, delim = "\t", verbose = TRUE) {
     header_names[samplename_pos] <- paste(samples, "value", sep = "___")
     header_names[samplename_pos + 1] <- paste(samples, "LCL1S", sep = "___")
     header_names[samplename_pos + 2] <- paste(samples, "UCL1S", sep = "___")
-
   } else { # ENKEL 1 STAAL
     filenamerecord <- str_split_1(header[2], pattern = "\t")
     sample <- gsub("\\.\\$av", "", filenamerecord[2])

@@ -1,4 +1,3 @@
-
 #' Converteer datumvector of POSIXct vector naar text in formaat yyyy-mm-dd
 #'
 #' @param x vector met datums (character)

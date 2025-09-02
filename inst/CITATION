@@ -2,12 +2,12 @@ citHeader("To cite `inbolims` in publications please use:")
 # begin checklist entry
 bibentry(
   bibtype = "Manual",
-  title = "inbolims: Utilities to query the INBO lab analysis datawarehouse. Version 0.3.0",
+  title = "inbolims: Utilities to query the INBO lab analysis datawarehouse. Version 0.3.1",
   author = c( author = c(person(given = "Pieter", family = "Verschelde"))),
   year = 2025,
   url = "https://inbo.github.io/inbolims/",
   abstract = "Some utilities that expand the Lims program in INBO. It mainly focuses on post-processing in connection with Quality Assurance.",
-  textVersion = "Verschelde, Pieter (2025) inbolims: Utilities to query the INBO lab analysis datawarehouse. Version 0.3.0. https://inbo.github.io/inbolims/",
+  textVersion = "Verschelde, Pieter (2025) inbolims: Utilities to query the INBO lab analysis datawarehouse. Version 0.3.1. https://inbo.github.io/inbolims/",
   keywords = "lims; lab results; COA; Certificate of Analysis",
 )
 # end checklist entry

@@ -87,9 +87,9 @@ If you want to get more advanced you can even specify your own query based on th
 ```{r basics3, cache = TRUE}
 #haal de rapportgegevens binnen uit de databank
 report_data <- read_lims_data(connection = connection,
-                               project = c("I-23W001-02"),
-                               sql_template = "default",
-                               show_query = FALSE)
+                              project = c("I-23W001-02"),
+                              sql_template = "default",
+                              show_query = FALSE)
 ```
 
 

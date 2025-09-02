@@ -16,7 +16,7 @@ library(tidyverse)
 
 #Haal alle data op
 rapport_data <- lims_report_data(project = c("I-19W001-02"),
-                              show_query = TRUE)
+                                 show_query = TRUE)
 
 #Maak een overzicht met enkel de stalen
 staaloverzicht <- lims_report_samples(rapport_data)

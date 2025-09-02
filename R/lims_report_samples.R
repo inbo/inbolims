@@ -8,8 +8,9 @@
 #' \dontrun{
 #' conn <- lims_connect()
 #' reportdata <- read_lims_data(conn,
-#'                              project = c("I-19W001-01"),
-#'                              show_query = TRUE)
+#'   project = c("I-19W001-01"),
+#'   show_query = TRUE
+#' )
 #' sampledata <- lims_report_samples(reportdata)
 #' }
 #'
@@ -57,8 +58,8 @@ lims_report_samples <- function(reportdata) {
 
   df_parent <- reportdata %>%
     select("OrigineelStaal",
-           "LimsStaalNummer",
-           HoofdLaboCode = "LaboCode"
+      "LimsStaalNummer",
+      HoofdLaboCode = "LaboCode"
     ) %>%
     filter(.data$OrigineelStaal == .data$LimsStaalNummer) %>%
     distinct(.data$OrigineelStaal, .data$HoofdLaboCode)

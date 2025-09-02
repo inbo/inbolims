@@ -3,21 +3,27 @@ library(here)
 
 test_that("texture parsing", {
   d1m <- suppressWarnings(
-    read_tsv(here("tests", "testthat", "fixtures",
-                  "source_texture_multiple_samples.txt"),
-             show_col_types = FALSE,
-             n_max = 6,
-             col_names = FALSE
+    read_tsv(
+      here(
+        "tests", "testthat", "fixtures",
+        "source_texture_multiple_samples.txt"
+      ),
+      show_col_types = FALSE,
+      n_max = 6,
+      col_names = FALSE
     )
   )
   expect_gt(nrow(d1m), 1)
 
   d2m <- suppressWarnings(
-    read_tsv(here("tests", "testthat", "fixtures",
-                  "source_texture_single_sample.txt"),
-             show_col_types = FALSE,
-             n_max = 6,
-             col_names = FALSE
+    read_tsv(
+      here(
+        "tests", "testthat", "fixtures",
+        "source_texture_single_sample.txt"
+      ),
+      show_col_types = FALSE,
+      n_max = 6,
+      col_names = FALSE
     )
   )
   expect_gt(nrow(d2m), 1)

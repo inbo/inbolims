@@ -1,4 +1,3 @@
-
 #' Interpreteer de geparste textuurfile
 #'
 #' @param textuurdata geparste textuurdata
@@ -18,7 +17,7 @@ interpret_texture_content <-
       separate(.data$name, into = c("sample", "param"), sep = "___")
     textuur_wide <- textuur_long %>%
       pivot_wider(
-        id_cols = c("lower_boundary", "upper_boundary","sample"),
+        id_cols = c("lower_boundary", "upper_boundary", "sample"),
         names_from = "param",
         values_from = "value"
       ) %>%

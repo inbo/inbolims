@@ -1,6 +1,6 @@
 {
   "title": "inbolims: Utilities to query the INBO lab analysis datawarehouse",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "license": "GPL-3.0",
   "upload_type": "software",
   "description": "<p>Some utilities that expand the Lims program in INBO. It mainly focuses on post-processing in connection with Quality Assurance.<\/p>",
