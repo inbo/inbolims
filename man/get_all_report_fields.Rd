@@ -14,7 +14,6 @@ and the corresponding description
 Show available fields
 }
 \examples{
-{
 get_all_report_fields()
-}
+
 }

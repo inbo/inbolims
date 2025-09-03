@@ -7,10 +7,9 @@
 #' @importFrom readr read_tsv
 #' @importFrom dplyr filter select
 #'
-#' @examples{
+#' @examples
 #' get_all_report_fields()
-#' }
-
+#'
 get_all_report_fields <- function() {
   read_tsv(file.path(
     system.file(package = "inbolims"),

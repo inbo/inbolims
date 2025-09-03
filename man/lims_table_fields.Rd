@@ -21,7 +21,9 @@ character vector with column names of the table
 Get all availaible column names from a table in the data warehouse
 }
 \examples{
+\dontrun{
 library(inbolims)
 con <- lims_connect()
 lims_table_fields(con, "dimSample")
+}
 }
