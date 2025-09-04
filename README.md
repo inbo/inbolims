@@ -92,6 +92,19 @@ staal_info <- lims_sample_information(connection, project = c("I-19W001-02"))
 
 ````
 
+Als je wil een overzicht hebben over alle testen en componenten die in de betrokken projecten gebruikt (gerapporteerd en niet-gerapporteerd) zijn kan je onderstaande functie gebruiken.
+
+Als je in je rapport enkele niet-gerapporteerde testen wil meerapporteren kan je dit op basis van deze output, waarbij je de LimsAnalysisName en Component aan elkaar plakt met een dubbele underscore 
+
+````
+#illustratieve stap: krijg de testinformatie (optioneel)
+test_info <- lims_test_information(connection, project = c("I-19W001-02"))
+
+````
+
+
+
+
 De belangrijkste functie is het inlezen van alle rapportdata.
 In de toekomst zal die functie ook verbeterd worden zodat ook gemakkelijk kan achterhaald worden wat er historisch allemaal bestond van analyse- en componentnamen.
 
@@ -104,6 +117,16 @@ rapport_data <- read_lims_data(connection = connection,
                                  
 ```` 
 Bovenstaande code haalt de data op voor het project I-19W001-02 (project = "I-19W001-02") volgens de standaardtemplate  (template = "default") en de query die gebruikt is om het datawarehouse te bevragen wordt getoond (show_query = TRUE). Als eerste variabele moet de databank connectie opgegeven worden, zodat de routine weet waar de gegevens uit gehaald moeten worden.
+
+Je kan ook alle of enkele niet-gerapporteerde componenten ophalen op basis van de informatie die je kan halen uit `lims_test_information`
+
+````
+include_nonrep <- c("IC_KATIONEN__Verdunning", "IC_ANIONEN__Verdunning")
+rapport_data <- read_lims_data(connection = connection, 
+                               project = c("I-19W001-02"),
+                               include_non_reportable = include_nonrep)
+
+````
 
 ## Afgeleide routines (work in progress)
 
