@@ -6,7 +6,7 @@
 ### IMPORTANT
 ### !!! Be sure to have VPN connection to link to LIMS system !!!
 
-#load necessary libraries
+# load necessary libraries
 
 library(dplyr)
 library(jsonlite)
@@ -22,16 +22,17 @@ getwd()
 # get input files
 file_input_path <- "."
 files_list <- list.files(file_input_path,
-                         pattern = "V-24V057",
-                         full.names = TRUE)
+  pattern = "V-24V057",
+  full.names = TRUE
+)
 n_files <- length(files_list)
 
-#output path
+# output path
 target_dir <- "./output"
 dir.create(target_dir)
 
-#db connection
-conn <- lims_connect() #connect to dwh to link lab id
+# db connection
+conn <- lims_connect() # connect to dwh to link lab id
 
 # main loop parsing
 for (i in 1:n_files) {
@@ -39,18 +40,18 @@ for (i in 1:n_files) {
   print(filename)
   textuur_parsed <- parse_texture_content(filename, delim = "\t")
   textuur_interpreted <- interpret_texture_content(textuur_parsed)
-  conn <- lims_connect() #connect to dwh
+  conn <- lims_connect() # connect to dwh
   textuur_linked <- link_labo_id(conn, textuur_interpreted)
   write_texture_files(target_dir, textuur_linked)
 }
 
-#conversion output to json
+# conversion output to json
 files_list_out <- list.files(target_dir, pattern = ".csv", full.names = TRUE)
 n_files_out <- length(files_list_out)
 
 for (j in 1:n_files_out) {
   tmp <- read.csv2(files_list_out[j])
-  tmp_uni <- distinct(tmp) #remove all duplicate rows
+  tmp_uni <- distinct(tmp) # remove all duplicate rows
   write.csv2(tmp_uni, files_list_out[j], row.names = FALSE)
   tex_csv_2_json(files_list_out[j])
 }

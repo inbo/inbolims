@@ -1,3 +1,7 @@
+# inbolims 0.3.2
+
+* added another example script for texture processing
+
 # inbolims 0.3.1
 
 * Added some extra tests and error handling
